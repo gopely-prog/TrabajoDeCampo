@@ -50,7 +50,7 @@ public class ConexionBD {
             }
             
         } catch (SQLException e) {
-            System.out.println("Error al obtener productos: " + e.getMessage());
+        	JOptionPane.showMessageDialog(null,"Error al obtener productos: " + e.getMessage());
         }
         
         return productos;
@@ -76,9 +76,31 @@ public class ConexionBD {
             }
             
         } catch (SQLException e) {
-            System.out.println("Error al obtener producto: " + e.getMessage());
+        	JOptionPane.showMessageDialog(null,"Error al obtener producto: " + e.getMessage());
         }
         
         return null;
+    }
+ // Método para insertar un nuevo producto
+    public static boolean insertarProducto(Producto producto) {
+    	//Se le da una instrucción a la base de datos
+        String sql = "INSERT INTO productos (codigo, descripcion, precio_unitario, stock) VALUES (?, ?, ?, ?)";
+        //Verifica que exista la conexión con el método getConnection
+        try (Connection conn = getConnection();
+        		//Un formulario para poder completar los ? de forma segura
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, producto.getCodigo());
+            stmt.setString(2, producto.getDescripcion());
+            stmt.setDouble(3, producto.getpUnitario());
+            stmt.setInt(4, producto.getStock());
+            
+            int filasAfectadas = stmt.executeUpdate();
+            return filasAfectadas > 0;//Si no se hacen cambios da error y entra al catch. 
+            
+        } catch (SQLException e) {
+        	JOptionPane.showMessageDialog(null,"Error al insertar producto: " + e.getMessage());
+            return false;
+        }
     }
 }
