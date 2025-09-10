@@ -17,6 +17,9 @@ public class ConexionBD {
     private static final String PASSWORD = ""; // Cambia por tu contraseña
     
     // Método para obtener la conexión
+    public static void main(String[] args) {
+    	
+    }
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);

@@ -62,16 +62,16 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	 * Create the frame.
 	 */
 	public GUI() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 466, 625);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Facturación");
+		JLabel lblNewLabel = new JLabel("Tienda");
 		lblNewLabel.setFont(new Font("MS PGothic", Font.PLAIN, 24));
-		lblNewLabel.setBounds(62, 0, 143, 39);
+		lblNewLabel.setBounds(10, 0, 143, 39);
 		contentPane.add(lblNewLabel);
 		
 		JLabel lblnombreDelRestaurante = new JLabel("(Nombre del restaurante)");
@@ -328,7 +328,6 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	
 	protected void do_btnAgregar_actionPerformed(ActionEvent e) {
 		// Tu código actual del botón agregar
-		String codigo = txtCodigo.getText();
 		String desc = cboProductos.getSelectedItem().toString();
 		double PUnit = Double.parseDouble(txtPUnitario.getText());
 		int cantidad = Integer.parseInt(txtCantidad.getText());
@@ -341,6 +340,5 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
         modelo.addRow(new Object[] {cantidad, desc, PUnit, total});
         // Limpiar campos
         txtCantidad.setText("");
-        // Los demás campos se limpian cuando selecciones otro producto
 	}
 }
