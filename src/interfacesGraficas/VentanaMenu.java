@@ -13,6 +13,8 @@ import javax.swing.JButton;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.GridLayout;
+import java.awt.Color;
 
 public class VentanaMenu extends JFrame implements ActionListener {
 
@@ -21,6 +23,10 @@ public class VentanaMenu extends JFrame implements ActionListener {
 	private JButton btnTienda;
 	private JButton btnComida;
 	private JButton btnSalir;
+	private JPanel panel;
+	private JPanel panel_1;
+	private JPanel panel_2;
+	private JLabel lblNewLabel;
 
 	/**
 	 * Launch the application.
@@ -43,35 +49,57 @@ public class VentanaMenu extends JFrame implements ActionListener {
 	 */
 	public VentanaMenu() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 523, 229);
+		setBounds(100, 100, 507, 475);
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(205, 232, 254));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Restaurante (------------------)");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setFont(new Font("Impact", Font.PLAIN, 19));
-		lblNewLabel.setBounds(132, 11, 244, 57);
-		contentPane.add(lblNewLabel);
+		panel = new JPanel();
+		panel.setBounds(329, 11, 147, 100);
+		contentPane.add(panel);
+		panel.setLayout(new GridLayout(1, 0, 0, 0));
 		
 		btnTienda = new JButton("Tienda");
+		btnTienda.setFont(new Font("Arial", Font.BOLD, 15));
+		btnTienda.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconTienda.png")));
+		panel.add(btnTienda);
 		btnTienda.addActionListener(this);
-		btnTienda.setBackground(SystemColor.activeCaption);
-		btnTienda.setBounds(42, 67, 72, 47);
-		contentPane.add(btnTienda);
+		btnTienda.setBackground(new Color(255, 255, 255));
+		btnTienda.setVerticalTextPosition(SwingConstants.BOTTOM);
+		btnTienda.setHorizontalTextPosition(SwingConstants.CENTER);
+		
+		panel_1 = new JPanel();
+		panel_1.setBounds(329, 153, 147, 100);
+		contentPane.add(panel_1);
+		panel_1.setLayout(new GridLayout(1, 0, 0, 0));
 		
 		btnComida = new JButton("Comida");
+		btnComida.setFont(new Font("Arial", Font.BOLD, 15));
+		btnComida.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconComida.png")));
+		panel_1.add(btnComida);
 		btnComida.addActionListener(this);
-		btnComida.setBackground(SystemColor.activeCaption);
-		btnComida.setBounds(203, 67, 93, 47);
-		contentPane.add(btnComida);
+		btnComida.setBackground(new Color(255, 255, 255));
+		btnComida.setVerticalTextPosition(SwingConstants.BOTTOM);		
+		btnComida.setHorizontalTextPosition(SwingConstants.CENTER);		
+		panel_2 = new JPanel();
+		panel_2.setBounds(329, 298, 147, 100);
+		contentPane.add(panel_2);
+		panel_2.setLayout(new GridLayout(1, 0, 0, 0));
 		
 		btnSalir = new JButton("Salir");
+		btnSalir.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconSalir.png")));
+		btnSalir.setFont(new Font("Arial", Font.BOLD, 15));
+		panel_2.add(btnSalir);
 		btnSalir.addActionListener(this);
-		btnSalir.setBackground(SystemColor.activeCaption);
-		btnSalir.setBounds(372, 67, 72, 47);
-		contentPane.add(btnSalir);
+		btnSalir.setBackground(new Color(255, 255, 255));
+		btnSalir.setVerticalTextPosition(SwingConstants.BOTTOM);
+		btnSalir.setHorizontalTextPosition(SwingConstants.CENTER);
+		
+		lblNewLabel = new JLabel("New label");
+		lblNewLabel.setBounds(107, 201, 46, 14);
+		contentPane.add(lblNewLabel);
 
 	}
 	public void actionPerformed(ActionEvent e) {

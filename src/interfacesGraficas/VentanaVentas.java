@@ -30,10 +30,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	TitledBorder bordeArticulo = new TitledBorder("Artículo");
-	private JTextField txtCodigo;
-	private JTextField txtStock;
-	private JTextField txtPUnitario;
-	private JTextField txtCantidad;
 	private JTextField txtRUC;
 	private JTextField txtRazonSocial;
 	private JTextField txtDomicilio;
@@ -44,7 +40,10 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	private JComboBox<Comida> cboProductos;
 	private JScrollPane scrollPane;
 	private JTable table;
-	private JTable table_1;
+	private JTextField txtCodigo;
+	private JTextField txtPUnitario;
+	private JTextField txtCantidad;
+	private JTextField txtStock;
 
 	/**
 	 * Create the frame.
@@ -53,6 +52,7 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 466, 625);
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(205, 232, 254));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -103,12 +103,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		lblCantidad.setBounds(10, 99, 102, 39);
 		panel.add(lblCantidad);
 		
-		txtCodigo = new JTextField();
-		txtCodigo.setEditable(false); // Solo lectura
-		txtCodigo.setBounds(140, 22, 147, 20);
-		panel.add(txtCodigo);
-		txtCodigo.setColumns(10);
-		
 		// ComboBox de productos
 		cboProductos = new JComboBox<>();
 		cboProductos.addItemListener(this);
@@ -120,14 +114,19 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		lblStock.setBounds(308, 11, 102, 39);
 		panel.add(lblStock);
 		
-		txtStock = new JTextField();
-		txtStock.setEditable(false); // Solo lectura
-		txtStock.setColumns(10);
-		txtStock.setBounds(306, 49, 92, 20);
-		panel.add(txtStock);
+		btnAgregar = new JButton("Agregar");
+		btnAgregar.addActionListener(this);
+		btnAgregar.setFont(new Font("SansSerif", Font.BOLD, 15));
+		btnAgregar.setBackground(SystemColor.activeCaption);
+		btnAgregar.setBounds(308, 99, 92, 39);
+		panel.add(btnAgregar);
+		
+		txtCodigo = new JTextField();
+		txtCodigo.setBounds(140, 22, 147, 20);
+		panel.add(txtCodigo);
+		txtCodigo.setColumns(10);
 		
 		txtPUnitario = new JTextField();
-		txtPUnitario.setEditable(false); // Solo lectura
 		txtPUnitario.setColumns(10);
 		txtPUnitario.setBounds(140, 79, 147, 20);
 		panel.add(txtPUnitario);
@@ -137,12 +136,10 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		txtCantidad.setBounds(140, 110, 147, 20);
 		panel.add(txtCantidad);
 		
-		btnAgregar = new JButton("Agregar");
-		btnAgregar.addActionListener(this);
-		btnAgregar.setFont(new Font("SansSerif", Font.BOLD, 15));
-		btnAgregar.setBackground(SystemColor.activeCaption);
-		btnAgregar.setBounds(308, 99, 102, 22);
-		panel.add(btnAgregar);
+		txtStock = new JTextField();
+		txtStock.setBounds(308, 49, 92, 20);
+		panel.add(txtStock);
+		txtStock.setColumns(10);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, SystemColor.activeCaption));
@@ -154,20 +151,14 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		scrollPane.setBounds(0, -21, 424, 169);
 		panel_1.add(scrollPane);
 		scrollPane.setEnabled(false);
+		DefaultTableModel modelo = new DefaultTableModel();
+		modelo.addColumn("Cantidad");
+		modelo.addColumn("Descripción");
+		modelo.addColumn("P. Unitario");  
+		modelo.addColumn("P. Total");
 		
-		
-		table.getColumnModel().getColumn(0).setResizable(false);
-		table.getColumnModel().getColumn(0).setPreferredWidth(52);
-		table.getColumnModel().getColumn(1).setResizable(false);
-		table.getColumnModel().getColumn(1).setPreferredWidth(106);
-		table.getColumnModel().getColumn(2).setResizable(false);
-		table.getColumnModel().getColumn(2).setPreferredWidth(59);
-		table.getColumnModel().getColumn(3).setResizable(false);
-		table.getColumnModel().getColumn(3).setPreferredWidth(52);
+		table = new JTable();
 		scrollPane.setViewportView(table);
-		
-		table_1 = new JTable();
-		scrollPane.setViewportView(table_1);
 		
 		JButton btnNuevo = new JButton("Nuevo");
 		btnNuevo.setFont(new Font("SansSerif", Font.BOLD, 15));

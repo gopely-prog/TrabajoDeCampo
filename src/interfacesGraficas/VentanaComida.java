@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 public class VentanaComida extends JFrame implements ActionListener {
 
@@ -37,6 +38,7 @@ public class VentanaComida extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 592);
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(205, 232, 254));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);

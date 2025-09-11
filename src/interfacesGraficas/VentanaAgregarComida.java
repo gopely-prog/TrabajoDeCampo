@@ -46,13 +46,14 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 362, 273);
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(205, 232, 254));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "", TitledBorder.LEADING, TitledBorder.TOP, null, Color.LIGHT_GRAY));
-		panel.setBounds(10, 11, 307, 195);
+		panel.setBounds(10, 11, 326, 212);
 		contentPane.add(panel);
 		panel.setBorder(bordeProductos);
 		panel.setLayout(null);
@@ -65,7 +66,7 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		panel.add(lblNewLabel);
 		
 		txtCodigo = new JTextField();
-		txtCodigo.setBounds(182, 9, 86, 20);
+		txtCodigo.setBounds(10, 32, 86, 20);
 		panel.add(txtCodigo);
 		txtCodigo.setColumns(10);
 		
@@ -73,41 +74,42 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		lblDescripcin.setForeground(Color.BLACK);
 		lblDescripcin.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 15));
 		lblDescripcin.setBackground(Color.WHITE);
-		lblDescripcin.setBounds(10, 34, 86, 18);
+		lblDescripcin.setBounds(10, 63, 86, 18);
 		panel.add(lblDescripcin);
 		
 		txtDescripcion = new JTextField();
 		txtDescripcion.setColumns(10);
-		txtDescripcion.setBounds(182, 32, 86, 20);
+		txtDescripcion.setBounds(123, 63, 162, 20);
 		panel.add(txtDescripcion);
 		
 		lblPrecio = new JLabel("Precio Unitario");
 		lblPrecio.setForeground(Color.BLACK);
 		lblPrecio.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 15));
 		lblPrecio.setBackground(Color.WHITE);
-		lblPrecio.setBounds(10, 58, 103, 18);
+		lblPrecio.setBounds(10, 104, 103, 18);
 		panel.add(lblPrecio);
 		
 		txtPUnitario = new JTextField();
 		txtPUnitario.setColumns(10);
-		txtPUnitario.setBounds(182, 56, 86, 20);
+		txtPUnitario.setBounds(123, 104, 86, 20);
 		panel.add(txtPUnitario);
 		
 		lblStock = new JLabel("Stock");
 		lblStock.setForeground(Color.BLACK);
 		lblStock.setFont(new Font("Franklin Gothic Medium", Font.PLAIN, 15));
 		lblStock.setBackground(Color.WHITE);
-		lblStock.setBounds(10, 81, 103, 18);
+		lblStock.setBounds(10, 148, 103, 18);
 		panel.add(lblStock);
 		
 		txtStock = new JTextField();
 		txtStock.setColumns(10);
-		txtStock.setBounds(182, 79, 86, 20);
+		txtStock.setBounds(123, 148, 86, 20);
 		panel.add(txtStock);
 		
 		btnAgregarProducto = new JButton("Agregar");
+		btnAgregarProducto.setFont(new Font("Arial", Font.BOLD, 12));
 		btnAgregarProducto.addActionListener(this);
-		btnAgregarProducto.setBounds(103, 131, 89, 23);
+		btnAgregarProducto.setBounds(230, 148, 86, 53);
 		panel.add(btnAgregarProducto);
 	}
 	ArregloComida ac = ArregloComida.getInstancia();
