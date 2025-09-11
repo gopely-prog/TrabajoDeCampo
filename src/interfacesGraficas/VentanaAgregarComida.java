@@ -1,4 +1,4 @@
-package P1;
+package interfacesGraficas;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -8,13 +8,21 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+
+import clases.ArregloComida;
+import clases.Comida;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.SystemColor;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class VentanaAgregarProducto extends JFrame {
+public class VentanaAgregarComida extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -31,25 +39,9 @@ public class VentanaAgregarProducto extends JFrame {
 	private JButton btnAgregarProducto;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaAgregarProducto frame = new VentanaAgregarProducto();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public VentanaAgregarProducto() {
+	public VentanaAgregarComida() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 362, 273);
 		contentPane = new JPanel();
@@ -113,7 +105,40 @@ public class VentanaAgregarProducto extends JFrame {
 		panel.add(txtStock);
 		
 		btnAgregarProducto = new JButton("Agregar");
+		btnAgregarProducto.addActionListener(this);
 		btnAgregarProducto.setBounds(103, 131, 89, 23);
 		panel.add(btnAgregarProducto);
+	}
+	ArregloComida ac= new ArregloComida();
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnAgregarProducto) {
+			do_btnAgregarProducto_actionPerformed(e);
+		}
+	}
+	int LeerCodigo() {
+		return Integer.parseInt(txtCodigo.getText());
+	}
+	String LeerDescripcion() {
+		return txtDescripcion.getText();
+	}
+	double LeerPUnitario() {
+		return Double.parseDouble(txtPUnitario.getText());
+	}
+	int LeerStock() {
+		return Integer.parseInt(txtStock.getText());
+	}
+
+	protected void do_btnAgregarProducto_actionPerformed(ActionEvent e) {
+		Comida c = ac.Buscar(LeerCodigo());
+		if(c==null) {
+			Comida c1= new Comida(LeerCodigo(),LeerDescripcion(),LeerPUnitario(),LeerStock());
+			ac.Adicionar(c1);
+			txtCodigo.setText("");
+			txtDescripcion.setText("");
+			txtPUnitario.setText("");
+			txtStock.setText("");
+			txtCodigo.requestFocus();
+			JOptionPane.showMessageDialog(this, "Plato agregado.");
+		}else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");
 	}
 }

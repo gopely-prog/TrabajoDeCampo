@@ -1,4 +1,4 @@
-package P1;
+package interfacesGraficas;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -8,6 +8,9 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+
+import clases.Comida;
+
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
 import javax.swing.JTextField;
@@ -22,7 +25,7 @@ import java.awt.event.ItemEvent;
 import javax.swing.JScrollPane;
 import java.util.List;
 
-public class GUI extends JFrame implements ActionListener, ItemListener {
+public class VentanaVentas extends JFrame implements ActionListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -38,30 +41,15 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 	private JTextField txtIGV;
 	private JTextField txtTotal;
 	private JButton btnAgregar;
-	private JComboBox<Producto> cboProductos;
+	private JComboBox<Comida> cboProductos;
 	private JScrollPane scrollPane;
 	private JTable table;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					GUI frame = new GUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JTable table_1;
 
 	/**
 	 * Create the frame.
 	 */
-	public GUI() {
+	public VentanaVentas() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 466, 625);
 		contentPane = new JPanel();
@@ -167,22 +155,7 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 		panel_1.add(scrollPane);
 		scrollPane.setEnabled(false);
 		
-		table = new JTable();
-		table.setFont(new Font("Tahoma", Font.BOLD, 10));
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Cantidad", "Descripci\u00F3n", "P. Unitario", "P. Total"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
+		
 		table.getColumnModel().getColumn(0).setResizable(false);
 		table.getColumnModel().getColumn(0).setPreferredWidth(52);
 		table.getColumnModel().getColumn(1).setResizable(false);
@@ -192,6 +165,9 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 		table.getColumnModel().getColumn(3).setResizable(false);
 		table.getColumnModel().getColumn(3).setPreferredWidth(52);
 		scrollPane.setViewportView(table);
+		
+		table_1 = new JTable();
+		scrollPane.setViewportView(table_1);
 		
 		JButton btnNuevo = new JButton("Nuevo");
 		btnNuevo.setFont(new Font("SansSerif", Font.BOLD, 15));
@@ -293,52 +269,17 @@ public class GUI extends JFrame implements ActionListener, ItemListener {
 		lblPUnitario_1.setBounds(245, 234, 102, 39);
 		contentPane.add(lblPUnitario_1);
 		lblPUnitario_1.setFont(new Font("SansSerif", Font.BOLD, 15));
-		
-		// Cargar productos al inicializar
-		cargarProductos();
 	}
-	
-	// Método para cargar productos en el ComboBox
-	private void cargarProductos() {
-		cboProductos.removeAllItems();
-		List<Producto> productos = ConexionBD.obtenerProductos();
-		for (var p : productos) {
-			cboProductos.addItem(p);
-		}
-	}
-	
-	// Listener para el ComboBox (autocompletado)
+
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		if (e.getSource() == cboProductos && e.getStateChange() == ItemEvent.SELECTED) {
-			Producto productoSeleccionado = (Producto) cboProductos.getSelectedItem();
-			if (productoSeleccionado != null) {
-				txtCodigo.setText(productoSeleccionado.getCodigo());
-				txtPUnitario.setText(String.valueOf(productoSeleccionado.getpUnitario()));
-				txtStock.setText(String.valueOf(productoSeleccionado.getStock()));
-			}
-		}
+		// TODO Auto-generated method stub
+		
 	}
-	
+
+	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnAgregar) {
-			do_btnAgregar_actionPerformed(e);
-		}
-	}
-	
-	protected void do_btnAgregar_actionPerformed(ActionEvent e) {
-		// Tu código actual del botón agregar
-		String desc = cboProductos.getSelectedItem().toString();
-		double PUnit = Double.parseDouble(txtPUnitario.getText());
-		int cantidad = Integer.parseInt(txtCantidad.getText());
-		int stock = Integer.parseInt(txtStock.getText());
+		// TODO Auto-generated method stub
 		
-		Producto p = new Producto(cantidad, PUnit);
-		double total = p.Total(cantidad, PUnit);
-		
-		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-        modelo.addRow(new Object[] {cantidad, desc, PUnit, total});
-        // Limpiar campos
-        txtCantidad.setText("");
 	}
 }

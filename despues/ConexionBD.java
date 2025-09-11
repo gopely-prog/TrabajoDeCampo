@@ -1,4 +1,4 @@
-package P1;
+package clases;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,11 +15,7 @@ public class ConexionBD {
     private static final String URL = "jdbc:mysql://localhost:3306/restaurante_bd";
     private static final String USER = "root"; // Cambia por tu usuario
     private static final String PASSWORD = ""; // Cambia por tu contraseña
-    
-    // Método para obtener la conexión
-    public static void main(String[] args) {
-    	
-    }
+
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -30,8 +26,8 @@ public class ConexionBD {
     }
     
     // Método para obtener todos los productos
-    public static List<Producto> obtenerProductos() {
-        List<Producto> productos = new ArrayList<>();
+    public static List<Comida> obtenerProductos() {
+        List<Comida> productos = new ArrayList<>();
         String sql = "SELECT codigo, descripcion, precio_unitario, stock FROM productos";
         
         try (Connection conn = getConnection();
@@ -39,13 +35,13 @@ public class ConexionBD {
              ResultSet rs = stmt.executeQuery()) {
             
             while (rs.next()) {
-                String codigo = rs.getString("codigo");
+                int codigo = rs.getInt("codigo");
                 String descripcion = rs.getString("descripcion");
                 double precioUnitario = rs.getDouble("precio_unitario");
                 int stock = rs.getInt("stock");
                 
                 // Crear producto con todos los datos
-                Producto producto = new Producto(descripcion, codigo,precioUnitario, stock);
+                Comida producto = new Comida(codigo, descripcion,precioUnitario, stock);
                 productos.add(producto);
             }
             
@@ -57,13 +53,13 @@ public class ConexionBD {
     }
     
     // Método para obtener un producto por código
-    public static Producto obtenerProductoPorCodigo(String codigo) {
+    public static Comida obtenerProductoPorCodigo(int codigo) {
         String sql = "SELECT codigo, descripcion, precio_unitario, stock FROM productos WHERE codigo = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, codigo);
+            stmt.setInt(1, codigo);
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
@@ -71,7 +67,7 @@ public class ConexionBD {
                 double precioUnitario = rs.getDouble("precio_unitario");
                 int stock = rs.getInt("stock");
                 
-                Producto producto = new Producto(descripcion, codigo, precioUnitario, stock);
+                Comida producto = new Comida(codigo, descripcion, precioUnitario, stock);
                 return producto;
             }
             
@@ -82,7 +78,7 @@ public class ConexionBD {
         return null;
     }
  // Método para insertar un nuevo producto
-    public static boolean insertarProducto(Producto producto) {
+    public static boolean insertarProducto(Comida producto) {
     	//Se le da una instrucción a la base de datos
         String sql = "INSERT INTO productos (codigo, descripcion, precio_unitario, stock) VALUES (?, ?, ?, ?)";
         //Verifica que exista la conexión con el método getConnection
@@ -90,7 +86,7 @@ public class ConexionBD {
         		//Un formulario para poder completar los ? de forma segura
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, producto.getCodigo());
+            stmt.setInt(1, producto.getCodigo());
             stmt.setString(2, producto.getDescripcion());
             stmt.setDouble(3, producto.getpUnitario());
             stmt.setInt(4, producto.getStock());

@@ -1,26 +1,18 @@
 
-package P1;
+package clases;
 
-public class Producto {
-	private int cantidad, stock;
-	private String codigo, descripcion;
+public class Comida {
+	private int cantidad,codigo, stock;
+	private String  descripcion;
 	private double pUnitario;
-	
-	//Constructor completo
-	public Producto(String descripcion, String codigo, int stock) {
-		this.descripcion = descripcion;
-		this.stock = stock;
-		this.codigo = codigo;
-	}
-	
 	//Constructor para cálculos
-	public Producto(int cantidad, double pUnitario) {
+	public Comida(int cantidad, double pUnitario) {
 		this.cantidad = cantidad;
 		this.pUnitario = pUnitario;
 	}
 	
 	//Constructor completo con todos los parámetros
-	public Producto(String codigo, String descripcion, double pUnitario, int stock) {
+	public Comida(int codigo, String descripcion, double pUnitario, int stock) {
 		this.codigo = codigo;
 		this.descripcion = descripcion;
 		this.pUnitario = pUnitario;
@@ -40,11 +32,11 @@ public class Producto {
 		this.cantidad = cantidad;
 	}
 	
-	public String getCodigo() {
+	public int getCodigo() {
 		return codigo;
 	}
 	
-	public void setCodigo(String codigo) {
+	public void setCodigo(int codigo) {
 		this.codigo = codigo;
 	}
 	

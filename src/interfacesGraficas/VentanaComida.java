@@ -1,4 +1,4 @@
-package P1;
+package interfacesGraficas;
 
 import java.awt.EventQueue;
 
@@ -6,6 +6,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import clases.ArregloComida;
+import clases.Comida;
+
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -14,39 +18,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.awt.event.ActionEvent;
 
-public class VentanaProductos extends JFrame implements ActionListener {
+public class VentanaComida extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panel;
-	private JButton btnNewButton;
+	private JButton btnAgregar;
 	private JButton btnModifica;
 	private JButton btnBuscar;
 	private JButton btnEliminar;
 	private JScrollPane scrollPane;
 	private JTable table;
-	private JButton btnListar;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaProductos frame = new VentanaProductos();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
 	 */
-	public VentanaProductos() {
+	public VentanaComida() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 592);
 		contentPane = new JPanel();
@@ -55,14 +42,14 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		contentPane.setLayout(null);
 		
 		panel = new JPanel();
-		panel.setBounds(10, 11, 427, 25);
+		panel.setBounds(10, 11, 427, 54);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		btnNewButton = new JButton("Agregar");
-		btnNewButton.addActionListener(this);
-		btnNewButton.setBounds(0, 0, 80, 23);
-		panel.add(btnNewButton);
+		btnAgregar = new JButton("Agregar");
+		btnAgregar.addActionListener(this);
+		btnAgregar.setBounds(0, 0, 80, 23);
+		panel.add(btnAgregar);
 		
 		btnModifica = new JButton("Modificar");
 		btnModifica.setBounds(90, 0, 92, 23);
@@ -76,6 +63,11 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		btnEliminar.setBounds(325, 0, 92, 23);
 		panel.add(btnEliminar);
 		
+		btnListar = new JButton("Listar");
+		btnListar.addActionListener(this);
+		btnListar.setBounds(0, 31, 80, 23);
+		panel.add(btnListar);
+		
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 76, 417, 453);
 		contentPane.add(scrollPane);
@@ -88,29 +80,26 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		modelo.addColumn("Stock");
 		modelo.addColumn("Precio Unitario");
 		table.setModel(modelo);
-
-		btnListar = new JButton("Listar");
-		btnListar.addActionListener(this);
-		btnListar.setBounds(10, 42, 80, 23);
-		contentPane.add(btnListar);
 		mostrarProductos();
 	}
+	ArregloComida ac= new ArregloComida();
+	private JButton btnListar;
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnNewButton) {
+		if (e.getSource() == btnListar) {
+			do_btnListar_actionPerformed(e);
+		}
+		if (e.getSource() == btnAgregar) {
 			do_btnNewButton_actionPerformed(e);
 		}
 	}
 	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
-		VentanaAgregarProducto ventana = new VentanaAgregarProducto();
+		VentanaAgregarComida ventana = new VentanaAgregarComida();
 		ventana.setVisible(true);
 	}
 	private void mostrarProductos() {
-		List<Producto> productos = ConexionBD.obtenerProductos();
-		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-		modelo.setRowCount(0); 
-		for (var p : productos){
-			modelo.addRow(new Object[]{p.getCodigo(),p.getDescripcion(),p.getStock(),p.getpUnitario()});
-		}
+		ac.Listar(table);
 	}
-	
+	protected void do_btnListar_actionPerformed(ActionEvent e) {
+		ac.Listar(table);
+	}
 }

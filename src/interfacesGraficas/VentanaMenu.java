@@ -1,4 +1,4 @@
-package P1;
+package interfacesGraficas;
 
 import java.awt.EventQueue;
 
@@ -19,7 +19,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JButton btnTienda;
-	private JButton btnProductos;
+	private JButton btnComida;
 	private JButton btnSalir;
 
 	/**
@@ -61,20 +61,24 @@ public class VentanaMenu extends JFrame implements ActionListener {
 		btnTienda.setBounds(42, 67, 72, 47);
 		contentPane.add(btnTienda);
 		
-		btnProductos = new JButton("Productos");
-		btnProductos.addActionListener(this);
-		btnProductos.setBackground(SystemColor.activeCaption);
-		btnProductos.setBounds(203, 67, 93, 47);
-		contentPane.add(btnProductos);
+		btnComida = new JButton("Comida");
+		btnComida.addActionListener(this);
+		btnComida.setBackground(SystemColor.activeCaption);
+		btnComida.setBounds(203, 67, 93, 47);
+		contentPane.add(btnComida);
 		
 		btnSalir = new JButton("Salir");
+		btnSalir.addActionListener(this);
 		btnSalir.setBackground(SystemColor.activeCaption);
 		btnSalir.setBounds(372, 67, 72, 47);
 		contentPane.add(btnSalir);
 
 	}
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnProductos) {
+		if (e.getSource() == btnSalir) {
+			do_btnSalir_actionPerformed(e);
+		}
+		if (e.getSource() == btnComida) {
 			do_btnProductos_actionPerformed(e);
 		}
 		if (e.getSource() == btnTienda) {
@@ -82,11 +86,14 @@ public class VentanaMenu extends JFrame implements ActionListener {
 		}
 	}
 	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
-		GUI ventana = new GUI();
+		VentanaVentas ventana = new VentanaVentas();
         ventana.setVisible(true);
 	}
 	protected void do_btnProductos_actionPerformed(ActionEvent e) {
-		VentanaProductos ventana = new VentanaProductos();
+		VentanaComida ventana = new VentanaComida();
 		ventana.setVisible(true);
+	}
+	protected void do_btnSalir_actionPerformed(ActionEvent e) {
+		System.exit(0);
 	}
 }
