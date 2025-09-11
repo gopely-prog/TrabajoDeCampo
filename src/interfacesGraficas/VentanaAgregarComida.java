@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class VentanaAgregarComida extends JFrame implements ActionListener {
+	
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -109,7 +110,7 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		btnAgregarProducto.setBounds(103, 131, 89, 23);
 		panel.add(btnAgregarProducto);
 	}
-	ArregloComida ac= new ArregloComida();
+	ArregloComida ac = ArregloComida.getInstancia();
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregarProducto) {
 			do_btnAgregarProducto_actionPerformed(e);

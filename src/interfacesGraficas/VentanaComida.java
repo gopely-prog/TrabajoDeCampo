@@ -42,31 +42,26 @@ public class VentanaComida extends JFrame implements ActionListener {
 		contentPane.setLayout(null);
 		
 		panel = new JPanel();
-		panel.setBounds(10, 11, 427, 54);
+		panel.setBounds(10, 11, 446, 54);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
 		btnAgregar = new JButton("Agregar");
 		btnAgregar.addActionListener(this);
-		btnAgregar.setBounds(0, 0, 80, 23);
+		btnAgregar.setBounds(0, 0, 80, 54);
 		panel.add(btnAgregar);
 		
 		btnModifica = new JButton("Modificar");
-		btnModifica.setBounds(90, 0, 92, 23);
+		btnModifica.setBounds(108, 0, 92, 54);
 		panel.add(btnModifica);
 		
 		btnBuscar = new JButton("Buscar");
-		btnBuscar.setBounds(210, 0, 92, 23);
+		btnBuscar.setBounds(230, 0, 92, 54);
 		panel.add(btnBuscar);
 		
 		btnEliminar = new JButton("Eliminar");
-		btnEliminar.setBounds(325, 0, 92, 23);
+		btnEliminar.setBounds(344, 0, 92, 54);
 		panel.add(btnEliminar);
-		
-		btnListar = new JButton("Listar");
-		btnListar.addActionListener(this);
-		btnListar.setBounds(0, 31, 80, 23);
-		panel.add(btnListar);
 		
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 76, 417, 453);
@@ -82,24 +77,23 @@ public class VentanaComida extends JFrame implements ActionListener {
 		table.setModel(modelo);
 		mostrarProductos();
 	}
-	ArregloComida ac= new ArregloComida();
-	private JButton btnListar;
+	ArregloComida ac = ArregloComida.getInstancia();
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnListar) {
-			do_btnListar_actionPerformed(e);
-		}
 		if (e.getSource() == btnAgregar) {
 			do_btnNewButton_actionPerformed(e);
 		}
 	}
 	protected void do_btnNewButton_actionPerformed(ActionEvent e) {
 		VentanaAgregarComida ventana = new VentanaAgregarComida();
-		ventana.setVisible(true);
+	    ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+	        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+	            mostrarProductos(); 
+	        }
+	    });
+	    
+	    ventana.setVisible(true);
 	}
-	private void mostrarProductos() {
-		ac.Listar(table);
-	}
-	protected void do_btnListar_actionPerformed(ActionEvent e) {
+	public void mostrarProductos() {
 		ac.Listar(table);
 	}
 }
