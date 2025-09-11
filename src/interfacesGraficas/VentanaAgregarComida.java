@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+
 import clases.ArregloComida;
 import clases.Comida;
 
@@ -119,10 +120,16 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		}
 	}
 	int LeerCodigo() {
-		return Integer.parseInt(txtCodigo.getText());
+			return Integer.parseInt(txtCodigo.getText());
+		
 	}
 	String LeerDescripcion() {
-		return txtDescripcion.getText();
+		try {
+			return txtDescripcion.getText();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "La descripción debe ser texto");
+			return "";
+		}
 	}
 	double LeerPUnitario() {
 		return Double.parseDouble(txtPUnitario.getText());
@@ -134,14 +141,15 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 	protected void do_btnAgregarProducto_actionPerformed(ActionEvent e) {
 		Comida c = ac.Buscar(LeerCodigo());
 		if(c==null) {
-			Comida c1= new Comida(LeerCodigo(),LeerDescripcion(),LeerPUnitario(),LeerStock());
-			ac.Adicionar(c1);
-			txtCodigo.setText("");
-			txtDescripcion.setText("");
-			txtPUnitario.setText("");
-			txtStock.setText("");
-			txtCodigo.requestFocus();
-			JOptionPane.showMessageDialog(this, "Plato agregado.");
+				Comida c1= new Comida(LeerCodigo(),LeerDescripcion(),LeerPUnitario(),LeerStock());
+				ac.Adicionar(c1);
+				txtCodigo.setText("");
+				txtDescripcion.setText("");
+				txtPUnitario.setText("");
+				txtStock.setText("");
+				txtCodigo.requestFocus();
+				JOptionPane.showMessageDialog(this, "Plato agregado.");
+			
 		}else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");
 	}
 }

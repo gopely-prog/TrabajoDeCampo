@@ -3,6 +3,7 @@ package interfacesGraficas;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -18,12 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import javax.swing.JTextField;
 
 public class VentanaComida extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JPanel panel;
 	private JButton btnAgregar;
 	private JButton btnModifica;
 	private JButton btnBuscar;
@@ -36,37 +37,15 @@ public class VentanaComida extends JFrame implements ActionListener {
 	 */
 	public VentanaComida() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 482, 592);
+		setBounds(100, 100, 481, 489);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(205, 232, 254));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		panel = new JPanel();
-		panel.setBounds(10, 11, 446, 54);
-		contentPane.add(panel);
-		panel.setLayout(null);
-		
-		btnAgregar = new JButton("Agregar");
-		btnAgregar.addActionListener(this);
-		btnAgregar.setBounds(0, 0, 80, 54);
-		panel.add(btnAgregar);
-		
-		btnModifica = new JButton("Modificar");
-		btnModifica.setBounds(108, 0, 92, 54);
-		panel.add(btnModifica);
-		
-		btnBuscar = new JButton("Buscar");
-		btnBuscar.setBounds(230, 0, 92, 54);
-		panel.add(btnBuscar);
-		
-		btnEliminar = new JButton("Eliminar");
-		btnEliminar.setBounds(344, 0, 92, 54);
-		panel.add(btnEliminar);
-		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(20, 76, 417, 453);
+		scrollPane.setBounds(20, 45, 328, 386);
 		contentPane.add(scrollPane);
 		
 		table = new JTable();
@@ -77,10 +56,45 @@ public class VentanaComida extends JFrame implements ActionListener {
 		modelo.addColumn("Stock");
 		modelo.addColumn("Precio Unitario");
 		table.setModel(modelo);
-		mostrarProductos();
+		
+		btnAgregar = new JButton("Agregar");
+		btnAgregar.setBounds(20, 11, 92, 23);
+		contentPane.add(btnAgregar);
+		
+		btnModifica = new JButton("Modificar");
+		btnModifica.setBounds(132, 11, 92, 23);
+		contentPane.add(btnModifica);
+		
+		btnBuscar = new JButton("Buscar");
+		btnBuscar.setBounds(364, 11, 92, 23);
+		contentPane.add(btnBuscar);
+		
+		btnEliminar = new JButton("Eliminar");
+		btnEliminar.addActionListener(this);
+		btnEliminar.setBounds(248, 9, 92, 26);
+		contentPane.add(btnEliminar);
+		
+		txtCodigo = new JTextField();
+		txtCodigo.setBounds(370, 75, 86, 20);
+		contentPane.add(txtCodigo);
+		txtCodigo.setColumns(10);
+		
+		btnListar = new JButton("Listar");
+		btnListar.addActionListener(this);
+		btnListar.setBounds(370, 397, 92, 23);
+		contentPane.add(btnListar);
+		btnAgregar.addActionListener(this);
 	}
 	ArregloComida ac = ArregloComida.getInstancia();
+	private JTextField txtCodigo;
+	private JButton btnListar;
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnEliminar) {
+			do_btnEliminar_actionPerformed(e);
+		}
+		if (e.getSource() == btnListar) {
+			do_btnListar_actionPerformed(e);
+		}
 		if (e.getSource() == btnAgregar) {
 			do_btnNewButton_actionPerformed(e);
 		}
@@ -95,7 +109,20 @@ public class VentanaComida extends JFrame implements ActionListener {
 	    
 	    ventana.setVisible(true);
 	}
+	int LeerCodigo() {
+		return Integer.parseInt(txtCodigo.getText());
+	}
 	public void mostrarProductos() {
 		ac.Listar(table);
+	}
+	protected void do_btnListar_actionPerformed(ActionEvent e) {
+			mostrarProductos();
+	}
+	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
+		if(ac.Buscar(LeerCodigo())!=null) {
+			ac.Eliminar(ac.Buscar(LeerCodigo()));
+			txtCodigo.setText("");
+			txtCodigo.requestFocus();
+		}else JOptionPane.showMessageDialog(this, "El código a eliminar no existe");
 	}
 }

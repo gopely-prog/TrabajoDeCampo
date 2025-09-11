@@ -122,21 +122,25 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		panel.add(btnAgregar);
 		
 		txtCodigo = new JTextField();
+		txtCodigo.setEditable(false);
 		txtCodigo.setBounds(140, 22, 147, 20);
 		panel.add(txtCodigo);
 		txtCodigo.setColumns(10);
 		
 		txtPUnitario = new JTextField();
+		txtPUnitario.setEditable(false);
 		txtPUnitario.setColumns(10);
 		txtPUnitario.setBounds(140, 79, 147, 20);
 		panel.add(txtPUnitario);
 		
 		txtCantidad = new JTextField();
+		txtCantidad.setEditable(false);
 		txtCantidad.setColumns(10);
 		txtCantidad.setBounds(140, 110, 147, 20);
 		panel.add(txtCantidad);
 		
 		txtStock = new JTextField();
+		txtStock.setEditable(false);
 		txtStock.setBounds(308, 49, 92, 20);
 		panel.add(txtStock);
 		txtStock.setColumns(10);
