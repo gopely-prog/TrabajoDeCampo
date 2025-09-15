@@ -117,7 +117,7 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregarProducto) {
 			do_btnAgregarProducto_actionPerformed(e);
-		}
+		}	
 	}
 	int LeerCodigo() {
 			return Integer.parseInt(txtCodigo.getText());

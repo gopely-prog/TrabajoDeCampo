@@ -103,8 +103,8 @@ public class VentanaComida extends JFrame implements ActionListener {
 		VentanaAgregarComida ventana = new VentanaAgregarComida();
 	    ventana.addWindowListener(new java.awt.event.WindowAdapter() {
 	        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-	            mostrarProductos(); 
-	        }
+	        mostrarProductos(); 
+	        }	
 	    });
 	    
 	    ventana.setVisible(true);
