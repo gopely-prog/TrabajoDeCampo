@@ -35,6 +35,10 @@ public class ArregloComida {
         ListaComida.remove(x);
     }
     
+    public int Tamaño() {
+    	return ListaComida.size();
+    }
+    
     public void Listar(JTable table) {
         DefaultTableModel modelo = (DefaultTableModel) table.getModel();
         modelo.setRowCount(0); 

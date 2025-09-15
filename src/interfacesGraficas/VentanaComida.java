@@ -20,6 +20,8 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class VentanaComida extends JFrame implements ActionListener {
 
@@ -62,10 +64,12 @@ public class VentanaComida extends JFrame implements ActionListener {
 		contentPane.add(btnAgregar);
 		
 		btnModifica = new JButton("Modificar");
+		btnModifica.addActionListener(this);
 		btnModifica.setBounds(132, 11, 92, 23);
 		contentPane.add(btnModifica);
 		
 		btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(this);
 		btnBuscar.setBounds(364, 11, 92, 23);
 		contentPane.add(btnBuscar);
 		
@@ -75,7 +79,7 @@ public class VentanaComida extends JFrame implements ActionListener {
 		contentPane.add(btnEliminar);
 		
 		txtCodigo = new JTextField();
-		txtCodigo.setBounds(370, 75, 86, 20);
+		txtCodigo.setBounds(370, 130, 86, 20);
 		contentPane.add(txtCodigo);
 		txtCodigo.setColumns(10);
 		
@@ -83,12 +87,30 @@ public class VentanaComida extends JFrame implements ActionListener {
 		btnListar.addActionListener(this);
 		btnListar.setBounds(370, 397, 92, 23);
 		contentPane.add(btnListar);
+		
+		lblNewLabel = new JLabel("Ingresa código a");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setBounds(358, 59, 111, 41);
+		contentPane.add(lblNewLabel);
+		
+		lblModificarBuscar = new JLabel("Eliminar o Buscar:");
+		lblModificarBuscar.setHorizontalAlignment(SwingConstants.CENTER);
+		lblModificarBuscar.setBounds(358, 79, 111, 41);
+		contentPane.add(lblModificarBuscar);
 		btnAgregar.addActionListener(this);
 	}
 	ArregloComida ac = ArregloComida.getInstancia();
 	private JTextField txtCodigo;
 	private JButton btnListar;
+	private JLabel lblNewLabel;
+	private JLabel lblModificarBuscar;
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnModifica) {
+			do_btnModifica_actionPerformed(e);
+		}
+		if (e.getSource() == btnBuscar) {
+			do_btnBuscar_actionPerformed(e);
+		}
 		if (e.getSource() == btnEliminar) {
 			do_btnEliminar_actionPerformed(e);
 		}
@@ -109,20 +131,70 @@ public class VentanaComida extends JFrame implements ActionListener {
 	    
 	    ventana.setVisible(true);
 	}
+	
 	int LeerCodigo() {
 		return Integer.parseInt(txtCodigo.getText());
 	}
+	
 	public void mostrarProductos() {
 		ac.Listar(table);
 	}
-	protected void do_btnListar_actionPerformed(ActionEvent e) {
-			mostrarProductos();
+	
+	protected void do_btnListar_actionPerformed(ActionEvent e) {		
+			int size = ac.Tamaño();	
+			if (size == 0) {
+				JOptionPane.showMessageDialog(this, "La lista esta vacía.");
+			}
+			else {
+				mostrarProductos();
+				JOptionPane.showMessageDialog(this, "Lista actualizada.");
+			}
 	}
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
-		if(ac.Buscar(LeerCodigo())!=null) {
-			ac.Eliminar(ac.Buscar(LeerCodigo()));
+		try {
+			if(ac.Buscar(LeerCodigo())!=null) {
+				ac.Eliminar(ac.Buscar(LeerCodigo()));
+				txtCodigo.setText("");
+				txtCodigo.requestFocus();
+				JOptionPane.showMessageDialog(this, "Código eliminado con éxito");
+				ac.Listar(table);
+			}
+			else JOptionPane.showMessageDialog(this, "El código a eliminar no existe");
+		}
+		catch(Exception e1) {
+			JOptionPane.showMessageDialog(this, "Inserta el código correcto a eliminar.");
+		}		
+	}
+	
+	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
+		try {
+			Comida enc = ac.Buscar(LeerCodigo());	
+			if (enc != null) {
+				JOptionPane.showMessageDialog(this, ac.Buscar(LeerCodigo()) + " sí existe." );
+			}
+			else {
+				JOptionPane.showMessageDialog(this, "El plato no existe.");
+			}
 			txtCodigo.setText("");
 			txtCodigo.requestFocus();
-		}else JOptionPane.showMessageDialog(this, "El código a eliminar no existe");
+		}
+		catch(Exception e1) {
+			JOptionPane.showMessageDialog(this, "Inserta el código correcto a buscar.");
+		}
+	}
+	
+	protected void do_btnModifica_actionPerformed(ActionEvent e) {	
+		try {
+			VentanaModificar ventana = new VentanaModificar();
+		    ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+		        public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+		            mostrarProductos();
+		        }
+		    });	    
+		    ventana.setVisible(true);
+		}
+		catch(Exception e1) {
+			JOptionPane.showMessageDialog(this, "Inserta un código primero.");
+		}
 	}
 }
