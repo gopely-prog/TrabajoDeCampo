@@ -15,11 +15,13 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.JTextField;
+import javax.swing.JLabel;
 
 public class VentanaComida extends JFrame implements ActionListener {
 
@@ -61,11 +63,16 @@ public class VentanaComida extends JFrame implements ActionListener {
 		btnAgregar.setBounds(20, 11, 92, 23);
 		contentPane.add(btnAgregar);
 		
-		btnModifica = new JButton("Modificar");
 		btnModifica.setBounds(132, 11, 92, 23);
 		contentPane.add(btnModifica);
 		
 		btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ac.buscar(LeerCodigo());
+				
+			}
+		});
 		btnBuscar.setBounds(364, 11, 92, 23);
 		contentPane.add(btnBuscar);
 		
@@ -83,11 +90,26 @@ public class VentanaComida extends JFrame implements ActionListener {
 		btnListar.addActionListener(this);
 		btnListar.setBounds(370, 397, 92, 23);
 		contentPane.add(btnListar);
+		
+		txtModificar = new JTextField();
+		txtModificar.setColumns(10);
+		txtModificar.setBounds(370, 152, 86, 20);
+		contentPane.add(txtModificar);
+		
+		JLabel lblNewLabel = new JLabel("Codigo:");
+		lblNewLabel.setBounds(374, 56, 46, 14);
+		contentPane.add(lblNewLabel);
+		
+		JLabel lblModifiar = new JLabel("Modificar:");
+		lblModifiar.setLabelFor(this);
+		lblModifiar.setBounds(370, 134, 62, 14);
+		contentPane.add(lblModifiar);
 		btnAgregar.addActionListener(this);
 	}
 	ArregloComida ac = ArregloComida.getInstancia();
 	private JTextField txtCodigo;
 	private JButton btnListar;
+	private JTextField txtModificar;
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnEliminar) {
 			do_btnEliminar_actionPerformed(e);
@@ -111,7 +133,12 @@ public class VentanaComida extends JFrame implements ActionListener {
 	}
 	int LeerCodigo() {
 		return Integer.parseInt(txtCodigo.getText());
+		
 	}
+	
+	int LeerModifciar() {
+		return Integer.parseInt(txtModificar.getText());}
+		
 	public void mostrarProductos() {
 		ac.Listar(table);
 	}
@@ -125,4 +152,12 @@ public class VentanaComida extends JFrame implements ActionListener {
 			txtCodigo.requestFocus();
 		}else JOptionPane.showMessageDialog(this, "El código a eliminar no existe");
 	}
+	{
+	btnModifica = new JButton("Modificar");
+	btnModifica.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			ac.Modificar(LeerCodigo(),LeerModifciar());
+		}
+	});
+}
 }
