@@ -42,4 +42,14 @@ public class ArregloComida {
             modelo.addRow(new Object[]{p.getCodigo(), p.getDescripcion(), p.getStock(), p.getpUnitario()});
         }
     }
+    public void Modificar(int codigo,int modificar) {
+    	for(int i = 0; i < ListaComida.size(); i++){
+            if(ListaComida.get(i).getCodigo() == codigo) {
+            	 ListaComida.get(i).setCodigo(modificar);
+                 System.out.println("Se modifico correctamente.");
+            }else System.out.println("No se pudo modificar.");
+        }
+        
+    	
+    }
 }
