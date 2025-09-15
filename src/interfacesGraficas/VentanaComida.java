@@ -67,6 +67,12 @@ public class VentanaComida extends JFrame implements ActionListener {
 		contentPane.add(btnModifica);
 		
 		btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ac.buscar(LeerCodigo());
+				
+			}
+		});
 		btnBuscar.setBounds(364, 11, 92, 23);
 		contentPane.add(btnBuscar);
 		
@@ -127,11 +133,12 @@ public class VentanaComida extends JFrame implements ActionListener {
 	}
 	int LeerCodigo() {
 		return Integer.parseInt(txtCodigo.getText());
+		
 	}
 	
 	int LeerModifciar() {
-		return Integer.parseInt(txtModificar.getText());
-	}
+		return Integer.parseInt(txtModificar.getText());}
+		
 	public void mostrarProductos() {
 		ac.Listar(table);
 	}
