@@ -199,12 +199,4 @@ public class VentanaComida extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(this, "Inserta un código primero.");
 		}
 	}
-	{
-	btnModifica = new JButton("Modificar");
-	btnModifica.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			ac.Modificar(LeerCodigo(),LeerModifciar());
-		}
-	});
-}
 }
