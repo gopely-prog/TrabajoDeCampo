@@ -22,11 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-<<<<<<< HEAD
 import javax.swing.SwingConstants;
-=======
->>>>>>> main
-
 public class VentanaComida extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
@@ -67,25 +63,14 @@ public class VentanaComida extends JFrame implements ActionListener {
 		btnAgregar.setBounds(20, 11, 92, 23);
 		contentPane.add(btnAgregar);
 		
-<<<<<<< HEAD
+
 		btnModifica = new JButton("Modificar");
 		btnModifica.addActionListener(this);
-=======
->>>>>>> main
 		btnModifica.setBounds(132, 11, 92, 23);
 		contentPane.add(btnModifica);
 		
 		btnBuscar = new JButton("Buscar");
-<<<<<<< HEAD
 		btnBuscar.addActionListener(this);
-=======
-		btnBuscar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ac.buscar(LeerCodigo());
-				
-			}
-		});
->>>>>>> main
 		btnBuscar.setBounds(364, 11, 92, 23);
 		contentPane.add(btnBuscar);
 		
@@ -104,7 +89,7 @@ public class VentanaComida extends JFrame implements ActionListener {
 		btnListar.setBounds(370, 397, 92, 23);
 		contentPane.add(btnListar);
 		
-<<<<<<< HEAD
+
 		lblNewLabel = new JLabel("Ingresa código a");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(358, 59, 111, 41);
@@ -114,32 +99,13 @@ public class VentanaComida extends JFrame implements ActionListener {
 		lblModificarBuscar.setHorizontalAlignment(SwingConstants.CENTER);
 		lblModificarBuscar.setBounds(358, 79, 111, 41);
 		contentPane.add(lblModificarBuscar);
-=======
-		txtModificar = new JTextField();
-		txtModificar.setColumns(10);
-		txtModificar.setBounds(370, 152, 86, 20);
-		contentPane.add(txtModificar);
-		
-		JLabel lblNewLabel = new JLabel("Codigo:");
-		lblNewLabel.setBounds(374, 56, 46, 14);
-		contentPane.add(lblNewLabel);
-		
-		JLabel lblModifiar = new JLabel("Modificar:");
-		lblModifiar.setLabelFor(this);
-		lblModifiar.setBounds(370, 134, 62, 14);
-		contentPane.add(lblModifiar);
->>>>>>> main
 		btnAgregar.addActionListener(this);
 	}
 	ArregloComida ac = ArregloComida.getInstancia();
 	private JTextField txtCodigo;
 	private JButton btnListar;
-<<<<<<< HEAD
 	private JLabel lblNewLabel;
 	private JLabel lblModificarBuscar;
-=======
-	private JTextField txtModificar;
->>>>>>> main
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnModifica) {
 			do_btnModifica_actionPerformed(e);
@@ -172,13 +138,6 @@ public class VentanaComida extends JFrame implements ActionListener {
 		return Integer.parseInt(txtCodigo.getText());
 		
 	}
-	
-<<<<<<< HEAD
-=======
-	int LeerModifciar() {
-		return Integer.parseInt(txtModificar.getText());}
-		
->>>>>>> main
 	public void mostrarProductos() {
 		ac.Listar(table);
 	}
