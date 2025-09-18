@@ -120,18 +120,19 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 			do_btnAgregarProducto_actionPerformed(e);
 		}
 	}
-/*	int LeerCodigo() {
-			return Integer.parseInt(txtCodigo.getText());		
-	}*/
-	boolean LeerCOdigo() {
-		try {
-			int Codigo=Integer.parseInt(txtCodigo.getText());
-			if(Codigo>0)return true;
-			else return false;
-			
-		} catch (Exception e) {
-			return false;
-		}
+	Integer LeerCodigo() {
+		 try {
+		        String texto = txtCodigo.getText().trim();
+		        if (texto.isEmpty()) {
+		            return null;
+		        }
+		        
+		        int codigo = Integer.parseInt(texto);
+		        return codigo > 0 ? codigo : null;
+		        
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }
 	}
 	String LeerDescripcion() {
 		try {
@@ -141,13 +142,41 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 			return "";
 		}
 	}
-	double LeerPUnitario() {
-		return Double.parseDouble(txtPUnitario.getText());
+	Double LeerPUnitario() {
+		 try {
+		        String texto = txtPUnitario.getText().trim();
+		        if (texto.isEmpty()) {
+		            return null;
+		        }
+		        
+		        double codigo = Double.parseDouble(texto);
+		        return codigo > 0 ? codigo : null;
+		        
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }
 	}
-	int LeerStock() {
-		return Integer.parseInt(txtStock.getText());
+	Integer LeerStock() {
+		try {
+	        String texto = txtCodigo.getText().trim();
+	        if (texto.isEmpty()) {
+	            return null;
+	        }
+	        
+	        int codigo = Integer.parseInt(texto);
+	        return codigo > 0 ? codigo : null;
+	        
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }
 	}
-
+	void limpiarCampos() {
+	    txtCodigo.setText("");
+	    txtDescripcion.setText("");
+	    txtPUnitario.setText("");
+	    txtStock.setText("");
+	    txtCodigo.requestFocus();
+	}
 	protected void do_btnAgregarProducto_actionPerformed(ActionEvent e) {
 		try {
 			if(LeerCOdigo()) 
@@ -157,11 +186,7 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 				if(c==null) {
 						Comida c1= new Comida(Codigo,LeerDescripcion(),LeerPUnitario(),LeerStock());
 						ac.Adicionar(c1);
-						txtCodigo.setText("");
-						txtDescripcion.setText("");
-						txtPUnitario.setText("");
-						txtStock.setText("");
-						txtCodigo.requestFocus();
+						limpiarCampos();
 						JOptionPane.showMessageDialog(this, "Plato agregado.");
 					
 				}
