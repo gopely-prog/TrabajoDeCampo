@@ -172,7 +172,7 @@ public class VentanaComida extends JFrame implements ActionListener {
 		try {
 			Comida enc = ac.Buscar(LeerCodigo());	
 			if (enc != null) {
-				JOptionPane.showMessageDialog(this, ac.Buscar(LeerCodigo()) + " sí existe." );
+				JOptionPane.showMessageDialog(this, "Código: "+ LeerCodigo()+ "\nDescripción: " + enc.getDescripcion() + "\nPrecio Unitario: " + enc.getpUnitario() +"\nStock: " + enc.getStock());
 			}
 			else {
 				JOptionPane.showMessageDialog(this, "El plato no existe.");

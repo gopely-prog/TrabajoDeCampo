@@ -120,9 +120,18 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 			do_btnAgregarProducto_actionPerformed(e);
 		}
 	}
-	int LeerCodigo() {
-			return Integer.parseInt(txtCodigo.getText());
-		
+/*	int LeerCodigo() {
+			return Integer.parseInt(txtCodigo.getText());		
+	}*/
+	boolean LeerCOdigo() {
+		try {
+			int Codigo=Integer.parseInt(txtCodigo.getText());
+			if(Codigo>0)return true;
+			else return false;
+			
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	String LeerDescripcion() {
 		try {
@@ -141,19 +150,23 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 
 	protected void do_btnAgregarProducto_actionPerformed(ActionEvent e) {
 		try {
-			Comida c = ac.Buscar(LeerCodigo());
-			if(c==null) {
-					Comida c1= new Comida(LeerCodigo(),LeerDescripcion(),LeerPUnitario(),LeerStock());
-					ac.Adicionar(c1);
-					txtCodigo.setText("");
-					txtDescripcion.setText("");
-					txtPUnitario.setText("");
-					txtStock.setText("");
-					txtCodigo.requestFocus();
-					JOptionPane.showMessageDialog(this, "Plato agregado.");
-				
-			}
-			else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");			
+			if(LeerCOdigo()) 
+			{
+				int Codigo=Integer.parseInt(txtCodigo.getText());
+				Comida c = ac.Buscar(Codigo);
+				if(c==null) {
+						Comida c1= new Comida(Codigo,LeerDescripcion(),LeerPUnitario(),LeerStock());
+						ac.Adicionar(c1);
+						txtCodigo.setText("");
+						txtDescripcion.setText("");
+						txtPUnitario.setText("");
+						txtStock.setText("");
+						txtCodigo.requestFocus();
+						JOptionPane.showMessageDialog(this, "Plato agregado.");
+					
+				}
+				else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");		
+			}		
 		}
 		catch (Exception e1) {
 			JOptionPane.showMessageDialog(this, "Rellena todos los campos para continuar.");
