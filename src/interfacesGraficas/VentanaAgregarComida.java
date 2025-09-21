@@ -121,54 +121,135 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		}	
 	}
 	Integer LeerCodigo() {
-		 try {
-		        String texto = txtCodigo.getText().trim();
-		        if (texto.isEmpty()) {
-		            return null;
-		        }
-		        
-		        int codigo = Integer.parseInt(texto);
-		        return codigo > 0 ? codigo : null;
-		        
-		    } catch (NumberFormatException e) {
-		        return null;
-		    }
+		try {
+			String texto = txtCodigo.getText().trim();
+			
+			// Verificar si el campo esta vacio
+			if (texto.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Error: El campo código no puede estar vacío.", 
+					"Campo Vacío", JOptionPane.ERROR_MESSAGE);
+				txtCodigo.requestFocus();
+				return null;
+			}
+			
+			// Convertir a entero
+			int codigo = Integer.parseInt(texto);
+			
+			if (codigo <= 0) {
+				JOptionPane.showMessageDialog(this, "Error: El código debe ser un número positivo.", 
+					"Código Inválido", JOptionPane.ERROR_MESSAGE);
+				txtCodigo.requestFocus();
+				return null;
+			}
+			
+			return codigo;
+			
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Error: El código debe ser un número entero válido.", 
+				"Formato Inválido", JOptionPane.ERROR_MESSAGE);
+			txtCodigo.requestFocus();
+			return null;
+		}
 	}
 	String LeerDescripcion() {
 		try {
-			return txtDescripcion.getText();
+			String descripcion = txtDescripcion.getText().trim();
+			
+			// Verificar si el campo está vacío
+			if (descripcion.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Error: El campo descripción no puede estar vacío.", 
+					"Campo Vacío", JOptionPane.ERROR_MESSAGE);
+				txtDescripcion.requestFocus();
+				return null;
+			}
+			
+			// Validar que no contenga solo números
+			if (descripcion.matches("^[0-9]+$")) {
+				JOptionPane.showMessageDialog(this, "Error: La descripción no puede contener solo números.", 
+					"Descripción Inválida", JOptionPane.ERROR_MESSAGE);
+				txtDescripcion.requestFocus();
+				return null;
+			}
+			
+			return descripcion;
+			
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "La descripción debe ser texto");
-			return "";
+			JOptionPane.showMessageDialog(this, "Error inesperado al leer la descripción: " + e.getMessage(), 
+				"Error", JOptionPane.ERROR_MESSAGE);
+			txtDescripcion.requestFocus();
+			return null;
 		}
 	}
 	Double LeerPUnitario() {
-		 try {
-		        String texto = txtPUnitario.getText().trim();
-		        if (texto.isEmpty()) {
-		            return null;
-		        }
-		        
-		        double codigo = Double.parseDouble(texto);
-		        return codigo > 0 ? codigo : null;
-		        
-		    } catch (NumberFormatException e) {
-		        return null;
-		    }
+		try {
+			String texto = txtPUnitario.getText().trim();
+			
+			// Verificar si el campo está vacío
+			if (texto.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Error: El campo precio unitario no puede estar vacío.", 
+					"Campo Vacío", JOptionPane.ERROR_MESSAGE);
+				txtPUnitario.requestFocus();
+				return null;
+			}
+			
+			// Convertir a double
+			double precio = Double.parseDouble(texto);
+
+			if (precio <= 0) {
+				JOptionPane.showMessageDialog(this, "Error: El precio unitario debe ser mayor a 0.", 
+					"Precio Inválido", JOptionPane.ERROR_MESSAGE);
+				txtPUnitario.requestFocus();
+				return null;
+			}			
+			return precio;
+			
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Error: El precio unitario debe ser un número válido (use punto para decimales).", 
+				"Formato Inválido", JOptionPane.ERROR_MESSAGE);
+			txtPUnitario.requestFocus();
+			return null;
+		}
 	}
 	Integer LeerStock() {
 		try {
-	        String texto = txtCodigo.getText().trim();
-	        if (texto.isEmpty()) {
-	            return null;
-	        }
-	        
-	        int codigo = Integer.parseInt(texto);
-	        return codigo > 0 ? codigo : null;
-	        
-	    } catch (NumberFormatException e) {
-	        return null;
-	    }
+			String texto = txtStock.getText().trim(); // CORREGIDO: era txtCodigo.getText()
+			
+			// Verificar si el campo está vacío
+			if (texto.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Error: El campo stock no puede estar vacío.", 
+					"Campo Vacío", JOptionPane.ERROR_MESSAGE);
+				txtStock.requestFocus();
+				return null;
+			}
+
+			int stock = Integer.parseInt(texto);
+
+			if (stock < 0) {
+				JOptionPane.showMessageDialog(this, "Error: El stock no puede ser negativo.", 
+					"Stock Inválido", JOptionPane.ERROR_MESSAGE);
+				txtStock.requestFocus();
+				return null;
+			}
+			
+			// Advertir si el stock es 0
+			if (stock == 0) {
+				int respuesta = JOptionPane.showConfirmDialog(this, 
+					"Advertencia: El stock es 0 (producto agotado). ¿Desea continuar?", 
+					"Stock Agotado", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (respuesta != JOptionPane.YES_OPTION) {
+					txtStock.requestFocus();
+					return null;
+				}
+			}
+			
+			return stock;
+			
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Error: El stock debe ser un número entero válido.", 
+				"Formato Inválido", JOptionPane.ERROR_MESSAGE);
+			txtStock.requestFocus();
+			return null;
+		}
 	}
 	void limpiarCampos() {
 	    txtCodigo.setText("");
@@ -179,25 +260,48 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 	}
 	protected void do_btnAgregarProducto_actionPerformed(ActionEvent e) {
 		try {
-			if(LeerCOdigo()) 
-			{
-				int Codigo=Integer.parseInt(txtCodigo.getText());
-				Comida c = ac.Buscar(Codigo);
-				if(c==null) {
-						Comida c1= new Comida(Codigo,LeerDescripcion(),LeerPUnitario(),LeerStock());
-						ac.Adicionar(c1);
-						limpiarCampos();
-						JOptionPane.showMessageDialog(this, "Plato agregado.");
-					
-				}
-				else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");		
-			}		
+			// Leer y validar todos los campos
+			Integer codigo = LeerCodigo();
+			if (codigo == null) return; 
+			
+			String descripcion = LeerDescripcion();
+			if (descripcion == null) return;
+			
+			Double precioUnitario = LeerPUnitario();
+			if (precioUnitario == null) return;
+			
+			Integer stock = LeerStock();
+			if (stock == null) return;
+			
+			// Verificar si ya existe el código
+			Comida c = ac.Buscar(codigo);
+			if (c != null) {
+				JOptionPane.showMessageDialog(this, 
+					"Error: Ya existe un plato con el código " + codigo + ".\n" +
+					"Plato existente: " + c.getDescripcion(), 
+					"Código Duplicado", JOptionPane.ERROR_MESSAGE);
+				txtCodigo.requestFocus();
+				return;
+			}
+			Comida nuevoPlato = new Comida(codigo, descripcion, precioUnitario, stock);
+			ac.Adicionar(nuevoPlato);
+			
+			JOptionPane.showMessageDialog(this, 
+				"¡Plato agregado exitosamente!\n" +
+				"Código: " + codigo + "\n" +
+				"Descripción: " + descripcion + "\n" +
+				"Precio: S/. " + String.format("%.2f", precioUnitario) + "\n" +
+				"Stock: " + stock + " unidades", 
+				"Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+			limpiarCampos();
+			
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, 
+				"Error inesperado al agregar el plato:\n" + ex.getMessage() + 
+				"\n\nPor favor, verifique todos los campos e intente nuevamente.", 
+				"Error del Sistema", JOptionPane.ERROR_MESSAGE);
 		}
-		catch (Exception e1) {
-			JOptionPane.showMessageDialog(this, "Rellena todos los campos para continuar.");
-		}
-		
-		
-		
+
 	}
 }

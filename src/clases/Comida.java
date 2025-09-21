@@ -59,11 +59,14 @@ public class Comida {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-	
+	//Total de la compra
 	public double Total(int cantidad, double pUnitario) {
 		return cantidad * pUnitario;
 	}
-	
+	//Total de la compra con impuestos
+	public double Total(int cantidad, double pUnitario, double IGV) {
+		return cantidad*pUnitario*IGV;
+	}
 	// Método toString para mostrar en el ComboBox
 	public String toString() {
 		return descripcion;

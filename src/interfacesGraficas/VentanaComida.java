@@ -134,9 +134,19 @@ public class VentanaComida extends JFrame implements ActionListener {
 	    ventana.setVisible(true);
 	}
 	
-	int LeerCodigo() {
-		return Integer.parseInt(txtCodigo.getText());
-		
+	Integer LeerCodigo() {
+		 try {
+		        String texto = txtCodigo.getText().trim();
+		        if (texto.isEmpty()) {
+		            return null;
+		        }
+		        
+		        int codigo = Integer.parseInt(texto);
+		        return codigo > 0 ? codigo : null;
+		        
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }
 	}
 	public void mostrarProductos() {
 		ac.Listar(table);
