@@ -113,15 +113,26 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 		btnAgregarProducto.setBounds(230, 148, 86, 53);
 		panel.add(btnAgregarProducto);
 	}
+	
 	ArregloComida ac = ArregloComida.getInstancia();
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregarProducto) {
 			do_btnAgregarProducto_actionPerformed(e);
 		}	
 	}
-	int LeerCodigo() {
-			return Integer.parseInt(txtCodigo.getText());
-		
+	Integer LeerCodigo() {
+		 try {
+		        String texto = txtCodigo.getText().trim();
+		        if (texto.isEmpty()) {
+		            return null;
+		        }
+		        
+		        int codigo = Integer.parseInt(texto);
+		        return codigo > 0 ? codigo : null;
+		        
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }
 	}
 	String LeerDescripcion() {
 		try {
@@ -131,25 +142,62 @@ public class VentanaAgregarComida extends JFrame implements ActionListener {
 			return "";
 		}
 	}
-	double LeerPUnitario() {
-		return Double.parseDouble(txtPUnitario.getText());
+	Double LeerPUnitario() {
+		 try {
+		        String texto = txtPUnitario.getText().trim();
+		        if (texto.isEmpty()) {
+		            return null;
+		        }
+		        
+		        double codigo = Double.parseDouble(texto);
+		        return codigo > 0 ? codigo : null;
+		        
+		    } catch (NumberFormatException e) {
+		        return null;
+		    }
 	}
-	int LeerStock() {
-		return Integer.parseInt(txtStock.getText());
+	Integer LeerStock() {
+		try {
+	        String texto = txtCodigo.getText().trim();
+	        if (texto.isEmpty()) {
+	            return null;
+	        }
+	        
+	        int codigo = Integer.parseInt(texto);
+	        return codigo > 0 ? codigo : null;
+	        
+	    } catch (NumberFormatException e) {
+	        return null;
+	    }
 	}
-
+	void limpiarCampos() {
+	    txtCodigo.setText("");
+	    txtDescripcion.setText("");
+	    txtPUnitario.setText("");
+	    txtStock.setText("");
+	    txtCodigo.requestFocus();
+	}
 	protected void do_btnAgregarProducto_actionPerformed(ActionEvent e) {
-		Comida c = ac.Buscar(LeerCodigo());
-		if(c==null) {
-				Comida c1= new Comida(LeerCodigo(),LeerDescripcion(),LeerPUnitario(),LeerStock());
-				ac.Adicionar(c1);
-				txtCodigo.setText("");
-				txtDescripcion.setText("");
-				txtPUnitario.setText("");
-				txtStock.setText("");
-				txtCodigo.requestFocus();
-				JOptionPane.showMessageDialog(this, "Plato agregado.");
-			
-		}else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");
+		try {
+			if(LeerCOdigo()) 
+			{
+				int Codigo=Integer.parseInt(txtCodigo.getText());
+				Comida c = ac.Buscar(Codigo);
+				if(c==null) {
+						Comida c1= new Comida(Codigo,LeerDescripcion(),LeerPUnitario(),LeerStock());
+						ac.Adicionar(c1);
+						limpiarCampos();
+						JOptionPane.showMessageDialog(this, "Plato agregado.");
+					
+				}
+				else JOptionPane.showMessageDialog(this, "Ya existe el plato de comida en registro.");		
+			}		
+		}
+		catch (Exception e1) {
+			JOptionPane.showMessageDialog(this, "Rellena todos los campos para continuar.");
+		}
+		
+		
+		
 	}
 }

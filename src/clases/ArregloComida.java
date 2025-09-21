@@ -31,16 +31,12 @@ public class ArregloComida {
         }
         return null;
     }
-    public void buscar(int codigo) {
-    	for(int i = 0; i < ListaComida.size(); i++){
-            if(ListaComida.get(i).getCodigo() == codigo) {
-JOptionPane.showMessageDialog(null, "El producto que estas buscando si se encuentra en la lista","informacion",JOptionPane.INFORMATION_MESSAGE);
-            }
-            else JOptionPane.showMessageDialog(null, "El producto no se encontro en la lista","informacion",JOptionPane.INFORMATION_MESSAGE);
-    }
-    }
     public void Eliminar(Comida x){
         ListaComida.remove(x);
+    }
+    
+    public int Tamaño() {
+    	return ListaComida.size();
     }
     
     public void Listar(JTable table) {
