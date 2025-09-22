@@ -62,9 +62,9 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		lblNewLabel.setBounds(10, 0, 143, 39);
 		contentPane.add(lblNewLabel);
 		
-		JLabel lblnombreDelRestaurante = new JLabel("(Nombre del restaurante)");
-		lblnombreDelRestaurante.setFont(new Font("MS PGothic", Font.PLAIN, 24));
-		lblnombreDelRestaurante.setBounds(10, 37, 247, 39);
+		JLabel lblnombreDelRestaurante = new JLabel("Polleria Excelencia");
+		lblnombreDelRestaurante.setFont(new Font("MS PGothic", Font.PLAIN, 27));
+		lblnombreDelRestaurante.setBounds(10, 27, 247, 39);
 		contentPane.add(lblnombreDelRestaurante);
 		
 		JPanel panel1 = new JPanel();
@@ -240,6 +240,10 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		contentPane.add(txtTotal);
 		
 		JButton btnVENTA = new JButton("Realizar Venta");
+		btnVENTA.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnVENTA.setFont(new Font("SansSerif", Font.BOLD, 15));
 		btnVENTA.setBackground(SystemColor.activeCaption);
 		btnVENTA.setBounds(223, 530, 207, 23);
