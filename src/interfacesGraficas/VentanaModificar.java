@@ -108,7 +108,7 @@ public class VentanaModificar extends JFrame implements ActionListener {
 		btnModificar = new JButton("Modificar");
 		btnModificar.addActionListener(this);
 		btnModificar.setFont(new Font("Arial", Font.BOLD, 12));
-		btnModificar.setBounds(230, 143, 86, 53);
+		btnModificar.setBounds(219, 133, 97, 53);
 		panel.add(btnModificar);
 		
 		lblNewLabel = new JLabel("Código");
