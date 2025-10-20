@@ -9,7 +9,10 @@ import java.awt.Font;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
+import clases.ArregloComida;
 import clases.Comida;
+import clases.GestorBoletas;
+import clases.ManejadorContador;
 
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
@@ -23,7 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.JScrollPane;
-import java.util.List;
+import javax.swing.JOptionPane;
+import java.util.ArrayList;
 
 public class VentanaVentas extends JFrame implements ActionListener, ItemListener {
 
@@ -44,10 +48,14 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	private JTextField txtPUnitario;
 	private JTextField txtCantidad;
 	private JTextField txtStock;
+	private JButton btnNuevo;
+	private JButton btnSalir;
+	private JButton btnVENTA;
+	
+	// Variables para controlar totales
+	private double subTotalGlobal = 0;
+	private int numeroProductosAgregados = 0;
 
-	/**
-	 * Create the frame.
-	 */
 	public VentanaVentas() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 466, 625);
@@ -134,7 +142,7 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		panel.add(txtPUnitario);
 		
 		txtCantidad = new JTextField();
-		txtCantidad.setEditable(false);
+		txtCantidad.setEditable(true);
 		txtCantidad.setColumns(10);
 		txtCantidad.setBounds(140, 110, 147, 20);
 		panel.add(txtCantidad);
@@ -155,6 +163,8 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		scrollPane.setBounds(0, -21, 424, 169);
 		panel_1.add(scrollPane);
 		scrollPane.setEnabled(false);
+		
+		// Modelo de tabla
 		DefaultTableModel modelo = new DefaultTableModel();
 		modelo.addColumn("Cantidad");
 		modelo.addColumn("Descripción");
@@ -162,18 +172,21 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		modelo.addColumn("P. Total");
 		
 		table = new JTable();
+		table.setModel(modelo);
 		scrollPane.setViewportView(table);
 		
-		JButton btnNuevo = new JButton("Nuevo");
+		btnNuevo = new JButton("Nuevo");
 		btnNuevo.setFont(new Font("SansSerif", Font.BOLD, 15));
 		btnNuevo.setBackground(SystemColor.activeCaption);
 		btnNuevo.setBounds(10, 428, 89, 23);
+		btnNuevo.addActionListener(this);
 		contentPane.add(btnNuevo);
 		
-		JButton btnSalir = new JButton("Salir");
+		btnSalir = new JButton("Salir");
 		btnSalir.setFont(new Font("SansSerif", Font.BOLD, 15));
 		btnSalir.setBackground(SystemColor.activeCaption);
 		btnSalir.setBounds(109, 428, 89, 23);
+		btnSalir.addActionListener(this);
 		contentPane.add(btnSalir);
 		
 		JLabel lblRucDni = new JLabel("R.U.C ");
@@ -239,11 +252,8 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		txtTotal.setBounds(317, 490, 113, 20);
 		contentPane.add(txtTotal);
 		
-		JButton btnVENTA = new JButton("Realizar Venta");
-		btnVENTA.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		btnVENTA = new JButton("Realizar Venta");
+		btnVENTA.addActionListener(this);
 		btnVENTA.setFont(new Font("SansSerif", Font.BOLD, 15));
 		btnVENTA.setBackground(SystemColor.activeCaption);
 		btnVENTA.setBounds(223, 530, 207, 23);
@@ -268,17 +278,305 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		lblPUnitario_1.setBounds(245, 234, 102, 39);
 		contentPane.add(lblPUnitario_1);
 		lblPUnitario_1.setFont(new Font("SansSerif", Font.BOLD, 15));
+		
+		// Cargar productos al inicializar
+		cargarProductos();
+		
+		// Inicializar contador de ventas
+		ManejadorContador.inicializarContador();
+	}
+	
+	ArregloComida ac = ArregloComida.getInstancia();
+	
+	/**
+	 * Carga todos los productos de ArregloComida al ComboBox
+	 */
+	private void cargarProductos() {
+		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
+		
+		// Agregar todos los productos del ArregloComida
+		for (int i = 0; i < ac.Tamaño(); i++) {
+			cboProductos.addItem(ac.obtenerPorIndice(i));
+		}
+	}
+	
+	/**
+	 * Limpia los campos de entrada de producto
+	 */
+	private void limpiarCamposProducto() {
+		txtCodigo.setText("");
+		txtPUnitario.setText("");
+		txtCantidad.setText("");
+		txtStock.setText("");
+		cboProductos.setSelectedIndex(0); // Vuelve a "-- Seleccionar Producto --"
+	}
+	
+	/**
+	 * Limpia la venta completa
+	 */
+	private void limpiarVenta() {
+		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		modelo.setRowCount(0);
+		subTotalGlobal = 0;
+		txtSubTotal.setText("S/. 0.00");
+		txtIGV.setText("S/. 0.00");
+		txtTotal.setText("S/. 0.00");
+		txtRUC.setText("");
+		txtRazonSocial.setText("");
+		txtDomicilio.setText("");
+		limpiarCamposProducto();
+	}
+	
+	/**
+	 * Actualiza los totales en la venta
+	 */
+	private void actualizarTotales() {
+		double igv = subTotalGlobal * 0.18;
+		double total = subTotalGlobal + igv;
+		
+		txtSubTotal.setText(String.format("S/. %.2f", subTotalGlobal));
+		txtIGV.setText(String.format("S/. %.2f", igv));
+		txtTotal.setText(String.format("S/. %.2f", total));
 	}
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.getSource() == cboProductos && e.getStateChange() == ItemEvent.SELECTED) {
+			Comida productoSeleccionado = (Comida) cboProductos.getSelectedItem();
+			
+			// Si selecciona la opción vacía o la opción inicial
+			if (productoSeleccionado == null || productoSeleccionado.getCodigo() == 0) {
+				limpiarCamposProducto();
+			} else {
+				// Llenar los campos con datos del producto seleccionado
+				txtCodigo.setText(String.valueOf(productoSeleccionado.getCodigo()));
+				txtPUnitario.setText(String.format("S/. %.2f", productoSeleccionado.getpUnitario()));
+				txtStock.setText(String.valueOf(productoSeleccionado.getStock()));
+				txtCantidad.setText(""); // Limpiar cantidad para que ingrese
+				txtCantidad.requestFocus(); // Enfocar en cantidad
+			}
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.getSource() == btnAgregar) {
+			do_btnAgregar_actionPerformed(e);
+		}
+		if (e.getSource() == btnNuevo) {
+			do_btnNuevo_actionPerformed(e);
+		}
+		if (e.getSource() == btnSalir) {
+			do_btnSalir_actionPerformed(e);
+		}
+		if (e.getSource() == btnVENTA) {
+			do_btnVENTA_actionPerformed(e);
+		}
+	}
+	
+	protected void do_btnAgregar_actionPerformed(ActionEvent e) {
+		try {
+			Comida productoSeleccionado = (Comida) cboProductos.getSelectedItem();
+			
+			// Validar que seleccione un producto válido
+			if (productoSeleccionado == null || productoSeleccionado.getCodigo() == 0) {
+				JOptionPane.showMessageDialog(this, "Debe seleccionar un producto", 
+					"Producto no seleccionado", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			// Validar que ingrese cantidad
+			String cantidadStr = txtCantidad.getText().trim();
+			if (cantidadStr.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Debe ingresar una cantidad", 
+					"Cantidad vacía", JOptionPane.WARNING_MESSAGE);
+				txtCantidad.requestFocus();
+				return;
+			}
+			
+			int cantidad = 0;
+			try {
+				cantidad = Integer.parseInt(cantidadStr);
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero", 
+					"Formato inválido", JOptionPane.ERROR_MESSAGE);
+				txtCantidad.setText("");
+				txtCantidad.requestFocus();
+				return;
+			}
+			
+			// Validar que cantidad sea positiva
+			if (cantidad <= 0) {
+				JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0", 
+					"Cantidad inválida", JOptionPane.WARNING_MESSAGE);
+				txtCantidad.setText("");
+				txtCantidad.requestFocus();
+				return;
+			}
+			
+			// VALIDACIÓN PRINCIPAL: Verificar stock disponible
+			if (cantidad > productoSeleccionado.getStock()) {
+				JOptionPane.showMessageDialog(this, 
+					"No hay suficiente stock disponible.\n" +
+					"Stock disponible: " + productoSeleccionado.getStock() + "\n" +
+					"Cantidad solicitada: " + cantidad, 
+					"Falta de Stock", JOptionPane.ERROR_MESSAGE);
+				txtCantidad.setText("");
+				txtCantidad.requestFocus();
+				return;
+			}
+			
+			// Calcular total del producto
+			double precioUnitario = productoSeleccionado.getpUnitario();
+			double totalProducto = cantidad * precioUnitario;
+			
+			// Reducir stock del producto
+			productoSeleccionado.setStock(productoSeleccionado.getStock() - cantidad);
+			
+			// Agregar fila a la tabla
+			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+			modelo.addRow(new Object[]{
+				cantidad,
+				productoSeleccionado.getDescripcion(),
+				String.format("S/. %.2f", precioUnitario),
+				String.format("S/. %.2f", totalProducto)
+			});
+			
+			// Actualizar subtotal global
+			subTotalGlobal += totalProducto;
+			actualizarTotales();
+			
+			// Limpiar campos para siguiente producto
+			limpiarCamposProducto();
+			
+			JOptionPane.showMessageDialog(this, "Producto agregado a la venta", 
+				"Éxito", JOptionPane.INFORMATION_MESSAGE);
+			
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), 
+				"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	protected void do_btnNuevo_actionPerformed(ActionEvent e) {
+		limpiarVenta();
+		JOptionPane.showMessageDialog(this, "Venta nueva iniciada", "Nueva Venta", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	protected void do_btnSalir_actionPerformed(ActionEvent e) {
+		this.dispose();
+	}
+	
+	protected void do_btnVENTA_actionPerformed(ActionEvent e) {
+		try {
+			// Validar que haya productos en la venta
+			if (table.getRowCount() == 0) {
+				JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
+					"Venta vacía", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			// Leer datos del cliente
+			String ruc = txtRUC.getText().trim();
+			String razonSocial = txtRazonSocial.getText().trim();
+			String domicilio = txtDomicilio.getText().trim();
+			
+			// Validar Razón Social (obligatoria en ambos casos)
+			if (razonSocial.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Debe ingresar la Razón Social del cliente", 
+					"Datos incompletos", JOptionPane.WARNING_MESSAGE);
+				txtRazonSocial.requestFocus();
+				return;
+			}
+			
+			// Obtener totales de los campos
+			String subTotalStr = txtSubTotal.getText().replace("S/. ", "");
+			String igvStr = txtIGV.getText().replace("S/. ", "");
+			String totalStr = txtTotal.getText().replace("S/. ", "");
+			
+			double subTotal = Double.parseDouble(subTotalStr);
+			double igv = Double.parseDouble(igvStr);
+			double total = Double.parseDouble(totalStr);
+			
+			// DETERMINAR SI ES BOLETA O FACTURA
+			boolean esFactura = false;
+			
+			if (ruc.isEmpty()) {
+				esFactura = false;
+			} else {
+				if (ruc.length() != 11 || !ruc.matches("\\d+")) {
+					JOptionPane.showMessageDialog(this, 
+						"RUC inválido. Debe contener exactamente 11 dígitos numéricos.\n" +
+						"RUC ingresado: " + ruc + " (" + ruc.length() + " caracteres)", 
+						"RUC Inválido", JOptionPane.ERROR_MESSAGE);
+					txtRUC.setText("");
+					txtRUC.requestFocus();
+					return;
+				}
+				if (domicilio.isEmpty()) {
+					JOptionPane.showMessageDialog(this, 
+						"Para generar una FACTURA debe ingresar el domicilio del cliente", 
+						"Domicilio requerido", JOptionPane.WARNING_MESSAGE);
+					txtDomicilio.requestFocus();
+					return;
+				}
+				
+				esFactura = true;
+			}
+			
+			// Preparar detalles de productos
+			ArrayList<GestorBoletas.DetalleVenta> productos = new ArrayList<>();
+			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+			
+			for (int i = 0; i < modelo.getRowCount(); i++) {
+				int cantidad = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+				String descripcion = modelo.getValueAt(i, 1).toString();
+				String precioStr = modelo.getValueAt(i, 2).toString().replace("S/. ", "");
+				double precioUnitario = Double.parseDouble(precioStr);
+				
+				productos.add(new GestorBoletas.DetalleVenta(cantidad, descripcion, precioUnitario));
+			}
+			
+			// Obtener el número secuencial
+			int numero = ManejadorContador.obtenerSiguienteNumero();
+			
+			String rutaArchivo = null;
+			String tipoComprobante = "";
+			
+			if (esFactura) {
+				// GENERAR FACTURA
+				rutaArchivo = GestorBoletas.GenerarFactura(numero, ruc, razonSocial, domicilio, 
+					productos, subTotal, igv, total);
+				tipoComprobante = "FACTURA";
+			} else {
+				// GENERAR BOLETA
+				rutaArchivo = GestorBoletas.GenerarBoleta(numero, razonSocial, 
+					productos, subTotal, igv, total);
+				tipoComprobante = "BOLETA";
+			}
+			
+			if (rutaArchivo == null) {
+				JOptionPane.showMessageDialog(this, "Error al generar la " + tipoComprobante, 
+					"Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			JOptionPane.showMessageDialog(this, 
+				tipoComprobante + " Nº " + String.format("%06d", numero) + " generada exitosamente!\n\n" +
+				"El archivo se ha guardado en:\n" + 
+				GestorBoletas.obtenerRutaDocumentos(), 
+				"¡Venta Realizada!", JOptionPane.INFORMATION_MESSAGE);
+			
+			GestorBoletas.abrirArchivo(rutaArchivo);
+			
+			limpiarVenta();
+			
+		} catch (NumberFormatException ex) {
+			JOptionPane.showMessageDialog(this, "Error al procesar los totales: " + ex.getMessage(), 
+				"Error de formato", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), 
+				"Error", JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+		}
 	}
 }

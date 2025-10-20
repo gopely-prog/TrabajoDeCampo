@@ -56,4 +56,10 @@ public class ArregloComida {
 		}
 		else return false; 
     }
+    public Comida obtenerPorIndice(int indice) {
+        if (indice >= 0 && indice < ListaComida.size()) {
+            return ListaComida.get(indice);
+        }
+        return null;
+    }
 }
