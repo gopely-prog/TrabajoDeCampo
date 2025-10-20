@@ -152,20 +152,9 @@ public class VentanaModificar extends JFrame implements ActionListener {
 	
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {	
 		try {
-			Comida enc = ac.Buscar(LeerCodigo());
-			if(enc != null) {
-				enc.setDescripcion(LeerDesc());
-				enc.setpUnitario(LeerPUnit());
-				enc.setStock(LeerStock());
-				
-				txtCod.setText("");
-				txtDesc.setText("");
-				txtPUnit.setText("");
-				txtStock.setText("");
-				txtCod.requestFocus();
+			if(ac.Modificar(LeerCodigo(), LeerDesc(), LeerPUnit(),  LeerStock())) {
 				JOptionPane.showMessageDialog(this, "Plato modificado.");
-			}
-			else JOptionPane.showMessageDialog(this, "El código no existe.");
+			}else JOptionPane.showMessageDialog(this, "El código no existe.");
 		}
 		catch (Exception e1){
 			JOptionPane.showMessageDialog(this, "Rellena todos los campos para continuar.");
