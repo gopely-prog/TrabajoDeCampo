@@ -13,8 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
 import java.awt.Color;
-import java.awt.Image;                 
-import java.awt.event.ComponentAdapter; 
+import java.awt.Image;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class VentanaMenu extends JFrame implements ActionListener {
@@ -22,11 +22,13 @@ public class VentanaMenu extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JButton btnTienda;
+    private JButton btnCompras;
     private JButton btnComida;
     private JButton btnSalir;
     private JPanel panel;
     private JPanel panel_1;
     private JPanel panel_2;
+    private JPanel panel_3;
     private JLabel icono;
 
     private static final String RUTA_LOGO = "/images/logo Polleria.png";
@@ -44,7 +46,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
     public VentanaMenu() {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setBounds(100, 100, 507, 475);
+        setBounds(100, 100, 507, 550);
         contentPane = new JPanel();
         contentPane.setBackground(new Color(205, 232, 254));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -66,28 +68,42 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnTienda.setHorizontalTextPosition(SwingConstants.CENTER);
 
         panel_1 = new JPanel();
-        panel_1.setBounds(329, 153, 147, 100);
+        panel_1.setBounds(329, 122, 147, 100);
         contentPane.add(panel_1);
         panel_1.setLayout(new GridLayout(1, 0, 0, 0));
 
-        btnComida = new JButton("Comida");
+        btnCompras = new JButton("<html><center>Fac.<br>Compras</center></html>");
+        btnCompras.setFont(new Font("Arial", Font.BOLD, 14));
+        btnCompras.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconComida.png")));
+        panel_1.add(btnCompras);
+        btnCompras.addActionListener(this);
+        btnCompras.setBackground(new Color(255, 255, 255));
+        btnCompras.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnCompras.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        panel_2 = new JPanel();
+        panel_2.setBounds(329, 233, 147, 100);
+        contentPane.add(panel_2);
+        panel_2.setLayout(new GridLayout(1, 0, 0, 0));
+
+        btnComida = new JButton("<html><center>Agregar.<br>Platos.</center></html>");
         btnComida.setFont(new Font("Arial", Font.BOLD, 15));
         btnComida.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconComida.png")));
-        panel_1.add(btnComida);
+        panel_2.add(btnComida);
         btnComida.addActionListener(this);
         btnComida.setBackground(new Color(255, 255, 255));
         btnComida.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnComida.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        panel_2 = new JPanel();
-        panel_2.setBounds(329, 298, 147, 100);
-        contentPane.add(panel_2);
-        panel_2.setLayout(new GridLayout(1, 0, 0, 0));
+        panel_3 = new JPanel();
+        panel_3.setBounds(329, 344, 147, 100);
+        contentPane.add(panel_3);
+        panel_3.setLayout(new GridLayout(1, 0, 0, 0));
 
         btnSalir = new JButton("Salir");
         btnSalir.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconSalir.png")));
         btnSalir.setFont(new Font("Arial", Font.BOLD, 15));
-        panel_2.add(btnSalir);
+        panel_3.add(btnSalir);
         btnSalir.addActionListener(this);
         btnSalir.setBackground(new Color(255, 255, 255));
         btnSalir.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -95,14 +111,14 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
         icono = new JLabel("");
         icono.setHorizontalAlignment(SwingConstants.CENTER);
-        icono.setBounds(0, 11, 331, 414); 
+        icono.setBounds(0, 11, 331, 489);
         contentPane.add(icono);
 
         javax.swing.SwingUtilities.invokeLater(() -> setScaledIcon(icono, RUTA_LOGO));
 
-        
         icono.addComponentListener(new ComponentAdapter() {
-            @Override public void componentResized(ComponentEvent e) {
+            @Override
+            public void componentResized(ComponentEvent e) {
                 setScaledIcon(icono, RUTA_LOGO);
             }
         });
@@ -115,18 +131,26 @@ public class VentanaMenu extends JFrame implements ActionListener {
         if (e.getSource() == btnComida) {
             do_btnProductos_actionPerformed(e);
         }
+        if (e.getSource() == btnCompras) {
+            do_btnCompras_actionPerformed(e);
+        }
         if (e.getSource() == btnTienda) {
-            do_btnNewButton_actionPerformed(e);
+            do_btnTienda_actionPerformed(e);
         }
     }
 
-    protected void do_btnNewButton_actionPerformed(ActionEvent e) {
+    protected void do_btnTienda_actionPerformed(ActionEvent e) {
         VentanaVentas ventana = new VentanaVentas();
         ventana.setVisible(true);
     }
 
+    protected void do_btnCompras_actionPerformed(ActionEvent e) {
+        VentanaCompras ventana = new VentanaCompras();
+        ventana.setVisible(true);
+    }
+
     protected void do_btnProductos_actionPerformed(ActionEvent e) {
-        VentanaComida ventana = new VentanaComida();
+        VentanaProductos ventana = new VentanaProductos();
         ventana.setVisible(true);
     }
 
@@ -134,7 +158,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
         System.exit(0);
     }
 
- 
     private void setScaledIcon(JLabel label, String resourcePath) {
         java.net.URL url = getClass().getResource(resourcePath);
         if (url == null) {

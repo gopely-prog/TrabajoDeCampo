@@ -1,25 +1,27 @@
-
 package clases;
 
 public class Comida {
-	private int cantidad,codigo, stock;
-	private String  descripcion;
+	private int cantidad, codigo, stock;
+	private String descripcion;
 	private double pUnitario;
-	//Constructor para cálculos
+	private double costoUnitario; // NUEVO ATRIBUTO
+	
+	// Constructor para cálculos
 	public Comida(int cantidad, double pUnitario) {
 		this.cantidad = cantidad;
 		this.pUnitario = pUnitario;
 	}
 	
-	//Constructor completo con todos los parámetros
-	public Comida(int codigo, String descripcion, double pUnitario, int stock) {
+	// Constructor completo con todos los parámetros (SIN STOCK - inicia en 0)
+	public Comida(int codigo, String descripcion, double pUnitario, double costoUnitario) {
 		this.codigo = codigo;
 		this.descripcion = descripcion;
 		this.pUnitario = pUnitario;
-		this.stock = stock;
+		this.costoUnitario = costoUnitario;
+		this.stock = 0; // SIEMPRE INICIA EN 0
 	}
 	
-	//Getters And Setters
+	// Getters And Setters
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -59,9 +61,25 @@ public class Comida {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-	//Total de la compra con impuestos
+	// Getter y Setter para Costo Unitario
+	public double getCostoUnitario() {
+		return costoUnitario;
+	}
+	
+	public void setCostoUnitario(double costoUnitario) {
+		this.costoUnitario = costoUnitario;
+	}
+	//Método para calcular porcentaje de ganancia
+	public double calcularPorcentajeGanancia() {
+		if (costoUnitario == 0) {
+			return 0;
+		}
+		return ((pUnitario - costoUnitario) / costoUnitario) * 100;
+	}
+
+	// Total de la compra con impuestos
 	public double Total(int cantidad, double pUnitario, double IGV) {
-		return cantidad*pUnitario*IGV;
+		return cantidad * pUnitario * IGV;
 	}
 	// Método toString para mostrar en el ComboBox
 	public String toString() {
