@@ -434,7 +434,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		ventana.setVisible(true);
 	}
 	
-	protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
+		protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
 		try {
 			if (table.getRowCount() == 0) {
 				JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
@@ -500,7 +500,9 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				// ACTUALIZAR STOCK DEL PRODUCTO
 				Comida producto = ac.Buscar(codigoProducto);
 				if (producto != null) {
-					producto.setStock(producto.getStock() + cantidad);
+					int nuevoStock = producto.getStock() + cantidad;
+					producto.setStock(nuevoStock);
+					ac.actualizarStock(producto.getCodigo(), nuevoStock); // ← AGREGAR ESTA LÍNEA
 				}
 			}
 			
