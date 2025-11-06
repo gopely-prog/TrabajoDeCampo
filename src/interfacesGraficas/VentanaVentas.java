@@ -10,9 +10,12 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import clases.ArregloComida;
+import clases.ArregloVentas;
 import clases.Comida;
+import clases.DetalleVenta;
 import clases.GestorBoletas;
 import clases.ManejadorContador;
+import clases.Venta;
 
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
@@ -431,7 +434,9 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 			double totalProducto = cantidad * precioUnitario;
 			
 			// Reducir stock del producto
-			productoSeleccionado.setStock(productoSeleccionado.getStock() - cantidad);
+			int nuevoStock = productoSeleccionado.getStock() - cantidad;
+			productoSeleccionado.setStock(nuevoStock);
+			ac.actualizarStock(productoSeleccionado.getCodigo(), nuevoStock);
 			
 			// Agregar fila a la tabla
 			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
@@ -524,7 +529,7 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				esFactura = true;
 			}
 			
-			// Preparar detalles de productos
+			// Preparar detalles de productos para GestorBoletas
 			ArrayList<GestorBoletas.DetalleVenta> productos = new ArrayList<>();
 			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 			
@@ -547,12 +552,12 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				// GENERAR FACTURA
 				rutaArchivo = GestorBoletas.GenerarFactura(numero, ruc, razonSocial, domicilio, 
 					productos, subTotal, igv, total);
-				tipoComprobante = "FACTURA";
+				tipoComprobante = "Factura";
 			} else {
 				// GENERAR BOLETA
 				rutaArchivo = GestorBoletas.GenerarBoleta(numero, razonSocial, 
 					productos, subTotal, igv, total);
-				tipoComprobante = "BOLETA";
+				tipoComprobante = "Boleta";
 			}
 			
 			if (rutaArchivo == null) {
@@ -560,10 +565,45 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 					"Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			
+			// ============ GUARDAR VENTA EN LA BASE DE DATOS ============
+			
+			// Crear objeto Venta para guardar en BD
+			Venta nuevaVenta = new Venta(numero, tipoComprobante, 
+			                             esFactura ? ruc : null, 
+			                             razonSocial, 
+			                             esFactura ? domicilio : null, 
+			                             rutaArchivo);
+			
+			// Agregar detalles a la venta
+			for (int i = 0; i < modelo.getRowCount(); i++) {
+				int cantidad = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+				String descripcion = modelo.getValueAt(i, 1).toString();
+				String precioStr = modelo.getValueAt(i, 2).toString().replace("S/. ", "");
+				double precioUnitario = Double.parseDouble(precioStr);
+				
+				// Buscar código del producto por descripción
+				Comida producto = ac.BuscarPorDescripcion(descripcion);
+				if (producto != null) {
+					DetalleVenta detalle = new DetalleVenta(producto.getCodigo(), 
+					                                        descripcion, 
+					                                        cantidad, 
+					                                        precioUnitario);
+					nuevaVenta.agregarDetalle(detalle);
+				}
+			}
+			
+			// Guardar venta en la BD
+			ArregloVentas av = ArregloVentas.getInstancia();
+			av.Adicionar(nuevaVenta);
+			
+			// ============================================================
+			
 			JOptionPane.showMessageDialog(this, 
 				tipoComprobante + " Nº " + String.format("%06d", numero) + " generada exitosamente!\n\n" +
 				"El archivo se ha guardado en:\n" + 
-				GestorBoletas.obtenerRutaDocumentos(), 
+				GestorBoletas.obtenerRutaDocumentos() + "\n\n" +
+				"La venta ha sido registrada en la base de datos.", 
 				"¡Venta Realizada!", JOptionPane.INFORMATION_MESSAGE);
 			
 			GestorBoletas.abrirArchivo(rutaArchivo);

@@ -30,8 +30,11 @@ public class VentanaMenu extends JFrame implements ActionListener {
     private JPanel panel_2;
     private JPanel panel_3;
     private JLabel icono;
+    
 
     private static final String RUTA_LOGO = "/images/logo Polleria.png";
+    private JPanel panel_4;
+    private JButton btnVerVentas;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -46,7 +49,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
     public VentanaMenu() {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setBounds(100, 100, 507, 550);
+        setBounds(100, 100, 699, 426);
         contentPane = new JPanel();
         contentPane.setBackground(new Color(205, 232, 254));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -68,7 +71,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnTienda.setHorizontalTextPosition(SwingConstants.CENTER);
 
         panel_1 = new JPanel();
-        panel_1.setBounds(329, 122, 147, 100);
+        panel_1.setBounds(525, 11, 147, 100);
         contentPane.add(panel_1);
         panel_1.setLayout(new GridLayout(1, 0, 0, 0));
 
@@ -82,7 +85,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnCompras.setHorizontalTextPosition(SwingConstants.CENTER);
 
         panel_2 = new JPanel();
-        panel_2.setBounds(329, 233, 147, 100);
+        panel_2.setBounds(329, 129, 147, 100);
         contentPane.add(panel_2);
         panel_2.setLayout(new GridLayout(1, 0, 0, 0));
 
@@ -96,7 +99,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnComida.setHorizontalTextPosition(SwingConstants.CENTER);
 
         panel_3 = new JPanel();
-        panel_3.setBounds(329, 344, 147, 100);
+        panel_3.setBounds(413, 253, 147, 100);
         contentPane.add(panel_3);
         panel_3.setLayout(new GridLayout(1, 0, 0, 0));
 
@@ -111,10 +114,24 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
         icono = new JLabel("");
         icono.setHorizontalAlignment(SwingConstants.CENTER);
-        icono.setBounds(0, 11, 331, 489);
+        icono.setBounds(10, 11, 283, 380);
         contentPane.add(icono);
 
         javax.swing.SwingUtilities.invokeLater(() -> setScaledIcon(icono, RUTA_LOGO));
+        
+        panel_4 = new JPanel();
+        panel_4.setBounds(525, 129, 147, 100);
+        contentPane.add(panel_4);
+        panel_4.setLayout(new GridLayout(1, 0, 0, 0));
+        
+        btnVerVentas = new JButton("<html><center>Ver<br>Ventas</center></html>");
+        btnVerVentas.setFont(new Font("Arial", Font.BOLD, 14));
+        btnVerVentas.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconTienda.png")));
+        btnVerVentas.addActionListener(this);
+        btnVerVentas.setBackground(new Color(255, 255, 255));
+        btnVerVentas.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnVerVentas.setHorizontalTextPosition(SwingConstants.CENTER);
+        panel_4.add(btnVerVentas);
 
         icono.addComponentListener(new ComponentAdapter() {
             @Override
@@ -125,6 +142,9 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+    	if (e.getSource() == btnVerVentas) {
+    		do_btnComida_1_actionPerformed(e);
+    	}
         if (e.getSource() == btnSalir) {
             do_btnSalir_actionPerformed(e);
         }
@@ -173,4 +193,8 @@ public class VentanaMenu extends JFrame implements ActionListener {
         Image img = original.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
         label.setIcon(new ImageIcon(img));
     }
+	protected void do_btnComida_1_actionPerformed(ActionEvent e) {
+		VentanaListarVentas ventana = new VentanaListarVentas();
+	    ventana.setVisible(true);
+	}
 }
