@@ -26,7 +26,6 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	private JButton btnAgregar;
 	private JButton btnModificar;
 	private JButton btnEliminar;
-	private JButton btnBuscar;
 	private JScrollPane scrollPane;
 	private JTable table;
 	private JTextField txtCodigoBuscar;
@@ -34,6 +33,9 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	private JLabel lblBuscarPorCodigo;
 	private JLabel lblBuscarPorDescripcion;
 	private JButton btnListarTodos;
+	
+	// Variable para almacenar el producto seleccionado
+	private Comida productoSeleccionado = null;
 
 	public VentanaProductos() {
 		setTitle("Gestión de Productos");
@@ -60,6 +62,13 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		modelo.addColumn("% Ganancia");
 		modelo.addColumn("Stock");
 		table.setModel(modelo);
+		
+		// ========== LISTENER PARA SELECCIÓN EN LA TABLA ==========
+		table.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				seleccionarProductoDeTabla();
+			}
+		});
 		
 		// Botones principales
 		btnAgregar = new JButton("Agregar");
@@ -97,6 +106,13 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		contentPane.add(txtCodigoBuscar);
 		txtCodigoBuscar.setColumns(10);
 		
+		// ========== FILTRADO EN TIEMPO REAL - CÓDIGO ==========
+		txtCodigoBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+			public void keyReleased(java.awt.event.KeyEvent evt) {
+				filtrarProductos();
+			}
+		});
+		
 		// Búsqueda por descripción
 		lblBuscarPorDescripcion = new JLabel("Buscar por Descripción:");
 		lblBuscarPorDescripcion.setFont(new Font("Arial", Font.BOLD, 13));
@@ -105,20 +121,93 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		
 		txtDescripcionBuscar = new JTextField();
 		txtDescripcionBuscar.setColumns(10);
-		txtDescripcionBuscar.setBounds(200, 50, 200, 25);
+		txtDescripcionBuscar.setBounds(200, 50, 300, 25);
 		contentPane.add(txtDescripcionBuscar);
 		
-		btnBuscar = new JButton("Buscar");
-		btnBuscar.setFont(new Font("Arial", Font.BOLD, 12));
-		btnBuscar.addActionListener(this);
-		btnBuscar.setBounds(420, 50, 100, 25);
-		contentPane.add(btnBuscar);
+		// ========== FILTRADO EN TIEMPO REAL - DESCRIPCIÓN ==========
+		txtDescripcionBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+			public void keyReleased(java.awt.event.KeyEvent evt) {
+				filtrarProductos();
+			}
+		});
 		
 		// Cargar todos los productos al iniciar
 		mostrarProductos();
 	}
 	
 	ArregloComida ac = ArregloComida.getInstancia();
+	
+	/**
+	 * Filtra productos en tiempo real mientras el usuario escribe
+	 */
+	private void filtrarProductos() {
+		String textoCodigo = txtCodigoBuscar.getText().trim().toLowerCase();
+		String textoDescripcion = txtDescripcionBuscar.getText().trim().toLowerCase();
+		
+		// Si ambos están vacíos, mostrar todos
+		if (textoCodigo.isEmpty() && textoDescripcion.isEmpty()) {
+			mostrarProductos();
+			return;
+		}
+		
+		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		modelo.setRowCount(0);
+		
+		// Recorrer todos los productos
+		for (int i = 0; i < ac.Tamaño(); i++) {
+			Comida producto = ac.obtenerPorIndice(i);
+			
+			String codigoProducto = String.valueOf(producto.getCodigo()).toLowerCase();
+			String descripcionProducto = producto.getDescripcion().toLowerCase();
+			
+			// Verificar si cumple con el filtro
+			boolean cumpleCodigo = textoCodigo.isEmpty() || codigoProducto.contains(textoCodigo);
+			boolean cumpleDescripcion = textoDescripcion.isEmpty() || descripcionProducto.contains(textoDescripcion);
+			
+			// Si cumple ambos filtros, agregar a la tabla
+			if (cumpleCodigo && cumpleDescripcion) {
+				modelo.addRow(new Object[]{
+					producto.getCodigo(),
+					producto.getDescripcion(),
+					String.format("S/. %.2f", producto.getpUnitario()),
+					String.format("S/. %.2f", producto.getCostoUnitario()),
+					String.format("%.2f%%", producto.calcularPorcentajeGanancia()),
+					producto.getStock()
+				});
+			}
+		}
+		
+		// Mostrar cuántos resultados se encontraron
+		int resultados = modelo.getRowCount();
+		if (resultados == 0) {
+			// No se encontraron resultados
+			System.out.println("⚠ No se encontraron productos con ese filtro");
+		} else {
+			System.out.println("✓ Se encontraron " + resultados + " producto(s)");
+		}
+	}
+	
+	/**
+	 * Captura el producto seleccionado en la tabla
+	 */
+	private void seleccionarProductoDeTabla() {
+		int filaSeleccionada = table.getSelectedRow();
+		
+		if (filaSeleccionada != -1) {
+			// Obtener el código del producto de la tabla
+			int codigo = (int) table.getValueAt(filaSeleccionada, 0);
+			
+			// Buscar el producto completo
+			productoSeleccionado = ac.Buscar(codigo);
+			
+			if (productoSeleccionado != null) {
+				System.out.println("✓ Producto seleccionado: " + productoSeleccionado.getDescripcion());
+				
+				// Opcional: Resaltar visualmente que hay un producto seleccionado
+				table.setSelectionBackground(new Color(144, 238, 144)); // Verde claro
+			}
+		}
+	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregar) {
@@ -130,9 +219,6 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		if (e.getSource() == btnEliminar) {
 			do_btnEliminar_actionPerformed(e);
 		}
-		if (e.getSource() == btnBuscar) {
-			do_btnBuscar_actionPerformed(e);
-		}
 		if (e.getSource() == btnListarTodos) {
 			do_btnListarTodos_actionPerformed(e);
 		}
@@ -143,160 +229,92 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosed(java.awt.event.WindowEvent windowEvent) {
 				mostrarProductos();
+				limpiarFiltros();
 			}
 		});
 		ventana.setVisible(true);
 	}
 	
+	/**
+	 * MODIFICADO: Ahora usa el producto seleccionado en la tabla
+	 */
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {
-		try {
-			String codigoStr = txtCodigoBuscar.getText().trim();
-			
-			if (codigoStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, 
-					"Debe ingresar un código para modificar", 
-					"Código vacío", JOptionPane.WARNING_MESSAGE);
-				txtCodigoBuscar.requestFocus();
-				return;
-			}
-			
-			int codigo = Integer.parseInt(codigoStr);
-			Comida producto = ac.Buscar(codigo);
-			
-			if (producto == null) {
-				JOptionPane.showMessageDialog(this, 
-					"No existe un producto con el código: " + codigo, 
-					"Producto no encontrado", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			VentanaModificarProducto ventana = new VentanaModificarProducto(producto);
-			ventana.addWindowListener(new java.awt.event.WindowAdapter() {
-				public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-					mostrarProductos();
-					txtCodigoBuscar.setText("");
-				}
-			});
-			ventana.setVisible(true);
-			
-		} catch (NumberFormatException ex) {
+		// Verificar si hay un producto seleccionado
+		if (productoSeleccionado == null) {
 			JOptionPane.showMessageDialog(this, 
-				"El código debe ser un número válido", 
-				"Formato inválido", JOptionPane.ERROR_MESSAGE);
-			txtCodigoBuscar.requestFocus();
-		}
-	}
-	
-	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
-		try {
-			String codigoStr = txtCodigoBuscar.getText().trim();
-			
-			if (codigoStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, 
-					"Debe ingresar un código para eliminar", 
-					"Código vacío", JOptionPane.WARNING_MESSAGE);
-				txtCodigoBuscar.requestFocus();
-				return;
-			}
-			
-			int codigo = Integer.parseInt(codigoStr);
-			Comida producto = ac.Buscar(codigo);
-			
-			if (producto == null) {
-				JOptionPane.showMessageDialog(this, 
-					"No existe un producto con el código: " + codigo, 
-					"Producto no encontrado", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			int respuesta = JOptionPane.showConfirmDialog(this, 
-				"¿Está seguro de eliminar el producto?\n\n" +
-				"Código: " + producto.getCodigo() + "\n" +
-				"Descripción: " + producto.getDescripcion() + "\n" +
-				"Stock actual: " + producto.getStock(),
-				"Confirmar eliminación", 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.WARNING_MESSAGE);
-			
-			if (respuesta == JOptionPane.YES_OPTION) {
-				ac.Eliminar(producto);
-				JOptionPane.showMessageDialog(this, 
-					"Producto eliminado exitosamente", 
-					"Éxito", JOptionPane.INFORMATION_MESSAGE);
-				txtCodigoBuscar.setText("");
-				mostrarProductos();
-			}
-			
-		} catch (NumberFormatException ex) {
-			JOptionPane.showMessageDialog(this, 
-				"El código debe ser un número válido", 
-				"Formato inválido", JOptionPane.ERROR_MESSAGE);
-			txtCodigoBuscar.requestFocus();
-		}
-	}
-	
-	protected void do_btnBuscar_actionPerformed(ActionEvent e) {
-		String codigoStr = txtCodigoBuscar.getText().trim();
-		String descripcion = txtDescripcionBuscar.getText().trim();
-		
-		// Validar que al menos uno esté lleno
-		if (codigoStr.isEmpty() && descripcion.isEmpty()) {
-			JOptionPane.showMessageDialog(this, 
-				"Debe ingresar un código o una descripción para buscar", 
-				"Campos vacíos", JOptionPane.WARNING_MESSAGE);
+				"Debe seleccionar un producto de la tabla para modificar\n\n" +
+				"Haga clic sobre la fila del producto que desea modificar", 
+				"Ningún producto seleccionado", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		
-		Comida encontrado = null;
-		
-		// Buscar por código si está lleno
-		if (!codigoStr.isEmpty()) {
-			try {
-				int codigo = Integer.parseInt(codigoStr);
-				encontrado = ac.Buscar(codigo);
-			} catch (NumberFormatException ex) {
-				JOptionPane.showMessageDialog(this, 
-					"El código debe ser un número válido", 
-					"Formato inválido", JOptionPane.ERROR_MESSAGE);
-				txtCodigoBuscar.requestFocus();
-				return;
+		// Abrir ventana de modificación con el producto seleccionado
+		VentanaModificarProducto ventana = new VentanaModificarProducto(productoSeleccionado);
+		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+				mostrarProductos();
+				limpiarFiltros();
+				productoSeleccionado = null; // Limpiar selección
 			}
-		}
-		// Buscar por descripción si código no dio resultado
-		else if (!descripcion.isEmpty()) {
-			encontrado = ac.BuscarPorDescripcion(descripcion);
+		});
+		ventana.setVisible(true);
+	}
+	
+	/**
+	 * MODIFICADO: Ahora usa el producto seleccionado en la tabla
+	 */
+	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
+		// Verificar si hay un producto seleccionado
+		if (productoSeleccionado == null) {
+			JOptionPane.showMessageDialog(this, 
+				"Debe seleccionar un producto de la tabla para eliminar\n\n" +
+				"Haga clic sobre la fila del producto que desea eliminar", 
+				"Ningún producto seleccionado", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
 		
-		// Mostrar resultado
-		if (encontrado != null) {
-			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-			modelo.setRowCount(0);
-			modelo.addRow(new Object[]{
-				encontrado.getCodigo(),
-				encontrado.getDescripcion(),
-				String.format("S/. %.2f", encontrado.getpUnitario()),
-				String.format("S/. %.2f", encontrado.getCostoUnitario()),
-				String.format("%.2f%%", encontrado.calcularPorcentajeGanancia()),
-				encontrado.getStock()
-			});
-			
+		// Confirmar eliminación
+		int respuesta = JOptionPane.showConfirmDialog(this, 
+			"¿Está seguro de eliminar el producto?\n\n" +
+			"Código: " + productoSeleccionado.getCodigo() + "\n" +
+			"Descripción: " + productoSeleccionado.getDescripcion() + "\n" +
+			"Stock actual: " + productoSeleccionado.getStock(),
+			"Confirmar eliminación", 
+			JOptionPane.YES_NO_OPTION, 
+			JOptionPane.WARNING_MESSAGE);
+		
+		if (respuesta == JOptionPane.YES_OPTION) {
+			ac.Eliminar(productoSeleccionado);
 			JOptionPane.showMessageDialog(this, 
-				"Producto encontrado", 
+				"Producto eliminado exitosamente", 
 				"Éxito", JOptionPane.INFORMATION_MESSAGE);
-		} else {
-			JOptionPane.showMessageDialog(this, 
-				"No se encontró el producto", 
-				"Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+			
+			productoSeleccionado = null; // Limpiar selección
+			mostrarProductos();
+			limpiarFiltros();
 		}
 	}
 	
 	protected void do_btnListarTodos_actionPerformed(ActionEvent e) {
+		limpiarFiltros();
 		mostrarProductos();
+		productoSeleccionado = null;
 		JOptionPane.showMessageDialog(this, 
 			"Mostrando todos los productos (" + ac.Tamaño() + ")", 
 			"Lista actualizada", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
+	/**
+	 * Limpia los campos de filtrado
+	 */
+	private void limpiarFiltros() {
+		txtCodigoBuscar.setText("");
+		txtDescripcionBuscar.setText("");
+	}
+	
+	/**
+	 * Muestra todos los productos en la tabla
+	 */
 	public void mostrarProductos() {
 		ac.Listar(table);
 	}
