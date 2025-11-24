@@ -99,6 +99,10 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtRUC.setBounds(140, 55, 150, 20);
 		panelDatos.add(txtRUC);
 		txtRUC.setColumns(10);
+		txtRUC.setToolTipText("RUC del proveedor (11 dígitos)");
+		
+		// ========== VALIDACIÓN RUC PROVEEDOR ==========
+	    configurarValidacionRUCProveedor();
 		
 		// ========== FILTRO PARA SOLO NÚMEROS Y MÁXIMO 11 ==========
 		aplicarFiltroRUC();
@@ -278,6 +282,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	ArregloProveedor ap = ArregloProveedor.getInstancia();
 	ArregloCompras acompras = ArregloCompras.getInstancia();
 	
+<<<<<<< HEAD
 	private void aplicarFiltroRUC() {
 		AbstractDocument doc = (AbstractDocument) txtRUC.getDocument();
 		doc.setDocumentFilter(new DocumentFilter() {
@@ -347,6 +352,73 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				break;
 		}
 	}
+=======
+	/**
+	 * Configura validación del RUC del proveedor
+	 */
+	private void configurarValidacionRUCProveedor() {
+	    txtRUC.addKeyListener(new java.awt.event.KeyAdapter() {
+	        @Override
+	        public void keyTyped(java.awt.event.KeyEvent evt) {
+	            char caracter = evt.getKeyChar();
+	            String textoActual = txtRUC.getText();
+	            
+	            // Solo números
+	            if (!Character.isDigit(caracter) && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+	                evt.consume();
+	                
+	                if (Character.isLetter(caracter)) {
+	                    java.awt.Toolkit.getDefaultToolkit().beep();
+	                    JOptionPane.showMessageDialog(VentanaCompras.this, 
+	                        "❌ El RUC solo puede contener números", 
+	                        "Carácter inválido", 
+	                        JOptionPane.WARNING_MESSAGE);
+	                }
+	                return;
+	            }
+	            
+	            // Máximo 11 dígitos
+	            if (textoActual.length() >= 11 && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+	                evt.consume();
+	                java.awt.Toolkit.getDefaultToolkit().beep();
+	                
+	                JOptionPane.showMessageDialog(VentanaCompras.this, 
+	                    "⚠️ El RUC debe tener exactamente 11 dígitos\n\n" +
+	                    "Ya alcanzaste el máximo permitido.", 
+	                    "Límite alcanzado", 
+	                    JOptionPane.WARNING_MESSAGE);
+	            }
+	        }
+	        
+	        @Override
+	        public void keyReleased(java.awt.event.KeyEvent evt) {
+	            actualizarFeedbackRUCProveedor();
+	        }
+	    });
+	}
+
+	/**
+	 * Feedback visual para RUC de proveedor
+	 */
+	private void actualizarFeedbackRUCProveedor() {
+	    String texto = txtRUC.getText().trim();
+	    int longitud = texto.length();
+	    
+	    if (longitud == 0) {
+	        txtRUC.setBackground(java.awt.Color.WHITE);
+	        txtRUC.setToolTipText("Ingrese RUC del proveedor");
+	        
+	    } else if (longitud < 11) {
+	        txtRUC.setBackground(new java.awt.Color(255, 255, 200));
+	        txtRUC.setToolTipText(String.format("Faltan %d dígitos", 11 - longitud));
+	        
+	    } else if (longitud == 11) {
+	        txtRUC.setBackground(new java.awt.Color(200, 255, 200));
+	        txtRUC.setToolTipText("✓ RUC válido");
+	    }
+	}
+	
+>>>>>>> a7cd711 (Tablas relacionadas en la BD, llaves foráneas agregadas)
 	private void cargarProductos() {
 		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
 		for (int i = 0; i < ac.Tamaño(); i++) {
@@ -519,6 +591,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		ventana.setVisible(true);
 	}
 	
+<<<<<<< HEAD
 	protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
 		try {
 			if (table.getRowCount() == 0) {
@@ -624,5 +697,96 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				"Error", JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 		}
+=======
+		protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
+			try {
+		        if (table.getRowCount() == 0) {
+		            JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
+		                "Compra vacía", JOptionPane.WARNING_MESSAGE);
+		            return;
+		        }
+		        
+		        String tipoDocumento = (String) cboTipoDocumento.getSelectedItem();
+		        String ruc = txtRUC.getText().trim();
+		        String nombre = txtNombreProveedor.getText().trim();
+		        
+		        // Validar RUC solo si NO es Nota de Compra
+		        if (!tipoDocumento.equals("Nota de Compra")) {
+		            if (ruc.isEmpty()) {
+		                JOptionPane.showMessageDialog(this, "Debe ingresar el RUC del proveedor", 
+		                    "RUC requerido", JOptionPane.WARNING_MESSAGE);
+		                txtRUC.requestFocus();
+		                return;
+		            }
+		            
+		            if (ruc.length() != 11 || !ruc.matches("\\d+")) {
+		                JOptionPane.showMessageDialog(this, 
+		                    "RUC inválido. Debe contener exactamente 11 dígitos numéricos.", 
+		                    "RUC Inválido", JOptionPane.ERROR_MESSAGE);
+		                txtRUC.requestFocus();
+		                return;
+		            }
+		        } else {
+		            ruc = "99999999999"; // RUC especial para Nota de Compra
+		        }
+		        
+		        if (nombre.isEmpty()) {
+		            JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
+		                "Nombre requerido", JOptionPane.WARNING_MESSAGE);
+		            txtNombreProveedor.requestFocus();
+		            return;
+		        }
+		        
+		        // ========== MODIFICACIÓN PRINCIPAL ==========
+		        // Buscar o crear proveedor y OBTENER SU ID
+		        Proveedor prov = ap.BuscarPorRuc(ruc);
+		        if (prov == null) {
+		            prov = new Proveedor(ruc, nombre);
+		            ap.Adicionar(prov); // Esto asigna el ID automáticamente
+		        }
+		        
+		        // ⚠️ CAMBIO CLAVE: Usar ID del proveedor en lugar de RUC/nombre
+		        int numeroCompra = acompras.obtenerSiguienteNumero();
+		        Compra compra = new Compra(numeroCompra, tipoDocumento, prov.getId());
+		        
+		        // Agregar detalles SIN descripción (solo código)
+		        DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		        for (int i = 0; i < modelo.getRowCount(); i++) {
+		            int codigoProducto = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+		            int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
+		            String costoStr = modelo.getValueAt(i, 3).toString().replace("S/. ", "");
+		            double costoUnitario = Double.parseDouble(costoStr);
+		            
+		            // ⚠️ Constructor actualizado: sin descripción
+		            DetalleCompra detalle = new DetalleCompra(codigoProducto, cantidad, costoUnitario);
+		            compra.agregarDetalle(detalle);
+		            
+		            // Actualizar stock
+		            Comida producto = ac.Buscar(codigoProducto);
+		            if (producto != null) {
+		                int nuevoStock = producto.getStock() + cantidad;
+		                producto.setStock(nuevoStock);
+		                ac.actualizarStock(producto.getCodigo(), nuevoStock);
+		            }
+		        }
+		        
+		        acompras.Adicionar(compra);
+		        
+		        JOptionPane.showMessageDialog(this, 
+		            "¡Compra realizada exitosamente!\n\n" +
+		            "Tipo: " + tipoDocumento + "\n" +
+		            "Número: " + String.format("%06d", numeroCompra) + "\n" +
+		            "Proveedor: " + nombre + "\n" +
+		            "Total: S/. " + String.format("%.2f", compra.getTotal()), 
+		            "Compra Registrada", JOptionPane.INFORMATION_MESSAGE);
+		        
+		        limpiarCompra();
+		        
+		    } catch (Exception ex) {
+		        JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), 
+		            "Error", JOptionPane.ERROR_MESSAGE);
+		        ex.printStackTrace();
+		    }
+>>>>>>> a7cd711 (Tablas relacionadas en la BD, llaves foráneas agregadas)
 	}
 }

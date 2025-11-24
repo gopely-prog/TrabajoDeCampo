@@ -126,66 +126,69 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	
 	protected void do_btnVerDetalle_actionPerformed(ActionEvent e) {
 		try {
-			String numeroStr = txtNumeroVenta.getText().trim();
-			
-			if (numeroStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, 
-					"Debe ingresar un número de venta", 
-					"Número vacío", JOptionPane.WARNING_MESSAGE);
-				txtNumeroVenta.requestFocus();
-				return;
-			}
-			
-			int numero = Integer.parseInt(numeroStr);
-			Venta venta = av.Buscar(numero);
-			
-			if (venta == null) {
-				JOptionPane.showMessageDialog(this, 
-					"No existe una venta con el número: " + numero, 
-					"Venta no encontrada", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			// Construir mensaje con detalle
-			StringBuilder detalle = new StringBuilder();
-			detalle.append("=== DETALLE DE VENTA ===\n\n");
-			detalle.append("Número: ").append(venta.getNumeroVenta()).append("\n");
-			detalle.append("Tipo: ").append(venta.getTipoDocumento()).append("\n");
-			
-			if (venta.getRucCliente() != null) {
-				detalle.append("RUC Cliente: ").append(venta.getRucCliente()).append("\n");
-			}
-			
-			detalle.append("Cliente: ").append(venta.getRazonSocial()).append("\n");
-			
-			if (venta.getDomicilio() != null) {
-				detalle.append("Domicilio: ").append(venta.getDomicilio()).append("\n");
-			}
-			
-			detalle.append("Fecha: ").append(venta.getFecha()).append("\n\n");
-			detalle.append("--- PRODUCTOS ---\n");
-			
-			for (DetalleVenta dv : venta.getDetalles()) {
-				detalle.append(String.format("• %s (Código: %d)\n", 
-					dv.getDescripcionProducto(), dv.getCodigoProducto()));
-				detalle.append(String.format("  Cantidad: %d | Precio Unit.: S/. %.2f | Subtotal: S/. %.2f\n\n", 
-					dv.getCantidad(), dv.getPrecioUnitario(), dv.getSubtotal()));
-			}
-			
-			detalle.append("--- TOTALES ---\n");
-			detalle.append(String.format("SubTotal: S/. %.2f\n", venta.getSubTotal()));
-			detalle.append(String.format("IGV (18%%): S/. %.2f\n", venta.getIgv()));
-			detalle.append(String.format("TOTAL: S/. %.2f\n", venta.getTotal()));
-			
-			JOptionPane.showMessageDialog(this, detalle.toString(), 
-				"Detalle de Venta", JOptionPane.INFORMATION_MESSAGE);
-			
-		} catch (NumberFormatException ex) {
-			JOptionPane.showMessageDialog(this, 
-				"El número de venta debe ser un valor numérico válido", 
-				"Formato inválido", JOptionPane.ERROR_MESSAGE);
-			txtNumeroVenta.requestFocus();
-		}
+	        String numeroStr = txtNumeroVenta.getText().trim();
+	        
+	        if (numeroStr.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, 
+	                "Debe ingresar un número de venta", 
+	                "Número vacío", JOptionPane.WARNING_MESSAGE);
+	            txtNumeroVenta.requestFocus();
+	            return;
+	        }
+	        
+	        int numero = Integer.parseInt(numeroStr);
+	        Venta venta = av.Buscar(numero);
+	        
+	        if (venta == null) {
+	            JOptionPane.showMessageDialog(this, 
+	                "No existe una venta con el número: " + numero, 
+	                "Venta no encontrada", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	        
+	        StringBuilder detalle = new StringBuilder();
+	        detalle.append("=== DETALLE DE VENTA ===\n\n");
+	        detalle.append("Número: ").append(venta.getNumeroVenta()).append("\n");
+	        detalle.append("Tipo: ").append(venta.getTipoDocumento()).append("\n");
+	        
+	        if (venta.getRucCliente() != null) {
+	            detalle.append("RUC Cliente: ").append(venta.getRucCliente()).append("\n");
+	        }
+	        
+	        detalle.append("Cliente: ").append(venta.getRazonSocial()).append("\n");
+	        
+	        if (venta.getDomicilio() != null) {
+	            detalle.append("Domicilio: ").append(venta.getDomicilio()).append("\n");
+	        }
+	        
+	        detalle.append("Fecha: ").append(venta.getFecha()).append("\n\n");
+	        detalle.append("--- PRODUCTOS ---\n");
+	        
+	        // ========== MODIFICACIÓN: Obtener descripción desde ArregloComida ==========
+	        for (DetalleVenta dv : venta.getDetalles()) {
+	            Comida producto = ac.Buscar(dv.getCodigoProducto());
+	            String descripcion = producto != null ? producto.getDescripcion() : "Producto eliminado";
+	            
+	            detalle.append(String.format("• %s (Código: %d)\n", 
+	                descripcion, dv.getCodigoProducto()));
+	            detalle.append(String.format("  Cantidad: %d | Precio Unit.: S/. %.2f | Subtotal: S/. %.2f\n\n", 
+	                dv.getCantidad(), dv.getPrecioUnitario(), dv.getSubtotal()));
+	        }
+	        
+	        detalle.append("--- TOTALES ---\n");
+	        detalle.append(String.format("SubTotal: S/. %.2f\n", venta.getSubTotal()));
+	        detalle.append(String.format("IGV (18%%): S/. %.2f\n", venta.getIgv()));
+	        detalle.append(String.format("TOTAL: S/. %.2f\n", venta.getTotal()));
+	        
+	        JOptionPane.showMessageDialog(this, detalle.toString(), 
+	            "Detalle de Venta", JOptionPane.INFORMATION_MESSAGE);
+	        
+	    } catch (NumberFormatException ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            "El número de venta debe ser un valor numérico válido", 
+	            "Formato inválido", JOptionPane.ERROR_MESSAGE);
+	        txtNumeroVenta.requestFocus();
+	    }
 	}
 	
 	protected void do_btnAbrirArchivo_actionPerformed(ActionEvent e) {

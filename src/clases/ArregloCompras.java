@@ -28,9 +28,6 @@ public class ArregloCompras {
         return instancia;
     }
     
-    /**
-     * NUEVO: Obtiene el último número de compra de la BD para continuar la secuencia
-     */
     private void obtenerUltimoNumeroCompra() {
         Connection conn = null;
         Statement stmt = null;
@@ -66,7 +63,7 @@ public class ArregloCompras {
     }
     
     /**
-     * NUEVO: Carga todas las compras desde la BD
+     * MODIFICADO: Ahora usa id_proveedor en lugar de ruc/nombre
      */
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
@@ -77,7 +74,7 @@ public class ArregloCompras {
             conn = ConexionBD.getConexion();
             stmt = conn.createStatement();
             
-            String sql = "SELECT numero_compra, tipo_documento, ruc_proveedor, nombre_proveedor, " +
+            String sql = "SELECT numero_compra, tipo_documento, id_proveedor, " +
                         "sub_total, igv, total, fecha FROM compras ORDER BY numero_compra";
             rs = stmt.executeQuery(sql);
             
@@ -86,17 +83,15 @@ public class ArregloCompras {
             while (rs.next()) {
                 int numeroCompra = rs.getInt("numero_compra");
                 String tipoDocumento = rs.getString("tipo_documento");
-                String rucProveedor = rs.getString("ruc_proveedor");
-                String nombreProveedor = rs.getString("nombre_proveedor");
+                int idProveedor = rs.getInt("id_proveedor");
                 double subTotal = rs.getDouble("sub_total");
                 double igv = rs.getDouble("igv");
                 double total = rs.getDouble("total");
                 String fecha = rs.getString("fecha");
                 
-                Compra compra = new Compra(numeroCompra, tipoDocumento, rucProveedor, nombreProveedor);
+                Compra compra = new Compra(numeroCompra, tipoDocumento, idProveedor);
                 compra.setFecha(fecha);
                 
-                // Cargar detalles de esta compra
                 cargarDetallesCompra(compra);
                 
                 listaCompras.add(compra);
@@ -120,7 +115,7 @@ public class ArregloCompras {
     }
     
     /**
-     * NUEVO: Carga los detalles de una compra específica
+     * MODIFICADO: Sin descripcion_producto (se obtiene por JOIN o lookup)
      */
     private void cargarDetallesCompra(Compra compra) {
         Connection conn = null;
@@ -130,7 +125,7 @@ public class ArregloCompras {
         try {
             conn = ConexionBD.getConexion();
             
-            String sql = "SELECT codigo_producto, descripcion_producto, cantidad, costo_unitario " +
+            String sql = "SELECT codigo_producto, cantidad, costo_unitario " +
                         "FROM detalle_compras WHERE numero_compra = ?";
             
             pstmt = conn.prepareStatement(sql);
@@ -140,12 +135,10 @@ public class ArregloCompras {
             
             while (rs.next()) {
                 int codigoProducto = rs.getInt("codigo_producto");
-                String descripcionProducto = rs.getString("descripcion_producto");
                 int cantidad = rs.getInt("cantidad");
                 double costoUnitario = rs.getDouble("costo_unitario");
                 
-                DetalleCompra detalle = new DetalleCompra(codigoProducto, descripcionProducto, 
-                                                          cantidad, costoUnitario);
+                DetalleCompra detalle = new DetalleCompra(codigoProducto, cantidad, costoUnitario);
                 compra.agregarDetalle(detalle);
             }
             
@@ -162,7 +155,7 @@ public class ArregloCompras {
     }
     
     /**
-     * MODIFICADO: Adicionar ahora guarda en la BD
+     * MODIFICADO: Usa id_proveedor (clave foránea)
      */
     public void Adicionar(Compra c) {
         Connection conn = null;
@@ -170,51 +163,49 @@ public class ArregloCompras {
         
         try {
             conn = ConexionBD.getConexion();
-            conn.setAutoCommit(false); // Iniciar transacción
+            conn.setAutoCommit(false);
             
             // 1. Insertar compra principal
-            String sqlCompra = "INSERT INTO compras (numero_compra, tipo_documento, ruc_proveedor, " +
-                              "nombre_proveedor, sub_total, igv, total, fecha) " +
-                              "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sqlCompra = "INSERT INTO compras (numero_compra, tipo_documento, id_proveedor, " +
+                              "sub_total, igv, total, fecha) " +
+                              "VALUES (?, ?, ?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sqlCompra);
             pstmt.setInt(1, c.getNumeroCompra());
             pstmt.setString(2, c.getTipoDocumento());
-            pstmt.setString(3, c.getRucProveedor());
-            pstmt.setString(4, c.getNombreProveedor());
-            pstmt.setDouble(5, c.getSubTotal());
-            pstmt.setDouble(6, c.getIgv());
-            pstmt.setDouble(7, c.getTotal());
-            pstmt.setString(8, c.getFecha());
+            pstmt.setInt(3, c.getIdProveedor());
+            pstmt.setDouble(4, c.getSubTotal());
+            pstmt.setDouble(5, c.getIgv());
+            pstmt.setDouble(6, c.getTotal());
+            pstmt.setString(7, c.getFecha());
             
             pstmt.executeUpdate();
             pstmt.close();
             
-            // 2. Insertar detalles de la compra
+            // 2. Insertar detalles (sin descripcion_producto)
             String sqlDetalle = "INSERT INTO detalle_compras (numero_compra, codigo_producto, " +
-                               "descripcion_producto, cantidad, costo_unitario, subtotal) " +
-                               "VALUES (?, ?, ?, ?, ?, ?)";
+                               "cantidad, costo_unitario, subtotal) " +
+                               "VALUES (?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sqlDetalle);
             
             for (DetalleCompra detalle : c.getDetalles()) {
                 pstmt.setInt(1, c.getNumeroCompra());
                 pstmt.setInt(2, detalle.getCodigoProducto());
-                pstmt.setString(3, detalle.getDescripcionProducto());
-                pstmt.setInt(4, detalle.getCantidad());
-                pstmt.setDouble(5, detalle.getCostoUnitario());
-                pstmt.setDouble(6, detalle.getSubtotal());
+                pstmt.setInt(3, detalle.getCantidad());
+                pstmt.setDouble(4, detalle.getCostoUnitario());
+                pstmt.setDouble(5, detalle.getSubtotal());
                 pstmt.executeUpdate();
             }
             
-            conn.commit(); // Confirmar transacción
+            conn.commit();
             listaCompras.add(c);
             
             System.out.println("✓ Compra #" + c.getNumeroCompra() + " guardada en la BD");
             
         } catch (SQLException e) {
             try {
-                if (conn != null) conn.rollback(); // Revertir si hay error
+                if (conn != null) conn.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -243,9 +234,6 @@ public class ArregloCompras {
         return null;
     }
     
-    /**
-     * MODIFICADO: Eliminar ahora borra de la BD
-     */
     public void Eliminar(Compra c) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -253,8 +241,7 @@ public class ArregloCompras {
         try {
             conn = ConexionBD.getConexion();
             
-            // Al eliminar la compra, los detalles se eliminan automáticamente 
-            // gracias al ON DELETE CASCADE en la BD
+            // CASCADE elimina automáticamente los detalles
             String sql = "DELETE FROM compras WHERE numero_compra = ?";
             
             pstmt = conn.prepareStatement(sql);
@@ -289,15 +276,26 @@ public class ArregloCompras {
         return contadorCompras++;
     }
     
+    /**
+     * MODIFICADO: Ahora hace JOIN para obtener nombre del proveedor
+     */
     public void Listar(JTable table) {
         DefaultTableModel modelo = (DefaultTableModel) table.getModel();
         modelo.setRowCount(0);
+        
+        ArregloProveedor ap = ArregloProveedor.getInstancia();
+        
         for (Compra c : listaCompras) {
+            // Obtener proveedor por ID
+            Proveedor proveedor = ap.BuscarPorId(c.getIdProveedor());
+            String nombreProveedor = proveedor != null ? proveedor.getNombre() : "Desconocido";
+            String rucProveedor = proveedor != null ? proveedor.getRuc() : "---";
+            
             modelo.addRow(new Object[]{
                 c.getNumeroCompra(),
                 c.getTipoDocumento(),
-                c.getRucProveedor(),
-                c.getNombreProveedor(),
+                rucProveedor,
+                nombreProveedor,
                 c.getFecha(),
                 String.format("S/. %.2f", c.getTotal())
             });

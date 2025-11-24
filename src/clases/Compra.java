@@ -6,26 +6,24 @@ import java.util.ArrayList;
 
 public class Compra {
     private int numeroCompra;
-    private String tipoDocumento; // "Factura", "Boleta", "Nota de Compra"
-    private String rucProveedor;
-    private String nombreProveedor;
+    private String tipoDocumento;
+    private int idProveedor; // ← CAMBIO: era rucProveedor String
+    // ❌ ELIMINADO: nombreProveedor (se obtiene de la tabla proveedores)
     private ArrayList<DetalleCompra> detalles;
     private double subTotal;
     private double igv;
     private double total;
     private String fecha;
     
-    public Compra(int numeroCompra, String tipoDocumento, String rucProveedor, String nombreProveedor) {
+    public Compra(int numeroCompra, String tipoDocumento, int idProveedor) {
         this.numeroCompra = numeroCompra;
         this.tipoDocumento = tipoDocumento;
-        this.rucProveedor = rucProveedor;
-        this.nombreProveedor = nombreProveedor;
+        this.idProveedor = idProveedor;
         this.detalles = new ArrayList<>();
         this.subTotal = 0;
         this.igv = 0;
         this.total = 0;
         
-        // Obtener fecha actual
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         this.fecha = ahora.format(formato);
@@ -62,20 +60,12 @@ public class Compra {
         this.tipoDocumento = tipoDocumento;
     }
     
-    public String getRucProveedor() {
-        return rucProveedor;
+    public int getIdProveedor() {
+        return idProveedor;
     }
     
-    public void setRucProveedor(String rucProveedor) {
-        this.rucProveedor = rucProveedor;
-    }
-    
-    public String getNombreProveedor() {
-        return nombreProveedor;
-    }
-    
-    public void setNombreProveedor(String nombreProveedor) {
-        this.nombreProveedor = nombreProveedor;
+    public void setIdProveedor(int idProveedor) {
+        this.idProveedor = idProveedor;
     }
     
     public ArrayList<DetalleCompra> getDetalles() {

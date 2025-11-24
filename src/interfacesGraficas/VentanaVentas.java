@@ -202,6 +202,32 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		txtRUC.setBounds(10, 477, 147, 20);
 		contentPane.add(txtRUC);
 		
+		// ========== VALIDACIÓN EN TIEMPO REAL ==========
+	    txtRUC.addKeyListener(new java.awt.event.KeyAdapter() {
+	        @Override
+	        public void keyTyped(java.awt.event.KeyEvent evt) {
+	            validarRUCEnTiempoReal(evt);
+	        }
+	    });
+	    
+	    // También añadir validación visual con DocumentListener
+	    txtRUC.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+	        @Override
+	        public void insertUpdate(javax.swing.event.DocumentEvent e) {
+	            validarLongitudRUC();
+	        }
+	        
+	        @Override
+	        public void removeUpdate(javax.swing.event.DocumentEvent e) {
+	            validarLongitudRUC();
+	        }
+	        
+	        @Override
+	        public void changedUpdate(javax.swing.event.DocumentEvent e) {
+	            validarLongitudRUC();
+	        }
+	    });
+		
 		JLabel lblRaznSocial = new JLabel("Razón Social");
 		lblRaznSocial.setFont(new Font("SansSerif", Font.BOLD, 15));
 		lblRaznSocial.setBounds(10, 490, 101, 39);
@@ -361,6 +387,64 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		}
 	}
 
+	private void validarRUCEnTiempoReal(java.awt.event.KeyEvent evt) {
+	    char caracter = evt.getKeyChar();
+	    String textoActual = txtRUC.getText();
+	    
+	    // 1. Solo permitir números
+	    if (!Character.isDigit(caracter) && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+	        evt.consume(); // Bloquear el carácter
+	        
+	        // Mostrar advertencia solo si intentó escribir letra
+	        if (Character.isLetter(caracter)) {
+	            javax.swing.JOptionPane.showMessageDialog(this, 
+	                "⚠️ El RUC solo puede contener números", 
+	                "Carácter inválido", 
+	                javax.swing.JOptionPane.WARNING_MESSAGE);
+	        }
+	        return;
+	    }
+	    
+	    // 2. Bloquear si ya tiene 11 dígitos (excepto backspace)
+	    if (textoActual.length() >= 11 && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
+	        evt.consume(); // Bloquear el carácter
+	        
+	        // Mostrar advertencia con sonido
+	        java.awt.Toolkit.getDefaultToolkit().beep();
+	        
+	        javax.swing.JOptionPane.showMessageDialog(this, 
+	            "⚠️ El RUC debe tener exactamente 11 dígitos.\n\n" +
+	            "Ya has alcanzado el límite.", 
+	            "Máximo 11 dígitos", 
+	            javax.swing.JOptionPane.WARNING_MESSAGE);
+	    }
+	}
+
+	/**
+	 * Validación visual: cambia color según longitud
+	 */
+	private void validarLongitudRUC() {
+	    String texto = txtRUC.getText().trim();
+	    int longitud = texto.length();
+	    
+	    if (longitud == 0) {
+	        // Campo vacío: color normal (blanco)
+	        txtRUC.setBackground(java.awt.Color.WHITE);
+	        
+	    } else if (longitud < 11) {
+	        // Menos de 11: amarillo (incompleto)
+	        txtRUC.setBackground(new java.awt.Color(255, 255, 200)); // Amarillo claro
+	        
+	    } else if (longitud == 11) {
+	        // Exactamente 11: verde (correcto)
+	        txtRUC.setBackground(new java.awt.Color(200, 255, 200)); // Verde claro
+	        
+	    } else {
+	        // Más de 11: rojo (error) - esto no debería pasar con keyTyped
+	        txtRUC.setBackground(new java.awt.Color(255, 200, 200)); // Rojo claro
+	    }
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregar) {
@@ -570,27 +654,27 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 			
 			// Crear objeto Venta para guardar en BD
 			Venta nuevaVenta = new Venta(numero, tipoComprobante, 
-			                             esFactura ? ruc : null, 
-			                             razonSocial, 
-			                             esFactura ? domicilio : null, 
-			                             rutaArchivo);
+                    esFactura ? ruc : null, 
+                    razonSocial, 
+                    esFactura ? domicilio : null, 
+                    rutaArchivo);
 			
 			// Agregar detalles a la venta
 			for (int i = 0; i < modelo.getRowCount(); i++) {
-				int cantidad = Integer.parseInt(modelo.getValueAt(i, 0).toString());
-				String descripcion = modelo.getValueAt(i, 1).toString();
-				String precioStr = modelo.getValueAt(i, 2).toString().replace("S/. ", "");
-				double precioUnitario = Double.parseDouble(precioStr);
-				
-				// Buscar código del producto por descripción
-				Comida producto = ac.BuscarPorDescripcion(descripcion);
-				if (producto != null) {
-					DetalleVenta detalle = new DetalleVenta(producto.getCodigo(), 
-					                                        descripcion, 
-					                                        cantidad, 
-					                                        precioUnitario);
-					nuevaVenta.agregarDetalle(detalle);
-				}
+			    int cantidad = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+			    String descripcion = modelo.getValueAt(i, 1).toString();
+			    String precioStr = modelo.getValueAt(i, 2).toString().replace("S/. ", "");
+			    double precioUnitario = Double.parseDouble(precioStr);
+			    
+			    // Buscar código del producto por descripción
+			    Comida producto = ac.BuscarPorDescripcion(descripcion);
+			    if (producto != null) {
+			        // ⚠️ Constructor actualizado: sin descripción
+			        DetalleVenta detalle = new DetalleVenta(producto.getCodigo(), 
+			                                                cantidad, 
+			                                                precioUnitario);
+			        nuevaVenta.agregarDetalle(detalle);
+			    }
 			}
 			
 			// Guardar venta en la BD
@@ -600,15 +684,14 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 			// ============================================================
 			
 			JOptionPane.showMessageDialog(this, 
-				tipoComprobante + " Nº " + String.format("%06d", numero) + " generada exitosamente!\n\n" +
-				"El archivo se ha guardado en:\n" + 
-				GestorBoletas.obtenerRutaDocumentos() + "\n\n" +
-				"La venta ha sido registrada en la base de datos.", 
-				"¡Venta Realizada!", JOptionPane.INFORMATION_MESSAGE);
-			
-			GestorBoletas.abrirArchivo(rutaArchivo);
-			
-			limpiarVenta();
+				    tipoComprobante + " Nº " + String.format("%06d", numero) + " generada exitosamente!\n\n" +
+				    "El archivo se ha guardado en:\n" + 
+				    GestorBoletas.obtenerRutaDocumentos() + "\n\n" +
+				    "La venta ha sido registrada en la base de datos.", 
+				    "¡Venta Realizada!", JOptionPane.INFORMATION_MESSAGE);
+
+				GestorBoletas.abrirArchivo(rutaArchivo);
+				limpiarVenta();
 			
 		} catch (NumberFormatException ex) {
 			JOptionPane.showMessageDialog(this, "Error al procesar los totales: " + ex.getMessage(), 

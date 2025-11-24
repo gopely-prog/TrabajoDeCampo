@@ -26,9 +26,6 @@ public class ArregloVentas {
         return instancia;
     }
     
-    /**
-     * NUEVO: Carga todas las ventas desde la BD
-     */
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
         Statement stmt = null;
@@ -61,7 +58,6 @@ public class ArregloVentas {
                                        razonSocial, domicilio, rutaArchivo);
                 venta.setFecha(fecha);
                 
-                // Cargar detalles de esta venta
                 cargarDetallesVenta(venta);
                 
                 listaVentas.add(venta);
@@ -85,7 +81,7 @@ public class ArregloVentas {
     }
     
     /**
-     * NUEVO: Carga los detalles de una venta específica
+     * MODIFICADO: Sin descripcion_producto
      */
     private void cargarDetallesVenta(Venta venta) {
         Connection conn = null;
@@ -95,7 +91,7 @@ public class ArregloVentas {
         try {
             conn = ConexionBD.getConexion();
             
-            String sql = "SELECT codigo_producto, descripcion_producto, cantidad, precio_unitario " +
+            String sql = "SELECT codigo_producto, cantidad, precio_unitario " +
                         "FROM detalle_ventas WHERE numero_venta = ?";
             
             pstmt = conn.prepareStatement(sql);
@@ -105,12 +101,10 @@ public class ArregloVentas {
             
             while (rs.next()) {
                 int codigoProducto = rs.getInt("codigo_producto");
-                String descripcionProducto = rs.getString("descripcion_producto");
                 int cantidad = rs.getInt("cantidad");
                 double precioUnitario = rs.getDouble("precio_unitario");
                 
-                DetalleVenta detalle = new DetalleVenta(codigoProducto, descripcionProducto, 
-                                                        cantidad, precioUnitario);
+                DetalleVenta detalle = new DetalleVenta(codigoProducto, cantidad, precioUnitario);
                 venta.agregarDetalle(detalle);
             }
             
@@ -127,7 +121,7 @@ public class ArregloVentas {
     }
     
     /**
-     * Adicionar venta a la BD
+     * MODIFICADO: Sin descripcion_producto en INSERT
      */
     public void Adicionar(Venta v) {
         Connection conn = null;
@@ -135,9 +129,8 @@ public class ArregloVentas {
         
         try {
             conn = ConexionBD.getConexion();
-            conn.setAutoCommit(false); // Iniciar transacción
+            conn.setAutoCommit(false);
             
-            // 1. Insertar venta principal
             String sqlVenta = "INSERT INTO ventas (numero_venta, tipo_documento, ruc_cliente, " +
                              "razon_social, domicilio, sub_total, igv, total, ruta_archivo, fecha) " +
                              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -157,31 +150,29 @@ public class ArregloVentas {
             pstmt.executeUpdate();
             pstmt.close();
             
-            // 2. Insertar detalles de la venta
             String sqlDetalle = "INSERT INTO detalle_ventas (numero_venta, codigo_producto, " +
-                               "descripcion_producto, cantidad, precio_unitario, subtotal) " +
-                               "VALUES (?, ?, ?, ?, ?, ?)";
+                               "cantidad, precio_unitario, subtotal) " +
+                               "VALUES (?, ?, ?, ?, ?)";
             
             pstmt = conn.prepareStatement(sqlDetalle);
             
             for (DetalleVenta detalle : v.getDetalles()) {
                 pstmt.setInt(1, v.getNumeroVenta());
                 pstmt.setInt(2, detalle.getCodigoProducto());
-                pstmt.setString(3, detalle.getDescripcionProducto());
-                pstmt.setInt(4, detalle.getCantidad());
-                pstmt.setDouble(5, detalle.getPrecioUnitario());
-                pstmt.setDouble(6, detalle.getSubtotal());
+                pstmt.setInt(3, detalle.getCantidad());
+                pstmt.setDouble(4, detalle.getPrecioUnitario());
+                pstmt.setDouble(5, detalle.getSubtotal());
                 pstmt.executeUpdate();
             }
             
-            conn.commit(); // Confirmar transacción
+            conn.commit();
             listaVentas.add(v);
             
             System.out.println("✓ Venta #" + v.getNumeroVenta() + " guardada en la BD");
             
         } catch (SQLException e) {
             try {
-                if (conn != null) conn.rollback(); // Revertir si hay error
+                if (conn != null) conn.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -210,9 +201,6 @@ public class ArregloVentas {
         return null;
     }
     
-    /**
-     * Eliminar venta de la BD
-     */
     public void Eliminar(Venta v) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -220,8 +208,6 @@ public class ArregloVentas {
         try {
             conn = ConexionBD.getConexion();
             
-            // Al eliminar la venta, los detalles se eliminan automáticamente 
-            // gracias al ON DELETE CASCADE en la BD
             String sql = "DELETE FROM ventas WHERE numero_venta = ?";
             
             pstmt = conn.prepareStatement(sql);

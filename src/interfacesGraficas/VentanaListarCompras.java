@@ -117,131 +117,140 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 	
 	protected void do_btnVerDetalle_actionPerformed(ActionEvent e) {
 		try {
-			String numeroStr = txtNumeroCompra.getText().trim();
-			
-			if (numeroStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, 
-					"Debe ingresar un número de compra", 
-					"Número vacío", JOptionPane.WARNING_MESSAGE);
-				txtNumeroCompra.requestFocus();
-				return;
-			}
-			
-			int numero = Integer.parseInt(numeroStr);
-			Compra compra = acompras.Buscar(numero);
-			
-			if (compra == null) {
-				JOptionPane.showMessageDialog(this, 
-					"No existe una compra con el número: " + numero, 
-					"Compra no encontrada", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			// Construir mensaje con detalle
-			StringBuilder detalle = new StringBuilder();
-			detalle.append("=== DETALLE DE COMPRA ===\n\n");
-			detalle.append("Número: ").append(compra.getNumeroCompra()).append("\n");
-			detalle.append("Tipo: ").append(compra.getTipoDocumento()).append("\n");
-			detalle.append("RUC Proveedor: ").append(compra.getRucProveedor()).append("\n");
-			detalle.append("Nombre: ").append(compra.getNombreProveedor()).append("\n");
-			detalle.append("Fecha: ").append(compra.getFecha()).append("\n\n");
-			detalle.append("--- PRODUCTOS ---\n");
-			
-			for (DetalleCompra dc : compra.getDetalles()) {
-				detalle.append(String.format("• %s (Código: %d)\n", 
-					dc.getDescripcionProducto(), dc.getCodigoProducto()));
-				detalle.append(String.format("  Cantidad: %d | Costo Unit.: S/. %.2f | Subtotal: S/. %.2f\n\n", 
-					dc.getCantidad(), dc.getCostoUnitario(), dc.getSubtotal()));
-			}
-			
-			detalle.append("--- TOTALES ---\n");
-			detalle.append(String.format("SubTotal: S/. %.2f\n", compra.getSubTotal()));
-			detalle.append(String.format("IGV (18%%): S/. %.2f\n", compra.getIgv()));
-			detalle.append(String.format("TOTAL: S/. %.2f\n", compra.getTotal()));
-			
-			JOptionPane.showMessageDialog(this, detalle.toString(), 
-				"Detalle de Compra", JOptionPane.INFORMATION_MESSAGE);
-			
-		} catch (NumberFormatException ex) {
-			JOptionPane.showMessageDialog(this, 
-				"El número de compra debe ser un valor numérico válido", 
-				"Formato inválido", JOptionPane.ERROR_MESSAGE);
-			txtNumeroCompra.requestFocus();
-		}
+	        String numeroStr = txtNumeroCompra.getText().trim();
+	        
+	        if (numeroStr.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, 
+	                "Debe ingresar un número de compra", 
+	                "Número vacío", JOptionPane.WARNING_MESSAGE);
+	            txtNumeroCompra.requestFocus();
+	            return;
+	        }
+	        
+	        int numero = Integer.parseInt(numeroStr);
+	        Compra compra = acompras.Buscar(numero);
+	        
+	        if (compra == null) {
+	            JOptionPane.showMessageDialog(this, 
+	                "No existe una compra con el número: " + numero, 
+	                "Compra no encontrada", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	        
+	        // ========== MODIFICACIÓN: Obtener proveedor por ID ==========
+	        ArregloProveedor ap = ArregloProveedor.getInstancia();
+	        Proveedor proveedor = ap.BuscarPorId(compra.getIdProveedor());
+	        
+	        String nombreProveedor = proveedor != null ? proveedor.getNombre() : "Desconocido";
+	        String rucProveedor = proveedor != null ? proveedor.getRuc() : "---";
+	        
+	        StringBuilder detalle = new StringBuilder();
+	        detalle.append("=== DETALLE DE COMPRA ===\n\n");
+	        detalle.append("Número: ").append(compra.getNumeroCompra()).append("\n");
+	        detalle.append("Tipo: ").append(compra.getTipoDocumento()).append("\n");
+	        detalle.append("RUC Proveedor: ").append(rucProveedor).append("\n");
+	        detalle.append("Nombre: ").append(nombreProveedor).append("\n");
+	        detalle.append("Fecha: ").append(compra.getFecha()).append("\n\n");
+	        detalle.append("--- PRODUCTOS ---\n");
+	        
+	        // ========== MODIFICACIÓN: Obtener descripción desde ArregloComida ==========
+	        for (DetalleCompra dc : compra.getDetalles()) {
+	            Comida producto = ac.Buscar(dc.getCodigoProducto());
+	            String descripcion = producto != null ? producto.getDescripcion() : "Producto eliminado";
+	            
+	            detalle.append(String.format("• %s (Código: %d)\n", 
+	                descripcion, dc.getCodigoProducto()));
+	            detalle.append(String.format("  Cantidad: %d | Costo Unit.: S/. %.2f | Subtotal: S/. %.2f\n\n", 
+	                dc.getCantidad(), dc.getCostoUnitario(), dc.getSubtotal()));
+	        }
+	        
+	        detalle.append("--- TOTALES ---\n");
+	        detalle.append(String.format("SubTotal: S/. %.2f\n", compra.getSubTotal()));
+	        detalle.append(String.format("IGV (18%%): S/. %.2f\n", compra.getIgv()));
+	        detalle.append(String.format("TOTAL: S/. %.2f\n", compra.getTotal()));
+	        
+	        JOptionPane.showMessageDialog(this, detalle.toString(), 
+	            "Detalle de Compra", JOptionPane.INFORMATION_MESSAGE);
+	        
+	    } catch (NumberFormatException ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            "El número de compra debe ser un valor numérico válido", 
+	            "Formato inválido", JOptionPane.ERROR_MESSAGE);
+	        txtNumeroCompra.requestFocus();
+	    }
 	}
 	
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
 		try {
-			String numeroStr = txtNumeroCompra.getText().trim();
-			
-			if (numeroStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, 
-					"Debe ingresar un número de compra para eliminar", 
-					"Número vacío", JOptionPane.WARNING_MESSAGE);
-				txtNumeroCompra.requestFocus();
-				return;
-			}
-			
-			int numero = Integer.parseInt(numeroStr);
-			Compra compra = acompras.Buscar(numero);
-			
-			if (compra == null) {
-				JOptionPane.showMessageDialog(this, 
-					"No existe una compra con el número: " + numero, 
-					"Compra no encontrada", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			// Confirmar eliminación
-			int respuesta = JOptionPane.showConfirmDialog(this, 
-				"¿Está seguro de eliminar esta compra?\n\n" +
-				"Número: " + compra.getNumeroCompra() + "\n" +
-				"Proveedor: " + compra.getNombreProveedor() + "\n" +
-				"Total: S/. " + String.format("%.2f", compra.getTotal()) + "\n\n" +
-				"ADVERTENCIA: Se restará el stock agregado de los productos.",
-				"Confirmar eliminación", 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.WARNING_MESSAGE);
-			
-			if (respuesta == JOptionPane.YES_OPTION) {
-				// RESTAR EL STOCK DE LOS PRODUCTOS
-				for (DetalleCompra dc : compra.getDetalles()) {
-					Comida producto = ac.Buscar(dc.getCodigoProducto());
-					if (producto != null) {
-						int nuevoStock = producto.getStock() - dc.getCantidad();
-						// Evitar stock negativo
-						if (nuevoStock < 0) {
-							JOptionPane.showMessageDialog(this, 
-								"ADVERTENCIA: El producto '" + producto.getDescripcion() + 
-								"' quedaría con stock negativo.\n" +
-								"Stock actual: " + producto.getStock() + 
-								" | A restar: " + dc.getCantidad() + "\n" +
-								"Se establecerá en 0.", 
-								"Stock negativo detectado", JOptionPane.WARNING_MESSAGE);
-							nuevoStock = 0;
-						}
-						producto.setStock(nuevoStock);
-					}
-				}
-				
-				// Eliminar compra
-				acompras.Eliminar(compra);
-				
-				JOptionPane.showMessageDialog(this, 
-					"Compra eliminada exitosamente\n" +
-					"El stock de los productos ha sido actualizado", 
-					"Éxito", JOptionPane.INFORMATION_MESSAGE);
-				
-				txtNumeroCompra.setText("");
-				mostrarCompras();
-			}
-			
-		} catch (NumberFormatException ex) {
-			JOptionPane.showMessageDialog(this, 
-				"El número de compra debe ser un valor numérico válido", 
-				"Formato inválido", JOptionPane.ERROR_MESSAGE);
-			txtNumeroCompra.requestFocus();
-		}
+	        String numeroStr = txtNumeroCompra.getText().trim();
+	        
+	        if (numeroStr.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, 
+	                "Debe ingresar un número de compra para eliminar", 
+	                "Número vacío", JOptionPane.WARNING_MESSAGE);
+	            txtNumeroCompra.requestFocus();
+	            return;
+	        }
+	        
+	        int numero = Integer.parseInt(numeroStr);
+	        Compra compra = acompras.Buscar(numero);
+	        
+	        if (compra == null) {
+	            JOptionPane.showMessageDialog(this, 
+	                "No existe una compra con el número: " + numero, 
+	                "Compra no encontrada", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	        
+	        // Confirmar eliminación
+	        int respuesta = JOptionPane.showConfirmDialog(this, 
+	            "¿Está seguro de eliminar esta compra?\n\n" +
+	            "Número: " + compra.getNumeroCompra() + "\n" +
+	            "Total: S/. " + String.format("%.2f", compra.getTotal()) + "\n\n" +
+	            "ADVERTENCIA: Se restará el stock agregado de los productos.",
+	            "Confirmar eliminación", 
+	            JOptionPane.YES_NO_OPTION, 
+	            JOptionPane.WARNING_MESSAGE);
+	        
+	        if (respuesta == JOptionPane.YES_OPTION) {
+	            // RESTAR EL STOCK DE LOS PRODUCTOS
+	            for (DetalleCompra dc : compra.getDetalles()) {
+	                Comida producto = ac.Buscar(dc.getCodigoProducto());
+	                if (producto != null) {
+	                    int nuevoStock = producto.getStock() - dc.getCantidad();
+	                    if (nuevoStock < 0) {
+	                        JOptionPane.showMessageDialog(this, 
+	                            "ADVERTENCIA: El producto '" + producto.getDescripcion() + 
+	                            "' quedaría con stock negativo.\n" +
+	                            "Stock actual: " + producto.getStock() + 
+	                            " | A restar: " + dc.getCantidad() + "\n" +
+	                            "Se establecerá en 0.", 
+	                            "Stock negativo detectado", JOptionPane.WARNING_MESSAGE);
+	                        nuevoStock = 0;
+	                    }
+	                    producto.setStock(nuevoStock);
+	                    // ⚠️ CRÍTICO: Actualizar en BD también
+	                    ac.actualizarStock(producto.getCodigo(), nuevoStock);
+	                }
+	            }
+	            
+	            acompras.Eliminar(compra);
+	            
+	            JOptionPane.showMessageDialog(this, 
+	                "Compra eliminada exitosamente\n" +
+	                "El stock de los productos ha sido actualizado", 
+	                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	            
+	            txtNumeroCompra.setText("");
+	            mostrarCompras();
+	        }
+	        
+	    } catch (NumberFormatException ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            "El número de compra debe ser un valor numérico válido", 
+	            "Formato inválido", JOptionPane.ERROR_MESSAGE);
+	        txtNumeroCompra.requestFocus();
+	    }
 	}
 	
 	protected void do_btnListarTodas_actionPerformed(ActionEvent e) {

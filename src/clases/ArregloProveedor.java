@@ -25,7 +25,7 @@ public class ArregloProveedor {
     }
     
     /**
-     * NUEVO: Carga todos los proveedores desde la BD
+     * MODIFICADO: Ahora carga con el campo id
      */
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
@@ -36,16 +36,17 @@ public class ArregloProveedor {
             conn = ConexionBD.getConexion();
             stmt = conn.createStatement();
             
-            String sql = "SELECT ruc, nombre FROM proveedores";
+            String sql = "SELECT id, ruc, nombre FROM proveedores";
             rs = stmt.executeQuery(sql);
             
             listaProveedores.clear();
             
             while (rs.next()) {
+                int id = rs.getInt("id");
                 String ruc = rs.getString("ruc");
                 String nombre = rs.getString("nombre");
                 
-                Proveedor proveedor = new Proveedor(ruc, nombre);
+                Proveedor proveedor = new Proveedor(id, ruc, nombre);
                 listaProveedores.add(proveedor);
             }
             
@@ -67,26 +68,34 @@ public class ArregloProveedor {
     }
     
     /**
-     * MODIFICADO: Adicionar ahora guarda en la BD
+     * MODIFICADO: Ahora captura el ID generado automáticamente
      */
     public void Adicionar(Proveedor p) {
         Connection conn = null;
         PreparedStatement pstmt = null;
+        ResultSet rs = null;
         
         try {
             conn = ConexionBD.getConexion();
             
             String sql = "INSERT INTO proveedores (ruc, nombre) VALUES (?, ?)";
             
-            pstmt = conn.prepareStatement(sql);
+            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, p.getRuc());
             pstmt.setString(2, p.getNombre());
             
             int filasAfectadas = pstmt.executeUpdate();
             
             if (filasAfectadas > 0) {
+                // Obtener el ID generado automáticamente
+                rs = pstmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int idGenerado = rs.getInt(1);
+                    p.setId(idGenerado);
+                }
+                
                 listaProveedores.add(p);
-                System.out.println("✓ Proveedor agregado a la BD: " + p.getNombre());
+                System.out.println("✓ Proveedor agregado a la BD: " + p.getNombre() + " (ID: " + p.getId() + ")");
             }
             
         } catch (SQLException e) {
@@ -96,6 +105,7 @@ public class ArregloProveedor {
             e.printStackTrace();
         } finally {
             try {
+                if (rs != null) rs.close();
                 if (pstmt != null) pstmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -103,6 +113,21 @@ public class ArregloProveedor {
         }
     }
     
+    /**
+     * NUEVO: Buscar proveedor por ID
+     */
+    public Proveedor BuscarPorId(int id) {
+        for (Proveedor p : listaProveedores) {
+            if (p.getId() == id) {
+                return p;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Buscar por RUC (mantener método existente)
+     */
     public Proveedor BuscarPorRuc(String ruc) {
         for (Proveedor p : listaProveedores) {
             if (p.getRuc().equals(ruc)) {

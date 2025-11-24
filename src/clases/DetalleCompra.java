@@ -2,13 +2,12 @@ package clases;
 
 public class DetalleCompra {
     private int codigoProducto;
-    private String descripcionProducto;
+    // ❌ ELIMINADO: descripcionProducto (se obtiene de la tabla productos)
     private int cantidad;
     private double costoUnitario;
     
-    public DetalleCompra(int codigoProducto, String descripcionProducto, int cantidad, double costoUnitario) {
+    public DetalleCompra(int codigoProducto, int cantidad, double costoUnitario) {
         this.codigoProducto = codigoProducto;
-        this.descripcionProducto = descripcionProducto;
         this.cantidad = cantidad;
         this.costoUnitario = costoUnitario;
     }
@@ -19,14 +18,6 @@ public class DetalleCompra {
     
     public void setCodigoProducto(int codigoProducto) {
         this.codigoProducto = codigoProducto;
-    }
-    
-    public String getDescripcionProducto() {
-        return descripcionProducto;
-    }
-    
-    public void setDescripcionProducto(String descripcionProducto) {
-        this.descripcionProducto = descripcionProducto;
     }
     
     public int getCantidad() {
