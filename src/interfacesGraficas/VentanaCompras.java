@@ -8,6 +8,11 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+
 import clases.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
@@ -82,6 +87,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		cboTipoDocumento.addItem("Boleta");
 		cboTipoDocumento.addItem("Nota de Compra");
 		cboTipoDocumento.setBounds(140, 25, 150, 20);
+		cboTipoDocumento.addItemListener(this); // ← LISTENER PARA CAMBIOS
 		panelDatos.add(cboTipoDocumento);
 		
 		JLabel lblRUC = new JLabel("RUC Proveedor:");
@@ -93,6 +99,9 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtRUC.setBounds(140, 55, 150, 20);
 		panelDatos.add(txtRUC);
 		txtRUC.setColumns(10);
+		
+		// ========== FILTRO PARA SOLO NÚMEROS Y MÁXIMO 11 ==========
+		aplicarFiltroRUC();
 		
 		// Listener para autocompletar nombre
 		txtRUC.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -269,6 +278,75 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	ArregloProveedor ap = ArregloProveedor.getInstancia();
 	ArregloCompras acompras = ArregloCompras.getInstancia();
 	
+	private void aplicarFiltroRUC() {
+		AbstractDocument doc = (AbstractDocument) txtRUC.getDocument();
+		doc.setDocumentFilter(new DocumentFilter() {
+			
+			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
+					throws BadLocationException {
+				if (string == null) return;
+				
+				if (string.matches("\\d+")) {
+					if ((fb.getDocument().getLength() + string.length()) <= 11) {
+						super.insertString(fb, offset, string, attr);
+					}
+				}
+			}
+
+			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
+					throws BadLocationException {
+				if (text == null) return;
+
+				if (text.matches("\\d+")) {
+					int newLength = fb.getDocument().getLength() - length + text.length();
+					if (newLength <= 11) {
+						super.replace(fb, offset, length, text, attrs);
+					}
+				}
+			}
+		});
+	}
+
+	private void controlarCamposSegunTipoDocumento() {
+		int tipoSeleccionado = cboTipoDocumento.getSelectedIndex();
+		
+		switch (tipoSeleccionado) {
+			case 0: 
+				txtRUC.setEnabled(true);
+				txtRUC.setBackground(Color.WHITE);
+				
+				txtNombreProveedor.setEnabled(true);
+				txtNombreProveedor.setBackground(Color.WHITE);
+				
+				txtRUC.requestFocus();
+				System.out.println("✓ Factura: RUC y Nombre habilitados");
+				break;
+				
+			case 1: 
+				txtRUC.setEnabled(false);
+				txtRUC.setText("");
+				txtRUC.setBackground(Color.LIGHT_GRAY);
+				
+				txtNombreProveedor.setEnabled(true);
+				txtNombreProveedor.setBackground(Color.WHITE);
+				txtNombreProveedor.requestFocus();
+				break;
+				
+			case 2:
+				txtRUC.setEnabled(false);
+				txtRUC.setText("");
+				txtRUC.setBackground(Color.LIGHT_GRAY);
+				
+				txtNombreProveedor.setEnabled(false);
+				txtNombreProveedor.setText("");
+				txtNombreProveedor.setBackground(Color.LIGHT_GRAY);
+				
+				break;
+				
+			default:
+				break;
+		}
+	}
 	private void cargarProductos() {
 		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
 		for (int i = 0; i < ac.Tamaño(); i++) {
@@ -303,6 +381,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtNombreProveedor.setText("");
 		cboTipoDocumento.setSelectedIndex(0);
 		limpiarCamposProducto();
+		controlarCamposSegunTipoDocumento(); // ← Resetear controles
 	}
 	
 	private void inicializarTotales() {
@@ -322,6 +401,12 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
+		// Control de tipo de documento
+		if (e.getSource() == cboTipoDocumento && e.getStateChange() == ItemEvent.SELECTED) {
+			controlarCamposSegunTipoDocumento();
+		}
+		
+		// Control de productos
 		if (e.getSource() == cboProductos && e.getStateChange() == ItemEvent.SELECTED) {
 			Comida productoSeleccionado = (Comida) cboProductos.getSelectedItem();
 			
@@ -434,7 +519,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		ventana.setVisible(true);
 	}
 	
-		protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
+	protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
 		try {
 			if (table.getRowCount() == 0) {
 				JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
@@ -446,8 +531,9 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 			String ruc = txtRUC.getText().trim();
 			String nombre = txtNombreProveedor.getText().trim();
 			
-			// Validar RUC solo si NO es Nota de Compra
-			if (!tipoDocumento.equals("Nota de Compra")) {
+			// Validación según tipo de documento
+			if (tipoDocumento.equals("Factura")) {
+				// FACTURA: RUC obligatorio
 				if (ruc.isEmpty()) {
 					JOptionPane.showMessageDialog(this, "Debe ingresar el RUC del proveedor", 
 						"RUC requerido", JOptionPane.WARNING_MESSAGE);
@@ -455,30 +541,45 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 					return;
 				}
 				
-				if (ruc.length() != 11 || !ruc.matches("\\d+")) {
+				if (ruc.length() != 11) {
 					JOptionPane.showMessageDialog(this, 
-						"RUC inválido. Debe contener exactamente 11 dígitos numéricos.", 
+						"RUC inválido. Debe contener exactamente 11 dígitos.\n" +
+						"RUC ingresado: " + ruc + " (" + ruc.length() + " dígitos)", 
 						"RUC Inválido", JOptionPane.ERROR_MESSAGE);
 					txtRUC.requestFocus();
 					return;
 				}
-			} else {
-				// Para Nota de Compra, usar código especial
+				
+				if (nombre.isEmpty()) {
+					JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
+						"Nombre requerido", JOptionPane.WARNING_MESSAGE);
+					txtNombreProveedor.requestFocus();
+					return;
+				}
+				
+			} else if (tipoDocumento.equals("Boleta")) {
+				// BOLETA: Solo nombre obligatorio
+				if (nombre.isEmpty()) {
+					JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
+						"Nombre requerido", JOptionPane.WARNING_MESSAGE);
+					txtNombreProveedor.requestFocus();
+					return;
+				}
+				ruc = "999999"; // RUC genérico para boleta
+				
+			} else if (tipoDocumento.equals("Nota de Compra")) {
+				// NOTA DE COMPRA: Datos genéricos
 				ruc = "999999";
+				nombre = "COMPRA INTERNA";
 			}
 			
-			if (nombre.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
-					"Nombre requerido", JOptionPane.WARNING_MESSAGE);
-				txtNombreProveedor.requestFocus();
-				return;
-			}
-			
-			// Guardar o actualizar proveedor
-			Proveedor prov = ap.BuscarPorRuc(ruc);
-			if (prov == null) {
-				prov = new Proveedor(ruc, nombre);
-				ap.Adicionar(prov);
+			// Guardar o actualizar proveedor (solo si tiene RUC real)
+			if (!ruc.equals("999999")) {
+				Proveedor prov = ap.BuscarPorRuc(ruc);
+				if (prov == null) {
+					prov = new Proveedor(ruc, nombre);
+					ap.Adicionar(prov);
+				}
 			}
 			
 			// Crear compra
@@ -497,12 +598,12 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				DetalleCompra detalle = new DetalleCompra(codigoProducto, descripcion, cantidad, costoUnitario);
 				compra.agregarDetalle(detalle);
 				
-				// ACTUALIZAR STOCK DEL PRODUCTO
+				// Actualizar stock
 				Comida producto = ac.Buscar(codigoProducto);
 				if (producto != null) {
 					int nuevoStock = producto.getStock() + cantidad;
 					producto.setStock(nuevoStock);
-					ac.actualizarStock(producto.getCodigo(), nuevoStock); // ← AGREGAR ESTA LÍNEA
+					ac.actualizarStock(producto.getCodigo(), nuevoStock);
 				}
 			}
 			
