@@ -1,12 +1,13 @@
 package interfacesGraficas;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import clases.ArregloComida;
 import clases.Comida;
+import clases.EliminacionSegura;
+
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -265,34 +266,41 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	 */
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
 		// Verificar si hay un producto seleccionado
-		if (productoSeleccionado == null) {
-			JOptionPane.showMessageDialog(this, 
-				"Debe seleccionar un producto de la tabla para eliminar\n\n" +
-				"Haga clic sobre la fila del producto que desea eliminar", 
-				"Ningún producto seleccionado", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		
-		// Confirmar eliminación
-		int respuesta = JOptionPane.showConfirmDialog(this, 
-			"¿Está seguro de eliminar el producto?\n\n" +
-			"Código: " + productoSeleccionado.getCodigo() + "\n" +
-			"Descripción: " + productoSeleccionado.getDescripcion() + "\n" +
-			"Stock actual: " + productoSeleccionado.getStock(),
-			"Confirmar eliminación", 
-			JOptionPane.YES_NO_OPTION, 
-			JOptionPane.WARNING_MESSAGE);
-		
-		if (respuesta == JOptionPane.YES_OPTION) {
-			ac.Eliminar(productoSeleccionado);
-			JOptionPane.showMessageDialog(this, 
-				"Producto eliminado exitosamente", 
-				"Éxito", JOptionPane.INFORMATION_MESSAGE);
-			
-			productoSeleccionado = null; // Limpiar selección
-			mostrarProductos();
-			limpiarFiltros();
-		}
+	    if (productoSeleccionado == null) {
+	        JOptionPane.showMessageDialog(this, 
+	            "Debe seleccionar un producto de la tabla para eliminar\n\n" +
+	            "Haga clic sobre la fila del producto que desea eliminar", 
+	            "Ningún producto seleccionado", JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
+	    
+	    // ========== NUEVO: Mostrar información de uso ANTES de intentar eliminar ==========
+	    String infoUso = EliminacionSegura.obtenerInfoUsoProducto(productoSeleccionado.getCodigo());
+	    
+	    int opcion = JOptionPane.showOptionDialog(this,
+	        infoUso + "\n¿Desea intentar eliminar este producto?",
+	        "Información del Producto",
+	        JOptionPane.YES_NO_CANCEL_OPTION,
+	        JOptionPane.QUESTION_MESSAGE,
+	        null,
+	        new Object[]{"Ver más info", "Eliminar", "Cancelar"},
+	        "Cancelar");
+	    
+	    if (opcion == 1) { // "Eliminar"
+	        // Usar eliminación segura
+	        if (EliminacionSegura.eliminarProductoSeguro(productoSeleccionado.getCodigo())) {
+	            JOptionPane.showMessageDialog(this,
+	                "✅ Producto eliminado exitosamente\n\n" +
+	                "El producto no tenía referencias en compras ni ventas.",
+	                "Éxito",
+	                JOptionPane.INFORMATION_MESSAGE);
+	            
+	            productoSeleccionado = null;
+	            mostrarProductos();
+	            limpiarFiltros();
+	        }
+	        // Si no pudo eliminarse, EliminacionSegura ya mostró el error
+	    }
 	}
 	
 	protected void do_btnListarTodos_actionPerformed(ActionEvent e) {

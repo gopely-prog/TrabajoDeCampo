@@ -193,54 +193,9 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 	        }
 	        
 	        int numero = Integer.parseInt(numeroStr);
-	        Compra compra = acompras.Buscar(numero);
 	        
-	        if (compra == null) {
-	            JOptionPane.showMessageDialog(this, 
-	                "No existe una compra con el número: " + numero, 
-	                "Compra no encontrada", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
-	        
-	        // Confirmar eliminación
-	        int respuesta = JOptionPane.showConfirmDialog(this, 
-	            "¿Está seguro de eliminar esta compra?\n\n" +
-	            "Número: " + compra.getNumeroCompra() + "\n" +
-	            "Total: S/. " + String.format("%.2f", compra.getTotal()) + "\n\n" +
-	            "ADVERTENCIA: Se restará el stock agregado de los productos.",
-	            "Confirmar eliminación", 
-	            JOptionPane.YES_NO_OPTION, 
-	            JOptionPane.WARNING_MESSAGE);
-	        
-	        if (respuesta == JOptionPane.YES_OPTION) {
-	            // RESTAR EL STOCK DE LOS PRODUCTOS
-	            for (DetalleCompra dc : compra.getDetalles()) {
-	                Comida producto = ac.Buscar(dc.getCodigoProducto());
-	                if (producto != null) {
-	                    int nuevoStock = producto.getStock() - dc.getCantidad();
-	                    if (nuevoStock < 0) {
-	                        JOptionPane.showMessageDialog(this, 
-	                            "ADVERTENCIA: El producto '" + producto.getDescripcion() + 
-	                            "' quedaría con stock negativo.\n" +
-	                            "Stock actual: " + producto.getStock() + 
-	                            " | A restar: " + dc.getCantidad() + "\n" +
-	                            "Se establecerá en 0.", 
-	                            "Stock negativo detectado", JOptionPane.WARNING_MESSAGE);
-	                        nuevoStock = 0;
-	                    }
-	                    producto.setStock(nuevoStock);
-	                    // ⚠️ CRÍTICO: Actualizar en BD también
-	                    ac.actualizarStock(producto.getCodigo(), nuevoStock);
-	                }
-	            }
-	            
-	            acompras.Eliminar(compra);
-	            
-	            JOptionPane.showMessageDialog(this, 
-	                "Compra eliminada exitosamente\n" +
-	                "El stock de los productos ha sido actualizado", 
-	                "Éxito", JOptionPane.INFORMATION_MESSAGE);
-	            
+	        // ========== USAR ELIMINACIÓN SEGURA ==========
+	        if (EliminacionSegura.eliminarCompraSegura(numero)) {
 	            txtNumeroCompra.setText("");
 	            mostrarCompras();
 	        }

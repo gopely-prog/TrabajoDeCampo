@@ -236,66 +236,30 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
 		try {
-			String numeroStr = txtNumeroVenta.getText().trim();
-			
-			if (numeroStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, 
-					"Debe ingresar un número de venta para anular", 
-					"Número vacío", JOptionPane.WARNING_MESSAGE);
-				txtNumeroVenta.requestFocus();
-				return;
-			}
-			
-			int numero = Integer.parseInt(numeroStr);
-			Venta venta = av.Buscar(numero);
-			
-			if (venta == null) {
-				JOptionPane.showMessageDialog(this, 
-					"No existe una venta con el número: " + numero, 
-					"Venta no encontrada", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			// Confirmar anulación
-			int respuesta = JOptionPane.showConfirmDialog(this, 
-				"¿Está seguro de ANULAR esta venta?\n\n" +
-				"Número: " + venta.getNumeroVenta() + "\n" +
-				"Cliente: " + venta.getRazonSocial() + "\n" +
-				"Total: S/. " + String.format("%.2f", venta.getTotal()) + "\n\n" +
-				"ADVERTENCIA: Se devolverá el stock a los productos.",
-				"Confirmar anulación", 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.WARNING_MESSAGE);
-			
-			if (respuesta == JOptionPane.YES_OPTION) {
-				// DEVOLVER EL STOCK DE LOS PRODUCTOS
-				for (DetalleVenta dv : venta.getDetalles()) {
-					Comida producto = ac.Buscar(dv.getCodigoProducto());
-					if (producto != null) {
-						int nuevoStock = producto.getStock() + dv.getCantidad();
-						producto.setStock(nuevoStock);
-						ac.actualizarStock(producto.getCodigo(), nuevoStock);
-					}
-				}
-				
-				// Eliminar venta
-				av.Eliminar(venta);
-				
-				JOptionPane.showMessageDialog(this, 
-					"Venta anulada exitosamente\n" +
-					"El stock de los productos ha sido devuelto", 
-					"Éxito", JOptionPane.INFORMATION_MESSAGE);
-				
-				txtNumeroVenta.setText("");
-				mostrarVentas();
-			}
-			
-		} catch (NumberFormatException ex) {
-			JOptionPane.showMessageDialog(this, 
-				"El número de venta debe ser un valor numérico válido", 
-				"Formato inválido", JOptionPane.ERROR_MESSAGE);
-			txtNumeroVenta.requestFocus();
-		}
+	        String numeroStr = txtNumeroVenta.getText().trim();
+	        
+	        if (numeroStr.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, 
+	                "Debe ingresar un número de venta para anular", 
+	                "Número vacío", JOptionPane.WARNING_MESSAGE);
+	            txtNumeroVenta.requestFocus();
+	            return;
+	        }
+	        
+	        int numero = Integer.parseInt(numeroStr);
+	        
+	        // ========== USAR ELIMINACIÓN SEGURA ==========
+	        if (EliminacionSegura.eliminarVentaSegura(numero)) {
+	            txtNumeroVenta.setText("");
+	            mostrarVentas();
+	        }
+	        
+	    } catch (NumberFormatException ex) {
+	        JOptionPane.showMessageDialog(this, 
+	            "El número de venta debe ser un valor numérico válido", 
+	            "Formato inválido", JOptionPane.ERROR_MESSAGE);
+	        txtNumeroVenta.requestFocus();
+	    }
 	}
 	
 	protected void do_btnListarTodas_actionPerformed(ActionEvent e) {

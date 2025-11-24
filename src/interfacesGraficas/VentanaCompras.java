@@ -282,7 +282,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	ArregloProveedor ap = ArregloProveedor.getInstancia();
 	ArregloCompras acompras = ArregloCompras.getInstancia();
 	
-<<<<<<< HEAD
 	private void aplicarFiltroRUC() {
 		AbstractDocument doc = (AbstractDocument) txtRUC.getDocument();
 		doc.setDocumentFilter(new DocumentFilter() {
@@ -352,7 +351,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				break;
 		}
 	}
-=======
+
 	/**
 	 * Configura validación del RUC del proveedor
 	 */
@@ -418,7 +417,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	    }
 	}
 	
->>>>>>> a7cd711 (Tablas relacionadas en la BD, llaves foráneas agregadas)
 	private void cargarProductos() {
 		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
 		for (int i = 0; i < ac.Tamaño(); i++) {
@@ -591,114 +589,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		ventana.setVisible(true);
 	}
 	
-<<<<<<< HEAD
 	protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
-		try {
-			if (table.getRowCount() == 0) {
-				JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
-					"Compra vacía", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			
-			String tipoDocumento = (String) cboTipoDocumento.getSelectedItem();
-			String ruc = txtRUC.getText().trim();
-			String nombre = txtNombreProveedor.getText().trim();
-			
-			// Validación según tipo de documento
-			if (tipoDocumento.equals("Factura")) {
-				// FACTURA: RUC obligatorio
-				if (ruc.isEmpty()) {
-					JOptionPane.showMessageDialog(this, "Debe ingresar el RUC del proveedor", 
-						"RUC requerido", JOptionPane.WARNING_MESSAGE);
-					txtRUC.requestFocus();
-					return;
-				}
-				
-				if (ruc.length() != 11) {
-					JOptionPane.showMessageDialog(this, 
-						"RUC inválido. Debe contener exactamente 11 dígitos.\n" +
-						"RUC ingresado: " + ruc + " (" + ruc.length() + " dígitos)", 
-						"RUC Inválido", JOptionPane.ERROR_MESSAGE);
-					txtRUC.requestFocus();
-					return;
-				}
-				
-				if (nombre.isEmpty()) {
-					JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
-						"Nombre requerido", JOptionPane.WARNING_MESSAGE);
-					txtNombreProveedor.requestFocus();
-					return;
-				}
-				
-			} else if (tipoDocumento.equals("Boleta")) {
-				// BOLETA: Solo nombre obligatorio
-				if (nombre.isEmpty()) {
-					JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
-						"Nombre requerido", JOptionPane.WARNING_MESSAGE);
-					txtNombreProveedor.requestFocus();
-					return;
-				}
-				ruc = "999999"; // RUC genérico para boleta
-				
-			} else if (tipoDocumento.equals("Nota de Compra")) {
-				// NOTA DE COMPRA: Datos genéricos
-				ruc = "999999";
-				nombre = "COMPRA INTERNA";
-			}
-			
-			// Guardar o actualizar proveedor (solo si tiene RUC real)
-			if (!ruc.equals("999999")) {
-				Proveedor prov = ap.BuscarPorRuc(ruc);
-				if (prov == null) {
-					prov = new Proveedor(ruc, nombre);
-					ap.Adicionar(prov);
-				}
-			}
-			
-			// Crear compra
-			int numeroCompra = acompras.obtenerSiguienteNumero();
-			Compra compra = new Compra(numeroCompra, tipoDocumento, ruc, nombre);
-			
-			// Agregar detalles y actualizar stock
-			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-			for (int i = 0; i < modelo.getRowCount(); i++) {
-				int codigoProducto = Integer.parseInt(modelo.getValueAt(i, 0).toString());
-				String descripcion = modelo.getValueAt(i, 1).toString();
-				int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
-				String costoStr = modelo.getValueAt(i, 3).toString().replace("S/. ", "");
-				double costoUnitario = Double.parseDouble(costoStr);
-				
-				DetalleCompra detalle = new DetalleCompra(codigoProducto, descripcion, cantidad, costoUnitario);
-				compra.agregarDetalle(detalle);
-				
-				// Actualizar stock
-				Comida producto = ac.Buscar(codigoProducto);
-				if (producto != null) {
-					int nuevoStock = producto.getStock() + cantidad;
-					producto.setStock(nuevoStock);
-					ac.actualizarStock(producto.getCodigo(), nuevoStock);
-				}
-			}
-			
-			acompras.Adicionar(compra);
-			
-			JOptionPane.showMessageDialog(this, 
-				"¡Compra realizada exitosamente!\n\n" +
-				"Tipo: " + tipoDocumento + "\n" +
-				"Número: " + String.format("%06d", numeroCompra) + "\n" +
-				"Proveedor: " + nombre + "\n" +
-				"Total: S/. " + String.format("%.2f", compra.getTotal()), 
-				"Compra Registrada", JOptionPane.INFORMATION_MESSAGE);
-			
-			limpiarCompra();
-			
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), 
-				"Error", JOptionPane.ERROR_MESSAGE);
-			ex.printStackTrace();
-		}
-=======
-		protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
 			try {
 		        if (table.getRowCount() == 0) {
 		            JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
@@ -787,6 +678,5 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		            "Error", JOptionPane.ERROR_MESSAGE);
 		        ex.printStackTrace();
 		    }
->>>>>>> a7cd711 (Tablas relacionadas en la BD, llaves foráneas agregadas)
 	}
 }
