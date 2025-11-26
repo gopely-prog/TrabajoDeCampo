@@ -32,7 +32,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField txtRUC;
+	private JTextField txtRUC1;
 	private JTextField txtNombreProveedor;
 	private JTextField txtSubTotal;
 	private JTextField txtIGV;
@@ -95,12 +95,10 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		lblRUC.setBounds(10, 55, 120, 20);
 		panelDatos.add(lblRUC);
 		
-		txtRUC = new JTextField();
-		txtRUC.setBounds(140, 55, 150, 20);
-		panelDatos.add(txtRUC);
-		txtRUC.setColumns(10);
-		txtRUC.setToolTipText("RUC del proveedor (11 dígitos)");
-		
+		txtRUC1 = new JTextField();
+		txtRUC1.setBounds(140, 55, 150, 20);
+		panelDatos.add(txtRUC1);
+		txtRUC1.setColumns(10);		
 		// ========== VALIDACIÓN RUC PROVEEDOR ==========
 	    configurarValidacionRUCProveedor();
 		
@@ -108,7 +106,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		aplicarFiltroRUC();
 		
 		// Listener para autocompletar nombre
-		txtRUC.addFocusListener(new java.awt.event.FocusAdapter() {
+		txtRUC1.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(java.awt.event.FocusEvent evt) {
 				autocompletarProveedor();
 			}
@@ -283,7 +281,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	ArregloCompras acompras = ArregloCompras.getInstancia();
 	
 	private void aplicarFiltroRUC() {
-		AbstractDocument doc = (AbstractDocument) txtRUC.getDocument();
+		AbstractDocument doc = (AbstractDocument) txtRUC1.getDocument();
 		doc.setDocumentFilter(new DocumentFilter() {
 			
 			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
@@ -301,7 +299,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 					throws BadLocationException {
 				if (text == null) return;
 
-				if (text.matches("\\d+")) {
+				if (text.isEmpty()||text.matches("\\d+")) {
 					int newLength = fb.getDocument().getLength() - length + text.length();
 					if (newLength <= 11) {
 						super.replace(fb, offset, length, text, attrs);
@@ -316,20 +314,20 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		
 		switch (tipoSeleccionado) {
 			case 0: 
-				txtRUC.setEnabled(true);
-				txtRUC.setBackground(Color.WHITE);
+				txtRUC1.setEnabled(true);
+				txtRUC1.setBackground(Color.WHITE);
 				
 				txtNombreProveedor.setEnabled(true);
 				txtNombreProveedor.setBackground(Color.WHITE);
 				
-				txtRUC.requestFocus();
+				txtRUC1.requestFocus();
 				System.out.println("✓ Factura: RUC y Nombre habilitados");
 				break;
 				
 			case 1: 
-				txtRUC.setEnabled(false);
-				txtRUC.setText("");
-				txtRUC.setBackground(Color.LIGHT_GRAY);
+				txtRUC1.setEnabled(false);
+				txtRUC1.setText("");
+				txtRUC1.setBackground(Color.LIGHT_GRAY);
 				
 				txtNombreProveedor.setEnabled(true);
 				txtNombreProveedor.setBackground(Color.WHITE);
@@ -337,13 +335,12 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				break;
 				
 			case 2:
-				txtRUC.setEnabled(false);
-				txtRUC.setText("");
-				txtRUC.setBackground(Color.LIGHT_GRAY);
+				txtRUC1.setEnabled(false);
+				txtRUC1.setText("");
+				txtRUC1.setBackground(Color.LIGHT_GRAY);
 				
-				txtNombreProveedor.setEnabled(false);
+				txtNombreProveedor.setEnabled(true);
 				txtNombreProveedor.setText("");
-				txtNombreProveedor.setBackground(Color.LIGHT_GRAY);
 				
 				break;
 				
@@ -356,11 +353,11 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	 * Configura validación del RUC del proveedor
 	 */
 	private void configurarValidacionRUCProveedor() {
-	    txtRUC.addKeyListener(new java.awt.event.KeyAdapter() {
+	    txtRUC1.addKeyListener(new java.awt.event.KeyAdapter() {
 	        @Override
 	        public void keyTyped(java.awt.event.KeyEvent evt) {
 	            char caracter = evt.getKeyChar();
-	            String textoActual = txtRUC.getText();
+	            String textoActual = txtRUC1.getText();
 	            
 	            // Solo números
 	            if (!Character.isDigit(caracter) && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
@@ -389,33 +386,9 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	            }
 	        }
 	        
-	        @Override
-	        public void keyReleased(java.awt.event.KeyEvent evt) {
-	            actualizarFeedbackRUCProveedor();
-	        }
 	    });
 	}
 
-	/**
-	 * Feedback visual para RUC de proveedor
-	 */
-	private void actualizarFeedbackRUCProveedor() {
-	    String texto = txtRUC.getText().trim();
-	    int longitud = texto.length();
-	    
-	    if (longitud == 0) {
-	        txtRUC.setBackground(java.awt.Color.WHITE);
-	        txtRUC.setToolTipText("Ingrese RUC del proveedor");
-	        
-	    } else if (longitud < 11) {
-	        txtRUC.setBackground(new java.awt.Color(255, 255, 200));
-	        txtRUC.setToolTipText(String.format("Faltan %d dígitos", 11 - longitud));
-	        
-	    } else if (longitud == 11) {
-	        txtRUC.setBackground(new java.awt.Color(200, 255, 200));
-	        txtRUC.setToolTipText("✓ RUC válido");
-	    }
-	}
 	
 	private void cargarProductos() {
 		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
@@ -425,7 +398,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	}
 	
 	private void autocompletarProveedor() {
-		String ruc = txtRUC.getText().trim();
+		String ruc = txtRUC1.getText().trim();
 		if (!ruc.isEmpty()) {
 			Proveedor prov = ap.BuscarPorRuc(ruc);
 			if (prov != null) {
@@ -443,15 +416,29 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	}
 	
 	private void limpiarCompra() {
-		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-		modelo.setRowCount(0);
-		subTotalGlobal = 0;
-		inicializarTotales();
-		txtRUC.setText("");
-		txtNombreProveedor.setText("");
-		cboTipoDocumento.setSelectedIndex(0);
-		limpiarCamposProducto();
-		controlarCamposSegunTipoDocumento(); // ← Resetear controles
+		// Limpiar tabla
+	    DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+	    modelo.setRowCount(0);
+	    
+	    // Resetear totales
+	    subTotalGlobal = 0;
+	    inicializarTotales();
+	    
+	    // ✅ LIMPIAR CAMPOS DE PROVEEDOR
+	    txtRUC1.setText("");
+	    txtRUC1.setBackground(Color.WHITE);  // ← Restaurar color
+	    txtRUC1.setToolTipText("Ingrese RUC del proveedor");
+	    
+	    txtNombreProveedor.setText("");
+	    
+	    // Resetear tipo de documento
+	    cboTipoDocumento.setSelectedIndex(0);
+	    
+	    // Limpiar campos de producto
+	    limpiarCamposProducto();
+	    
+	    // ✅ IMPORTANTE: Aplicar controles según tipo de documento
+	    controlarCamposSegunTipoDocumento();
 	}
 	
 	private void inicializarTotales() {
@@ -598,7 +585,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		        }
 		        
 		        String tipoDocumento = (String) cboTipoDocumento.getSelectedItem();
-		        String ruc = txtRUC.getText().trim();
+		        String ruc = txtRUC1.getText().trim();
 		        String nombre = txtNombreProveedor.getText().trim();
 		        
 		        // Validar RUC solo si NO es Nota de Compra
@@ -606,7 +593,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		            if (ruc.isEmpty()) {
 		                JOptionPane.showMessageDialog(this, "Debe ingresar el RUC del proveedor", 
 		                    "RUC requerido", JOptionPane.WARNING_MESSAGE);
-		                txtRUC.requestFocus();
+		                txtRUC1.requestFocus();
 		                return;
 		            }
 		            
@@ -614,7 +601,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		                JOptionPane.showMessageDialog(this, 
 		                    "RUC inválido. Debe contener exactamente 11 dígitos numéricos.", 
 		                    "RUC Inválido", JOptionPane.ERROR_MESSAGE);
-		                txtRUC.requestFocus();
+		                txtRUC1.requestFocus();
 		                return;
 		            }
 		        } else {
