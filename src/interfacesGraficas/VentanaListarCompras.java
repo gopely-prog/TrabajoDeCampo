@@ -30,7 +30,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 	private JLabel lblBuscarPorNumero;
 	private JButton btnListarTodas;
 	private JButton btnSalir;
-	private JLabel lblCompraSeleccionada;
 	
 	// Variable para almacenar la compra seleccionada
 	private Compra compraSeleccionada = null;
@@ -62,14 +61,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 				filtrarCompras();
 			}
 		});
-		
-		// ========== ETIQUETA DE COMPRA SELECCIONADA ==========
-		lblCompraSeleccionada = new JLabel("Ninguna compra seleccionada");
-		lblCompraSeleccionada.setFont(new Font("Arial", Font.BOLD, 12));
-		lblCompraSeleccionada.setForeground(new Color(100, 100, 100));
-		lblCompraSeleccionada.setHorizontalAlignment(SwingConstants.LEFT);
-		lblCompraSeleccionada.setBounds(20, 50, 800, 20);
-		contentPane.add(lblCompraSeleccionada);
 		
 		// Tabla de compras
 		scrollPane = new JScrollPane();
@@ -144,11 +135,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 				ArregloProveedor ap = ArregloProveedor.getInstancia();
 				Proveedor proveedor = ap.BuscarPorId(compraSeleccionada.getIdProveedor());
 				String nombreProveedor = proveedor != null ? proveedor.getNombre() : "Desconocido";
-				
-				lblCompraSeleccionada.setText("✓ Compra seleccionada: #" + numeroCompra + 
-					" | " + nombreProveedor + " | Total: S/. " + 
-					String.format("%.2f", compraSeleccionada.getTotal()));
-				lblCompraSeleccionada.setForeground(new Color(0, 100, 0));
 				
 				// Resaltar visualmente
 				table.setSelectionBackground(new Color(144, 238, 144));
@@ -270,8 +256,7 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		// Usar eliminación segura
 		if (EliminacionSegura.eliminarCompraSegura(compraSeleccionada.getNumeroCompra())) {
 			compraSeleccionada = null;
-			lblCompraSeleccionada.setText("Ninguna compra seleccionada");
-			lblCompraSeleccionada.setForeground(new Color(100, 100, 100));
+
 			txtNumeroCompra.setText("");
 			mostrarCompras();
 		}
@@ -280,8 +265,7 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 	protected void do_btnListarTodas_actionPerformed(ActionEvent e) {
 		txtNumeroCompra.setText("");
 		compraSeleccionada = null;
-		lblCompraSeleccionada.setText("Ninguna compra seleccionada");
-		lblCompraSeleccionada.setForeground(new Color(100, 100, 100));
+
 		mostrarCompras();
 		JOptionPane.showMessageDialog(this, 
 			"Mostrando todas las compras (" + acompras.Tamaño() + ")", 

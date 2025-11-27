@@ -31,7 +31,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	private JLabel lblBuscarPorNumero;
 	private JButton btnListarTodas;
 	private JButton btnSalir;
-	private JLabel lblVentaSeleccionada;
 	
 	// Variable para almacenar la venta seleccionada
 	private Venta ventaSeleccionada = null;
@@ -63,14 +62,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 				filtrarVentas();
 			}
 		});
-		
-		// ========== ETIQUETA DE VENTA SELECCIONADA ==========
-		lblVentaSeleccionada = new JLabel("Ninguna venta seleccionada");
-		lblVentaSeleccionada.setFont(new Font("Arial", Font.BOLD, 12));
-		lblVentaSeleccionada.setForeground(new Color(100, 100, 100));
-		lblVentaSeleccionada.setHorizontalAlignment(SwingConstants.LEFT);
-		lblVentaSeleccionada.setBounds(20, 50, 850, 20);
-		contentPane.add(lblVentaSeleccionada);
 		
 		// Tabla de ventas
 		scrollPane = new JScrollPane();
@@ -150,12 +141,7 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 				// Actualizar etiqueta de selección
 				String tipoDoc = ventaSeleccionada.getTipoDocumento();
 				String cliente = ventaSeleccionada.getRazonSocial();
-				
-				lblVentaSeleccionada.setText("✓ Venta seleccionada: #" + numeroVenta + 
-					" | " + tipoDoc + " | " + cliente + " | Total: S/. " + 
-					String.format("%.2f", ventaSeleccionada.getTotal()));
-				lblVentaSeleccionada.setForeground(new Color(0, 100, 0));
-				
+	
 				// Resaltar visualmente
 				table.setSelectionBackground(new Color(144, 238, 144));
 				
@@ -299,8 +285,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 		// Usar eliminación segura
 		if (EliminacionSegura.eliminarVentaSegura(ventaSeleccionada.getNumeroVenta())) {
 			ventaSeleccionada = null;
-			lblVentaSeleccionada.setText("Ninguna venta seleccionada");
-			lblVentaSeleccionada.setForeground(new Color(100, 100, 100));
 			txtNumeroVenta.setText("");
 			mostrarVentas();
 		}
@@ -309,8 +293,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	protected void do_btnListarTodas_actionPerformed(ActionEvent e) {
 		txtNumeroVenta.setText("");
 		ventaSeleccionada = null;
-		lblVentaSeleccionada.setText("Ninguna venta seleccionada");
-		lblVentaSeleccionada.setForeground(new Color(100, 100, 100));
 		mostrarVentas();
 		JOptionPane.showMessageDialog(this, 
 			"Mostrando todas las ventas (" + av.Tamaño() + ")", 
