@@ -4,24 +4,21 @@ public class Comida {
 	private int cantidad, codigo, stock;
 	private String descripcion;
 	private double pUnitario;
-	private double costoUnitario; // NUEVO ATRIBUTO
+	private double costoUnitario; 
 	
-	// Constructor para cálculos
-	public Comida(int cantidad, double pUnitario) {
+	public Comida(int cantidad, double pUnitario) { //cálculos rápidos
 		this.cantidad = cantidad;
 		this.pUnitario = pUnitario;
 	}
 	
-	// Constructor completo con todos los parámetros (SIN STOCK - inicia en 0)
 	public Comida(int codigo, String descripcion, double pUnitario, double costoUnitario) {
 		this.codigo = codigo;
 		this.descripcion = descripcion;
 		this.pUnitario = pUnitario;
 		this.costoUnitario = costoUnitario;
-		this.stock = 0; // SIEMPRE INICIA EN 0
+		this.stock = 0; 
 	}
 	
-	// Getters And Setters
 	public String getDescripcion() {
 		return descripcion;
 	}
@@ -61,7 +58,6 @@ public class Comida {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-	// Getter y Setter para Costo Unitario
 	public double getCostoUnitario() {
 		return costoUnitario;
 	}
@@ -69,20 +65,16 @@ public class Comida {
 	public void setCostoUnitario(double costoUnitario) {
 		this.costoUnitario = costoUnitario;
 	}
-	//Método para calcular porcentaje de ganancia
 	public double calcularPorcentajeGanancia() {
 		if (costoUnitario == 0) {
 			return 0;
 		}
 		return ((pUnitario - costoUnitario) / costoUnitario) * 100;
 	}
-
-	// Total de la compra con impuestos
 	public double Total(int cantidad, double pUnitario, double IGV) {
 		return cantidad * pUnitario * IGV;
 	}
-	// Método toString para mostrar en el ComboBox
-	public String toString() {
+	public String toString() { //se va a utilizar para el cboBox
 		return descripcion;
 	}
 }

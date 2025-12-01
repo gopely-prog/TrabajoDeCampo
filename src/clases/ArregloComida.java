@@ -11,24 +11,21 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ArregloComida {
-    private static ArregloComida instancia;
+    private static ArregloComida instancia; //Es el único arreglo que existirá (Singleton)
     ArrayList<Comida> ListaComida;
     
-    private ArregloComida() {
+    private ArregloComida() {//Privado para que no puedan otras clases hacer "new"
         ListaComida = new ArrayList<Comida>();
         cargarDesdeBaseDeDatos(); // Cargar productos al iniciar
     }
     
-    public static ArregloComida getInstancia() {
+    public static ArregloComida getInstancia() {//Este método es el que permite usar esta clase desde otras partes del código
         if (instancia == null) {
             instancia = new ArregloComida();
         }
         return instancia;
     }
     
-    /**
-     * NUEVO: Carga todos los productos desde la base de datos
-     */
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
         Statement stmt = null;
@@ -41,10 +38,8 @@ public class ArregloComida {
             String sql = "SELECT codigo, descripcion, precio_unitario, costo_unitario, stock FROM productos";
             rs = stmt.executeQuery(sql);
             
-            // Limpiar lista actual
             ListaComida.clear();
             
-            // Cargar cada producto
             while (rs.next()) {
                 int codigo = rs.getInt("codigo");
                 String descripcion = rs.getString("descripcion");
@@ -52,13 +47,10 @@ public class ArregloComida {
                 double costoUnitario = rs.getDouble("costo_unitario");
                 int stock = rs.getInt("stock");
                 
-                // Crear objeto Comida y agregarlo a la lista
                 Comida producto = new Comida(codigo, descripcion, precioUnitario, costoUnitario);
                 producto.setStock(stock);
                 ListaComida.add(producto);
             }
-            
-            System.out.println("✓ Se cargaron " + ListaComida.size() + " productos desde la BD");
             
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, 
@@ -75,9 +67,6 @@ public class ArregloComida {
         }
     }
     
-    /**
-     * MODIFICADO: Adicionar ahora guarda en la BD
-     */
     public void Adicionar(Comida x) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -99,7 +88,6 @@ public class ArregloComida {
             
             if (filasAfectadas > 0) {
                 ListaComida.add(x);
-                System.out.println("✓ Producto agregado a la BD: " + x.getDescripcion());
             }
             
         } catch (SQLException e) {
@@ -131,10 +119,7 @@ public class ArregloComida {
         }
         return null;
     }
-    
-    /**
-     * MODIFICADO: Eliminar ahora borra de la BD
-     */
+
     public void Eliminar(Comida x){
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -151,7 +136,6 @@ public class ArregloComida {
             
             if (filasAfectadas > 0) {
                 ListaComida.remove(x);
-                System.out.println("✓ Producto eliminado de la BD: " + x.getDescripcion());
             }
             
         } catch (SQLException e) {
@@ -187,9 +171,6 @@ public class ArregloComida {
         }
     }
     
-    /**
-     * MODIFICADO: Modificar ahora actualiza en la BD
-     */
     public boolean Modificar(int codigo, String descripcion, double PUnit, double costoUnit) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -212,11 +193,9 @@ public class ArregloComida {
             int filasAfectadas = pstmt.executeUpdate();
             
             if (filasAfectadas > 0) {
-                // Actualizar también en memoria
                 enc.setDescripcion(descripcion);
                 enc.setpUnitario(PUnit);
                 enc.setCostoUnitario(costoUnit);
-                System.out.println("✓ Producto modificado en la BD: " + descripcion);
                 return true;
             }
             
@@ -236,9 +215,6 @@ public class ArregloComida {
         return false;
     }
     
-    /**
-     * NUEVO: Actualizar solo el stock en la BD
-     */
     public void actualizarStock(int codigo, int nuevoStock) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -259,7 +235,6 @@ public class ArregloComida {
                 if (producto != null) {
                     producto.setStock(nuevoStock);
                 }
-                System.out.println("✓ Stock actualizado en BD - Código: " + codigo + " | Nuevo stock: " + nuevoStock);
             }
             
         } catch (SQLException e) {

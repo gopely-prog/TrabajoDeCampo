@@ -10,8 +10,8 @@ import java.util.ArrayList;
 public class GestorBoletas {
     // Información de la tienda
     private static final String NOMBRE_TIENDA = "POLLERIA EXCELENCIA";
-    private static final String DIRECCION_TIENDA = "Av. Principal 123, Lima - Perú";
-    private static final String TELEFONO_TIENDA = "+51 999 888 777";
+    private static final String DIRECCION_TIENDA = "Yanacoto, Lurigancho - Chosica Perú";
+    private static final String TELEFONO_TIENDA = "+51 977 783 829";
     private static final String SUNAT_URL = "WWW.SUNAT.GOB.PE";
     
     // Ruta donde se guardarán los archivos

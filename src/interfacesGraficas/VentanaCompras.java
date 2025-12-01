@@ -313,35 +313,33 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		int tipoSeleccionado = cboTipoDocumento.getSelectedIndex();
 		
 		switch (tipoSeleccionado) {
-			case 0: 
+			case 0: // FACTURA
 				txtRUC1.setEnabled(true);
 				txtRUC1.setBackground(Color.WHITE);
-				
 				txtNombreProveedor.setEnabled(true);
 				txtNombreProveedor.setBackground(Color.WHITE);
-				
 				txtRUC1.requestFocus();
-				System.out.println("✓ Factura: RUC y Nombre habilitados");
 				break;
 				
-			case 1: 
+			case 1: // BOLETA
 				txtRUC1.setEnabled(false);
 				txtRUC1.setText("");
 				txtRUC1.setBackground(Color.LIGHT_GRAY);
 				
-				txtNombreProveedor.setEnabled(true);
+				txtNombreProveedor.setEnabled(true); // En Boleta SI pedimos nombre
 				txtNombreProveedor.setBackground(Color.WHITE);
 				txtNombreProveedor.requestFocus();
 				break;
 				
-			case 2:
+			case 2: // NOTA DE COMPRA
 				txtRUC1.setEnabled(false);
 				txtRUC1.setText("");
 				txtRUC1.setBackground(Color.LIGHT_GRAY);
 				
-				txtNombreProveedor.setEnabled(true);
+				// AQUI EL CAMBIO: Deshabilitamos también el nombre para Nota de Compra
+				txtNombreProveedor.setEnabled(false); 
 				txtNombreProveedor.setText("");
-				
+				txtNombreProveedor.setBackground(Color.LIGHT_GRAY);
 				break;
 				
 			default:
@@ -577,93 +575,122 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	}
 	
 	protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
-			try {
-		        if (table.getRowCount() == 0) {
-		            JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
-		                "Compra vacía", JOptionPane.WARNING_MESSAGE);
-		            return;
-		        }
-		        
-		        String tipoDocumento = (String) cboTipoDocumento.getSelectedItem();
-		        String ruc = txtRUC1.getText().trim();
-		        String nombre = txtNombreProveedor.getText().trim();
-		        
-		        // Validar RUC solo si NO es Nota de Compra
-		        if (!tipoDocumento.equals("Nota de Compra")) {
-		            if (ruc.isEmpty()) {
-		                JOptionPane.showMessageDialog(this, "Debe ingresar el RUC del proveedor", 
-		                    "RUC requerido", JOptionPane.WARNING_MESSAGE);
-		                txtRUC1.requestFocus();
-		                return;
-		            }
-		            
-		            if (ruc.length() != 11 || !ruc.matches("\\d+")) {
-		                JOptionPane.showMessageDialog(this, 
-		                    "RUC inválido. Debe contener exactamente 11 dígitos numéricos.", 
-		                    "RUC Inválido", JOptionPane.ERROR_MESSAGE);
-		                txtRUC1.requestFocus();
-		                return;
-		            }
-		        } else {
-		            ruc = "99999999999"; // RUC especial para Nota de Compra
-		        }
-		        
-		        if (nombre.isEmpty()) {
-		            JOptionPane.showMessageDialog(this, "Debe ingresar el nombre del proveedor", 
-		                "Nombre requerido", JOptionPane.WARNING_MESSAGE);
-		            txtNombreProveedor.requestFocus();
-		            return;
-		        }
-		        
-		        // ========== MODIFICACIÓN PRINCIPAL ==========
-		        // Buscar o crear proveedor y OBTENER SU ID
-		        Proveedor prov = ap.BuscarPorRuc(ruc);
-		        if (prov == null) {
-		            prov = new Proveedor(ruc, nombre);
-		            ap.Adicionar(prov); // Esto asigna el ID automáticamente
-		        }
-		        
-		        // ⚠️ CAMBIO CLAVE: Usar ID del proveedor en lugar de RUC/nombre
-		        int numeroCompra = acompras.obtenerSiguienteNumero();
-		        Compra compra = new Compra(numeroCompra, tipoDocumento, prov.getId());
-		        
-		        // Agregar detalles SIN descripción (solo código)
-		        DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-		        for (int i = 0; i < modelo.getRowCount(); i++) {
-		            int codigoProducto = Integer.parseInt(modelo.getValueAt(i, 0).toString());
-		            int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
-		            String costoStr = modelo.getValueAt(i, 3).toString().replace("S/. ", "");
-		            double costoUnitario = Double.parseDouble(costoStr);
-		            
-		            // ⚠️ Constructor actualizado: sin descripción
-		            DetalleCompra detalle = new DetalleCompra(codigoProducto, cantidad, costoUnitario);
-		            compra.agregarDetalle(detalle);
-		            
-		            // Actualizar stock
-		            Comida producto = ac.Buscar(codigoProducto);
-		            if (producto != null) {
-		                int nuevoStock = producto.getStock() + cantidad;
-		                producto.setStock(nuevoStock);
-		                ac.actualizarStock(producto.getCodigo(), nuevoStock);
-		            }
-		        }
-		        
-		        acompras.Adicionar(compra);
-		        
-		        JOptionPane.showMessageDialog(this, 
-		            "¡Compra realizada exitosamente!\n\n" +
-		            "Tipo: " + tipoDocumento + "\n" +
-		            "Número: " + String.format("%06d", numeroCompra) + "\n" +
-		            "Proveedor: " + nombre + "\n" +
-		            "Total: S/. " + String.format("%.2f", compra.getTotal()), 
-		            "Compra Registrada", JOptionPane.INFORMATION_MESSAGE);
-		        
-		        limpiarCompra();
-		        
-		    } catch (Exception ex) {
-		        JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), 
-		            "Error", JOptionPane.ERROR_MESSAGE);
-		        ex.printStackTrace();
-		    }
+		try {
+			// 1. Validar que haya productos en la tabla
+	        if (table.getRowCount() == 0) {
+	            JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
+	                "Compra vacía", JOptionPane.WARNING_MESSAGE);
+	            return;
+	        }
+	        
+	        String tipoDocumento = (String) cboTipoDocumento.getSelectedItem();
+	        String ruc = txtRUC1.getText().trim();
+	        String nombre = txtNombreProveedor.getText().trim();
+	        
+	        // =======================================================
+	        //       LÓGICA DE VALIDACIÓN CORREGIDA POR TIPO
+	        // =======================================================
+	        
+	        if (tipoDocumento.equals("Factura")) {
+	        	// CASO 1: FACTURA (Exige RUC y Nombre)
+	            if (ruc.isEmpty()) {
+	                JOptionPane.showMessageDialog(this, "Para Factura, el RUC es obligatorio.", 
+	                    "Falta RUC", JOptionPane.WARNING_MESSAGE);
+	                txtRUC1.requestFocus();
+	                return;
+	            }
+	            if (ruc.length() != 11 || !ruc.matches("\\d+")) {
+	                JOptionPane.showMessageDialog(this, "RUC inválido. Debe tener 11 dígitos.", 
+	                    "Error RUC", JOptionPane.ERROR_MESSAGE);
+	                txtRUC1.requestFocus();
+	                return;
+	            }
+	            if (nombre.isEmpty()) {
+	                JOptionPane.showMessageDialog(this, "Para Factura, la Razón Social es obligatoria.", 
+	                    "Falta Nombre", JOptionPane.WARNING_MESSAGE);
+	                txtNombreProveedor.requestFocus();
+	                return;
+	            }
+	            
+	        } else if (tipoDocumento.equals("Boleta")) {
+	        	// CASO 2: BOLETA (No pide RUC, pero SÍ pide Nombre)
+	        	// Asignamos un RUC genérico interno para que la base de datos no falle
+	        	ruc = "00000000000"; 
+	        	
+	        	if (nombre.isEmpty()) {
+	                JOptionPane.showMessageDialog(this, "Para Boleta, debe ingresar el nombre del proveedor.", 
+	                    "Falta Nombre", JOptionPane.WARNING_MESSAGE);
+	                txtNombreProveedor.requestFocus();
+	                return;
+	            }
+	        	
+	        } else {
+	        	// CASO 3: NOTA DE COMPRA (No pide nada)
+	        	// Asignamos valores por defecto para que el sistema procese la compra
+	        	ruc = "99999999999";
+	        	nombre = "PROVEEDOR VARIOS - NOTA DE COMPRA";
+	        }
+
+	        // =======================================================
+	        //       PROCESAMIENTO DE LA COMPRA (Igual que antes)
+	        // =======================================================
+	        
+	        // Buscar o crear proveedor
+	        Proveedor prov = ap.BuscarPorRuc(ruc);
+	        if (prov == null) {
+	            prov = new Proveedor(ruc, nombre);
+	            ap.Adicionar(prov);
+	        } else {
+	        	// Si es Factura o Boleta, actualizamos el nombre por si cambió
+	        	if (!tipoDocumento.equals("Nota de Compra")) {
+	        		prov.setNombre(nombre); 
+	        		// Aquí podrías tener un método ap.Modificar(prov) si fuera necesario
+	        	}
+	        }
+	        
+	        // Crear objeto Compra
+	        int numeroCompra = acompras.obtenerSiguienteNumero();
+	        Compra compra = new Compra(numeroCompra, tipoDocumento, prov.getId());
+	        
+	        // Agregar detalles
+	        DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+	        for (int i = 0; i < modelo.getRowCount(); i++) {
+	            int codigoProducto = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+	            int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
+	            
+	            // Limpieza del string de moneda para obtener el double
+	            String costoStr = modelo.getValueAt(i, 3).toString()
+	            		.replace("S/.", "").replace("S/. ", "").replace(",", "").trim();
+	            double costoUnitario = Double.parseDouble(costoStr);
+	            
+	            DetalleCompra detalle = new DetalleCompra(codigoProducto, cantidad, costoUnitario);
+	            compra.agregarDetalle(detalle);
+	            
+	            // Actualizar stock
+	            Comida producto = ac.Buscar(codigoProducto);
+	            if (producto != null) {
+	                int nuevoStock = producto.getStock() + cantidad;
+	                producto.setStock(nuevoStock);
+	                ac.actualizarStock(producto.getCodigo(), nuevoStock);
+	            }
+	        }
+	        
+	        acompras.Adicionar(compra);
+	        
+	        JOptionPane.showMessageDialog(this, 
+	            "¡Compra realizada exitosamente!\n\n" +
+	            "Tipo: " + tipoDocumento + "\n" +
+	            "Número: " + String.format("%06d", numeroCompra) + "\n" +
+	            "Proveedor: " + nombre + "\n" +
+	            "Total: S/. " + String.format("%.2f", compra.getTotal()), 
+	            "Compra Registrada", JOptionPane.INFORMATION_MESSAGE);
+	        
+	        limpiarCompra();
+	        
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), 
+	            "Error", JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    }
 	}
 }

@@ -263,7 +263,7 @@ public class EliminacionSegura {
             for (DetalleCompra dc : compra.getDetalles()) {
                 Comida producto = ac.Buscar(dc.getCodigoProducto());
                 if (producto != null) {
-                    int nuevoStock = producto.getStock() + dc.getCantidad();
+                    int nuevoStock = producto.getStock() - dc.getCantidad();
                     if (nuevoStock < 0) nuevoStock = 0;
                     producto.setStock(nuevoStock);
                     ac.actualizarStock(producto.getCodigo(), nuevoStock);
