@@ -125,6 +125,13 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		txtDescripcionBuscar.setBounds(200, 50, 300, 25);
 		contentPane.add(txtDescripcionBuscar);
 		
+		btnVerProveedores = new JButton("Ver Proveedores");
+		btnVerProveedores.addActionListener(this);
+		btnVerProveedores.setFont(new Font("Arial", Font.BOLD, 12));
+		btnVerProveedores.setBounds(486, 460, 141, 30);
+		btnVerProveedores.setToolTipText("Ver todos los proveedores que han vendido este producto");
+		contentPane.add(btnVerProveedores);
+		
 		// ========== FILTRADO EN TIEMPO REAL - DESCRIPCIÓN ==========
 		txtDescripcionBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -137,6 +144,7 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	}
 	
 	ArregloComida ac = ArregloComida.getInstancia();
+	private JButton btnVerProveedores;
 	
 	/**
 	 * Filtra productos en tiempo real mientras el usuario escribe
@@ -211,6 +219,9 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnVerProveedores) {
+			do_btnVerProveedores_actionPerformed(e);
+		}
 		if (e.getSource() == btnAgregar) {
 			do_btnAgregar_actionPerformed(e);
 		}
@@ -325,5 +336,22 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	 */
 	public void mostrarProductos() {
 		ac.Listar(table);
+	}
+	protected void do_btnVerProveedores_actionPerformed(ActionEvent e) {
+		// Verificar si hay un producto seleccionado
+				if (productoSeleccionado == null) {
+					JOptionPane.showMessageDialog(this, 
+						"Debe seleccionar un producto de la tabla\n\n" +
+						"Haga clic sobre la fila del producto cuyos proveedores desea ver", 
+						"Ningún producto seleccionado", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				// Abrir ventana de proveedores del producto
+				VentanaProveedoresProducto ventana = new VentanaProveedoresProducto(productoSeleccionado);
+				ventana.setVisible(true);
+				
+				System.out.println("✓ Abriendo ventana de proveedores para: " + 
+				                   productoSeleccionado.getDescripcion());
 	}
 }
