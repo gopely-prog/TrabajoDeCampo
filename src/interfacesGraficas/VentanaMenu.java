@@ -14,9 +14,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
 import java.awt.Color;
-import java.awt.Image;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class VentanaMenu extends JFrame implements ActionListener {
 
@@ -33,6 +30,8 @@ public class VentanaMenu extends JFrame implements ActionListener {
     private JLabel icono;
     private JPanel panel_4;
     private JButton btnVerVentas;
+    private JPanel panel_5;
+    private JButton btnProveedores;
     private JLabel lblUsuarioActivo;
     
     // Variable para almacenar el tipo de usuario
@@ -61,7 +60,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
         
         setTitle("POLLERIA EXCELENCIA - Menú Principal");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setBounds(100, 100, 699, 500);
+        setBounds(100, 100, 699, 550);
         contentPane = new JPanel();
         contentPane.setBackground(new Color(205, 232, 254));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -143,9 +142,24 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnVerVentas.setHorizontalTextPosition(SwingConstants.CENTER);
         panel_4.add(btnVerVentas);
 
+        // ========== BOTÓN PROVEEDORES (NUEVO) ==========
+        panel_5 = new JPanel();
+        panel_5.setBounds(329, 286, 147, 100);
+        contentPane.add(panel_5);
+        panel_5.setLayout(new GridLayout(1, 0, 0, 0));
+        
+        btnProveedores = new JButton("Proveedores");
+        btnProveedores.setFont(new Font("Arial", Font.BOLD, 14));
+        btnProveedores.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconComida.png")));
+        btnProveedores.addActionListener(this);
+        btnProveedores.setBackground(new Color(255, 255, 255));
+        btnProveedores.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnProveedores.setHorizontalTextPosition(SwingConstants.CENTER);
+        panel_5.add(btnProveedores);
+
         // ========== BOTÓN SALIR ==========
         panel_3 = new JPanel();
-        panel_3.setBounds(413, 292, 147, 100);
+        panel_3.setBounds(525, 286, 147, 100);
         contentPane.add(panel_3);
         panel_3.setLayout(new GridLayout(1, 0, 0, 0));
 
@@ -179,10 +193,14 @@ public class VentanaMenu extends JFrame implements ActionListener {
             btnVerVentas.setEnabled(false);
             btnVerVentas.setToolTipText("Acceso restringido - Solo ADMINISTRADOR");
             
+            btnProveedores.setEnabled(false);
+            btnProveedores.setToolTipText("Acceso restringido - Solo ADMINISTRADOR");
+            
             // Cambiar color a gris para indicar deshabilitado
             btnCompras.setBackground(new Color(200, 200, 200));
             btnComida.setBackground(new Color(200, 200, 200));
             btnVerVentas.setBackground(new Color(200, 200, 200));
+            btnProveedores.setBackground(new Color(200, 200, 200));
             
             System.out.println("✓ Modo TRABAJADOR activado - Solo ventas disponibles");
             
@@ -192,12 +210,16 @@ public class VentanaMenu extends JFrame implements ActionListener {
             btnCompras.setEnabled(true);
             btnComida.setEnabled(true);
             btnVerVentas.setEnabled(true);
+            btnProveedores.setEnabled(true);
             
             System.out.println("✓ Modo ADMINISTRADOR activado - Acceso completo");
         }
     }
 
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnProveedores) {
+            do_btnProveedores_actionPerformed(e);
+        }
         if (e.getSource() == btnVerVentas) {
             do_btnVerVentas_actionPerformed(e);
         }
@@ -244,25 +266,9 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
 
     protected void do_btnSalir_actionPerformed(ActionEvent e) {
-            VentanaLogin login = new VentanaLogin();
-            login.setVisible(true);
-            this.dispose();
-    }
-
-    private void setScaledIcon(JLabel label, String resourcePath) {
-        java.net.URL url = getClass().getResource(resourcePath);
-        if (url == null) {
-            System.err.println("No se encontró el recurso: " + resourcePath);
-            return;
-        }
-        ImageIcon original = new ImageIcon(url);
-
-        int w = label.getWidth();
-        int h = label.getHeight();
-        if (w <= 0 || h <= 0) return;
-
-        Image img = original.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        label.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/Sin título (2) (1).png")));
+        VentanaLogin login = new VentanaLogin();
+        login.setVisible(true);
+        this.dispose();
     }
     
     protected void do_btnVerVentas_actionPerformed(ActionEvent e) {
@@ -274,6 +280,18 @@ public class VentanaMenu extends JFrame implements ActionListener {
             return;
         }
         VentanaListarVentas ventana = new VentanaListarVentas();
+        ventana.setVisible(true);
+    }
+    
+    protected void do_btnProveedores_actionPerformed(ActionEvent e) {
+        // Verificación adicional (por seguridad)
+        if (tipoUsuario.equals("TRABAJADOR")) {
+            JOptionPane.showMessageDialog(this, 
+                "Acceso denegado\n\nSolo el ADMINISTRADOR puede gestionar proveedores", 
+                "Acceso Restringido", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        VentanaProveedores ventana = new VentanaProveedores();
         ventana.setVisible(true);
     }
 }

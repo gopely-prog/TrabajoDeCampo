@@ -140,4 +140,14 @@ public class ArregloProveedor {
     public int Tamaño() {
         return listaProveedores.size();
     }
+    
+    /**
+     * NUEVO: Obtener proveedor por índice
+     */
+    public Proveedor obtenerPorIndice(int indice) {
+        if (indice >= 0 && indice < listaProveedores.size()) {
+            return listaProveedores.get(indice);
+        }
+        return null;
+    }
 }
