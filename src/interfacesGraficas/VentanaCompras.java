@@ -50,7 +50,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	private JButton btnSalir;
 	private JButton btnRealizarCompra;
 	private JButton btnListarCompras;
-	
+	// Total acumulado de la compra actual
 	private double subTotalGlobal = 0;
 
 	public VentanaCompras() {
@@ -68,7 +68,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		lblTitulo.setBounds(10, 11, 350, 39);
 		contentPane.add(lblTitulo);
 		
-		// Panel de datos de compra
 		JPanel panelDatos = new JPanel();
 		panelDatos.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, 
 			new Color(255, 255, 255), new Color(160, 160, 160)), 
@@ -87,7 +86,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		cboTipoDocumento.addItem("Boleta");
 		cboTipoDocumento.addItem("Nota de Compra");
 		cboTipoDocumento.setBounds(140, 25, 150, 20);
-		cboTipoDocumento.addItemListener(this); // ← LISTENER PARA CAMBIOS
+		cboTipoDocumento.addItemListener(this); 
 		panelDatos.add(cboTipoDocumento);
 		
 		JLabel lblRUC = new JLabel("RUC Proveedor:");
@@ -99,13 +98,10 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtRUC1.setBounds(140, 55, 150, 20);
 		panelDatos.add(txtRUC1);
 		txtRUC1.setColumns(10);		
-		// ========== VALIDACIÓN RUC PROVEEDOR ==========
 	    configurarValidacionRUCProveedor();
 		
-		// ========== FILTRO PARA SOLO NÚMEROS Y MÁXIMO 11 ==========
 		aplicarFiltroRUC();
 		
-		// Listener para autocompletar nombre
 		txtRUC1.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(java.awt.event.FocusEvent evt) {
 				autocompletarProveedor();
@@ -122,7 +118,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtNombreProveedor.setBounds(140, 90, 350, 20);
 		panelDatos.add(txtNombreProveedor);
 		
-		// Panel de productos
 		JPanel panelProductos = new JPanel();
 		panelProductos.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, 
 			new Color(255, 255, 255), new Color(160, 160, 160)), 
@@ -190,7 +185,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		btnAgregarProducto.setBounds(310, 115, 120, 40);
 		panelProductos.add(btnAgregarProducto);
 		
-		// Tabla de productos
 		JPanel panelTabla = new JPanel();
 		panelTabla.setBorder(new TitledBorder(null, "Detalle de Compra", 
 			TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
@@ -213,7 +207,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		table.setModel(modelo);
 		scrollPane.setViewportView(table);
 		
-		// Totales
 		JLabel lblSubTotal = new JLabel("Sub Total:");
 		lblSubTotal.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblSubTotal.setBounds(270, 584, 80, 20);
@@ -247,7 +240,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtTotal.setBounds(360, 636, 160, 20);
 		contentPane.add(txtTotal);
 		
-		// Botones
 		btnNuevo = new JButton("Nuevo");
 		btnNuevo.setFont(new Font("Arial", Font.BOLD, 12));
 		btnNuevo.setBounds(10, 584, 100, 30);
@@ -279,7 +271,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	ArregloComida ac = ArregloComida.getInstancia();
 	ArregloProveedor ap = ArregloProveedor.getInstancia();
 	ArregloCompras acompras = ArregloCompras.getInstancia();
-	
+	// Limita el RUC a 11 dígitos numéricos
 	private void aplicarFiltroRUC() {
 		AbstractDocument doc = (AbstractDocument) txtRUC1.getDocument();
 		doc.setDocumentFilter(new DocumentFilter() {
@@ -308,7 +300,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 			}
 		});
 	}
-
+	// Habilita/deshabilita campos según el tipo de documento seleccionado
 	private void controlarCamposSegunTipoDocumento() {
 		int tipoSeleccionado = cboTipoDocumento.getSelectedIndex();
 		
@@ -326,7 +318,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				txtRUC1.setText("");
 				txtRUC1.setBackground(Color.LIGHT_GRAY);
 				
-				txtNombreProveedor.setEnabled(true); // En Boleta SI pedimos nombre
+				txtNombreProveedor.setEnabled(true); 
 				txtNombreProveedor.setBackground(Color.WHITE);
 				txtNombreProveedor.requestFocus();
 				break;
@@ -336,7 +328,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				txtRUC1.setText("");
 				txtRUC1.setBackground(Color.LIGHT_GRAY);
 				
-				// AQUI EL CAMBIO: Deshabilitamos también el nombre para Nota de Compra
 				txtNombreProveedor.setEnabled(false); 
 				txtNombreProveedor.setText("");
 				txtNombreProveedor.setBackground(Color.LIGHT_GRAY);
@@ -346,38 +337,32 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 				break;
 		}
 	}
-
-	/**
-	 * Configura validación del RUC del proveedor
-	 */
+	// Valida que el RUC tenga exactamente 11 digitos y solo números
 	private void configurarValidacionRUCProveedor() {
 	    txtRUC1.addKeyListener(new java.awt.event.KeyAdapter() {
-	        @Override
 	        public void keyTyped(java.awt.event.KeyEvent evt) {
 	            char caracter = evt.getKeyChar();
 	            String textoActual = txtRUC1.getText();
 	            
-	            // Solo números
 	            if (!Character.isDigit(caracter) && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
 	                evt.consume();
 	                
 	                if (Character.isLetter(caracter)) {
 	                    java.awt.Toolkit.getDefaultToolkit().beep();
 	                    JOptionPane.showMessageDialog(VentanaCompras.this, 
-	                        "❌ El RUC solo puede contener números", 
+	                        "El RUC solo puede contener números", 
 	                        "Carácter inválido", 
 	                        JOptionPane.WARNING_MESSAGE);
 	                }
 	                return;
 	            }
 	            
-	            // Máximo 11 dígitos
 	            if (textoActual.length() >= 11 && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
 	                evt.consume();
 	                java.awt.Toolkit.getDefaultToolkit().beep();
 	                
 	                JOptionPane.showMessageDialog(VentanaCompras.this, 
-	                    "⚠️ El RUC debe tener exactamente 11 dígitos\n\n" +
+	                    "El RUC debe tener exactamente 11 dígitos\n\n" +
 	                    "Ya alcanzaste el máximo permitido.", 
 	                    "Límite alcanzado", 
 	                    JOptionPane.WARNING_MESSAGE);
@@ -387,14 +372,14 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	    });
 	}
 
-	
+	// Carga los productos del ArregloComida al ComboBox
 	private void cargarProductos() {
 		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
 		for (int i = 0; i < ac.Tamaño(); i++) {
 			cboProductos.addItem(ac.obtenerPorIndice(i));
 		}
 	}
-	
+	// Busca el proveedor por RUC y completa el nombre automáticamente
 	private void autocompletarProveedor() {
 		String ruc = txtRUC1.getText().trim();
 		if (!ruc.isEmpty()) {
@@ -414,28 +399,22 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	}
 	
 	private void limpiarCompra() {
-		// Limpiar tabla
 	    DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 	    modelo.setRowCount(0);
 	    
-	    // Resetear totales
 	    subTotalGlobal = 0;
 	    inicializarTotales();
 	    
-	    // ✅ LIMPIAR CAMPOS DE PROVEEDOR
 	    txtRUC1.setText("");
-	    txtRUC1.setBackground(Color.WHITE);  // ← Restaurar color
+	    txtRUC1.setBackground(Color.WHITE);  
 	    txtRUC1.setToolTipText("Ingrese RUC del proveedor");
 	    
 	    txtNombreProveedor.setText("");
 	    
-	    // Resetear tipo de documento
 	    cboTipoDocumento.setSelectedIndex(0);
 	    
-	    // Limpiar campos de producto
 	    limpiarCamposProducto();
 	    
-	    // ✅ IMPORTANTE: Aplicar controles según tipo de documento
 	    controlarCamposSegunTipoDocumento();
 	}
 	
@@ -454,14 +433,12 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		txtTotal.setText(String.format("S/. %.2f", total));
 	}
 
-	@Override
 	public void itemStateChanged(ItemEvent e) {
-		// Control de tipo de documento
+		
 		if (e.getSource() == cboTipoDocumento && e.getStateChange() == ItemEvent.SELECTED) {
 			controlarCamposSegunTipoDocumento();
 		}
 		
-		// Control de productos
 		if (e.getSource() == cboProductos && e.getStateChange() == ItemEvent.SELECTED) {
 			Comida productoSeleccionado = (Comida) cboProductos.getSelectedItem();
 			
@@ -477,7 +454,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		}
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregarProducto) {
 			do_btnAgregarProducto_actionPerformed(e);
@@ -573,10 +549,9 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 		VentanaListarCompras ventana = new VentanaListarCompras();
 		ventana.setVisible(true);
 	}
-	
+	// Registra la compra en BD, actualiza stock y guarda detalles
 	protected void do_btnRealizarCompra_actionPerformed(ActionEvent e) {
 		try {
-			// 1. Validar que haya productos en la tabla
 	        if (table.getRowCount() == 0) {
 	            JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
 	                "Compra vacía", JOptionPane.WARNING_MESSAGE);
@@ -587,12 +562,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	        String ruc = txtRUC1.getText().trim();
 	        String nombre = txtNombreProveedor.getText().trim();
 	        
-	        // =======================================================
-	        //       LÓGICA DE VALIDACIÓN CORREGIDA POR TIPO
-	        // =======================================================
-	        
 	        if (tipoDocumento.equals("Factura")) {
-	        	// CASO 1: FACTURA (Exige RUC y Nombre)
 	            if (ruc.isEmpty()) {
 	                JOptionPane.showMessageDialog(this, "Para Factura, el RUC es obligatorio.", 
 	                    "Falta RUC", JOptionPane.WARNING_MESSAGE);
@@ -613,8 +583,7 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	            }
 	            
 	        } else if (tipoDocumento.equals("Boleta")) {
-	        	// CASO 2: BOLETA (No pide RUC, pero SÍ pide Nombre)
-	        	// Asignamos un RUC genérico interno para que la base de datos no falle
+	        	
 	        	ruc = "00000000000"; 
 	        	
 	        	if (nombre.isEmpty()) {
@@ -625,40 +594,31 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	            }
 	        	
 	        } else {
-	        	// CASO 3: NOTA DE COMPRA (No pide nada)
-	        	// Asignamos valores por defecto para que el sistema procese la compra
+	        	
 	        	ruc = "99999999999";
 	        	nombre = "PROVEEDOR VARIOS - NOTA DE COMPRA";
 	        }
 
-	        // =======================================================
-	        //       PROCESAMIENTO DE LA COMPRA (Igual que antes)
-	        // =======================================================
-	        
-	        // Buscar o crear proveedor
 	        Proveedor prov = ap.BuscarPorRuc(ruc);
 	        if (prov == null) {
 	            prov = new Proveedor(ruc, nombre);
 	            ap.Adicionar(prov);
 	        } else {
-	        	// Si es Factura o Boleta, actualizamos el nombre por si cambió
+	        	
 	        	if (!tipoDocumento.equals("Nota de Compra")) {
 	        		prov.setNombre(nombre); 
-	        		// Aquí podrías tener un método ap.Modificar(prov) si fuera necesario
+	        		
 	        	}
 	        }
 	        
-	        // Crear objeto Compra
 	        int numeroCompra = acompras.obtenerSiguienteNumero();
 	        Compra compra = new Compra(numeroCompra, tipoDocumento, prov.getId());
 	        
-	        // Agregar detalles
 	        DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 	        for (int i = 0; i < modelo.getRowCount(); i++) {
 	            int codigoProducto = Integer.parseInt(modelo.getValueAt(i, 0).toString());
 	            int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
 	            
-	            // Limpieza del string de moneda para obtener el double
 	            String costoStr = modelo.getValueAt(i, 3).toString()
 	            		.replace("S/.", "").replace("S/. ", "").replace(",", "").trim();
 	            double costoUnitario = Double.parseDouble(costoStr);
@@ -666,7 +626,6 @@ public class VentanaCompras extends JFrame implements ActionListener, ItemListen
 	            DetalleCompra detalle = new DetalleCompra(codigoProducto, cantidad, costoUnitario);
 	            compra.agregarDetalle(detalle);
 	            
-	            // Actualizar stock
 	            Comida producto = ac.Buscar(codigoProducto);
 	            if (producto != null) {
 	                int nuevoStock = producto.getStock() + cantidad;

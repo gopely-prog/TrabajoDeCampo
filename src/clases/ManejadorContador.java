@@ -10,17 +10,17 @@ public class ManejadorContador {
     private static final String RUTA_DOCUMENTOS = System.getProperty("user.home") + 
                                                    File.separator + "Documents" + 
                                                    File.separator + "Polleria_Excelencia_Ventas";
+    // Ruta del archivo donde se guarda el contador
     private static final String ARCHIVO_CONTADOR = RUTA_DOCUMENTOS + File.separator + "contador.txt";
     
     private static int contadorActual = 1;
-
+    // 	Lee el contador desde archivo o lo inicializa en 1 si no existe
     public static void inicializarContador() {
         crearCarpetaDocumentos();
         
         File archivoContador = new File(ARCHIVO_CONTADOR);
         
         if (archivoContador.exists()) {
-            // Leer el contador del archivo
             try (FileReader fr = new FileReader(archivoContador)) {
                 StringBuilder sb = new StringBuilder();
                 int c;
@@ -38,25 +38,19 @@ public class ManejadorContador {
                 contadorActual = 1;
             }
         } else {
-            // Crear archivo nuevo con contador en 1
+        	
             guardarContador(1);
             System.out.println("✓ Archivo contador creado");
         }
     }
-    
-    /**
-     * Obtiene el siguiente número secuencial y lo guarda
-     */
+    // Obtiene el siguiente número secuencial y actualiza el archivo
     public static int obtenerSiguienteNumero() {
         int numeroActual = contadorActual;
         contadorActual++;
         guardarContador(contadorActual);
         return numeroActual;
     }
-    
-    /**
-     * Guarda el contador en el archivo
-     */
+    // Guarda el contador en el archivo de texto
     private static void guardarContador(int numero) {
         try (FileWriter fw = new FileWriter(ARCHIVO_CONTADOR)) {
             fw.write(String.valueOf(numero));
@@ -66,9 +60,6 @@ public class ManejadorContador {
         }
     }
     
-    /**
-     * Crea la carpeta de documentos si no existe
-     */
     private static void crearCarpetaDocumentos() {
         File carpeta = new File(RUTA_DOCUMENTOS);
         if (!carpeta.exists()) {

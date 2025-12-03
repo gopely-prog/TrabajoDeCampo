@@ -8,13 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class GestorBoletas {
-    // Información de la tienda
     private static final String NOMBRE_TIENDA = "POLLERIA EXCELENCIA";
     private static final String DIRECCION_TIENDA = "Yanacoto, Lurigancho - Chosica Perú";
     private static final String TELEFONO_TIENDA = "+51 977 783 829";
     private static final String SUNAT_URL = "WWW.SUNAT.GOB.PE";
-    
-    // Ruta donde se guardarán los archivos
+    //Ruta donde se guardan las ventas.
     private static final String RUTA_DOCUMENTOS = System.getProperty("user.home") + File.separator + "Documents" +
     File.separator + "Polleria_Excelencia_Ventas";
     
@@ -37,29 +35,24 @@ public class GestorBoletas {
             // Crear el escritor de archivo
             FileWriter fw = new FileWriter(rutaCompleta);
             
-            // Encabezado
             fw.write("===============================================\n");
             fw.write("                POLLERIA EXCELENCIA\n");
             fw.write("===============================================\n");
             fw.write("           BOLETA DE VENTA ELECTRONICA\n");
             fw.write("===============================================\n\n");
             
-            // Información de la tienda
             fw.write("Dirección: " + DIRECCION_TIENDA + "\n");
             fw.write("Teléfono: " + TELEFONO_TIENDA + "\n\n");
             
-            // Datos del comprobante
             fw.write("-----------------------------------------------\n");
             fw.write("Nº BOLETA: " + String.format("%06d", numeroBoleta) + "\n");
             fw.write("Fecha: " + ObtenerFechaCompleta() + "\n");
             fw.write("Cliente: " + cliente + "\n");
             fw.write("-----------------------------------------------\n\n");
             
-            // Encabezado de tabla
             fw.write("CANT.   PRODUCTO                   P.UNI.      TOTAL\n");
             fw.write("-----------------------------------------------\n");
             
-            // Listar productos
             for (DetalleVenta dv : productos) {
                 double subtotalProducto = dv.cantidad * dv.precioUnitario;
                 fw.write(String.format("%-6d  %-28s S/. %-8.2f S/. %.2f\n", 
@@ -71,14 +64,12 @@ public class GestorBoletas {
             
             fw.write("-----------------------------------------------\n\n");
             
-            // Totales
             fw.write(String.format("SUBTOTAL                              S/. %.2f\n", subTotal));
             fw.write(String.format("IGV (18%%)                             S/. %.2f\n", igvMonto));
             fw.write("-----------------------------------------------\n");
             fw.write(String.format("TOTAL A PAGAR                         S/. %.2f\n", total));
             fw.write("===============================================\n\n");
             
-            // Pie de página
             fw.write("Gracias por su compra!\n");
             fw.write("Vuelva pronto a POLLERIA EXCELENCIA\n\n");
             fw.write("Esta es una presentación impresa de la\n");
@@ -86,7 +77,6 @@ public class GestorBoletas {
             fw.write("Puede verificarla en: " + SUNAT_URL + "\n\n");
             fw.write("Generado: " + ObtenerFechaCompleta() + "\n");
             
-            // Cerrar archivo
             fw.close();
             
             System.out.println("✓ Boleta guardada en: " + rutaCompleta);
@@ -101,45 +91,37 @@ public class GestorBoletas {
         try {
             crearCarpetaDocumentos();
             
-            // Crear nombre del archivo
             String nombreArchivo = "FACTURA_" + String.format("%08d", numeroFactura) + "_" + 
                                   ObtenerFechaFormato() + ".txt";
             String rutaCompleta = RUTA_DOCUMENTOS + File.separator + nombreArchivo;
             
-            // Crear el escritor de archivo
             FileWriter fw = new FileWriter(rutaCompleta);
             
-            // Encabezado
             fw.write("===============================================\n");
             fw.write("                POLLERIA EXCELENCIA\n");
             fw.write("===============================================\n");
             fw.write("             FACTURA ELECTRONICA\n");
             fw.write("===============================================\n\n");
             
-            // Datos del EMISOR (tienda)
             fw.write("EMISOR:\n");
             fw.write("Empresa: " + NOMBRE_TIENDA + "\n");
             fw.write("Dirección: " + DIRECCION_TIENDA + "\n");
             fw.write("Teléfono: " + TELEFONO_TIENDA + "\n\n");
             
-            // Datos del CLIENTE (receptor)
             fw.write("CLIENTE (RECEPTOR):\n");
             fw.write("RUC: " + rucCliente + "\n");
             fw.write("Razón Social: " + razonSocial + "\n");
             fw.write("Domicilio: " + domicilio + "\n\n");
             
-            // Datos del comprobante
             fw.write("-----------------------------------------------\n");
             fw.write("Nº FACTURA: " + String.format("%08d", numeroFactura) + "\n");
             fw.write("Fecha de Emisión: " + ObtenerFechaCompleta() + "\n");
             fw.write("Moneda: SOLES (S/.)\n");
             fw.write("-----------------------------------------------\n\n");
             
-            // Encabezado de tabla
             fw.write("CANT.   PRODUCTO                   P.UNI.      TOTAL\n");
             fw.write("-----------------------------------------------\n");
             
-            // Listar productos
             for (DetalleVenta dv : productos) {
                 double subtotalProducto = dv.cantidad * dv.precioUnitario;
                 fw.write(String.format("%-6d  %-28s S/. %-8.2f S/. %.2f\n", 
@@ -151,14 +133,12 @@ public class GestorBoletas {
             
             fw.write("-----------------------------------------------\n\n");
             
-            // Totales
             fw.write(String.format("SUBTOTAL (Gravada)                    S/. %.2f\n", subTotal));
             fw.write(String.format("IGV (18%%)                             S/. %.2f\n", igvMonto));
             fw.write("-----------------------------------------------\n");
             fw.write(String.format("TOTAL A PAGAR                         S/. %.2f\n", total));
             fw.write("===============================================\n\n");
             
-            // Pie de página
             fw.write("Condiciones de pago: Al contado\n");
             fw.write("Gracias por confiar en POLLERIA EXCELENCIA!\n\n");
             fw.write("Esta es una presentación impresa de la\n");
@@ -166,7 +146,6 @@ public class GestorBoletas {
             fw.write("Puede verificarla en: " + SUNAT_URL + "\n\n");
             fw.write("Generado: " + ObtenerFechaCompleta() + "\n");
             
-            // Cerrar archivo
             fw.close();
             
             System.out.println("✓ Factura guardada en: " + rutaCompleta);
@@ -190,7 +169,6 @@ public class GestorBoletas {
                 return;
             }
             
-            // Detectar el sistema operativo
             String osName = System.getProperty("os.name").toLowerCase();
             
             if (osName.contains("win")) {
@@ -211,18 +189,12 @@ public class GestorBoletas {
         }
     }
     
-    /**
-     * Obtiene la fecha actual en formato: dd/MM/yyyy HH:mm:ss
-     */
     private static String ObtenerFechaCompleta() {
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return ahora.format(formato);
     }
     
-    /**
-     * Obtiene la fecha actual en formato: ddMMyyyyHHmmss (para nombres de archivo)
-     */
     private static String ObtenerFechaFormato() {
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");

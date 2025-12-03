@@ -7,14 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
-/**
- * Clase para consultar productos que distribuye un proveedor específico
- */
 public class ConsultaProductosPorProveedor {
     
-    /**
-     * Clase interna para almacenar datos de producto con detalles de compra
-     */
     public static class ProductoProveedor {
         private int codigoProducto;
         private String descripcionProducto;
@@ -23,7 +17,7 @@ public class ConsultaProductosPorProveedor {
         private int cantidadComprada;
         private double costoUnitario;
         private String tipoDocumento;
-        
+     // Clase interna para almacenar datos de producto con detalles de compra
         public ProductoProveedor(int codigoProducto, String descripcionProducto,
                                 int numeroCompra, String fechaCompra, int cantidadComprada,
                                 double costoUnitario, String tipoDocumento) {
@@ -46,12 +40,8 @@ public class ConsultaProductosPorProveedor {
         public String getTipoDocumento() { return tipoDocumento; }
         public double getSubtotal() { return cantidadComprada * costoUnitario; }
     }
-    
-    /**
-     * Obtiene todos los productos que ha distribuido un proveedor específico
-     * @param idProveedor ID del proveedor a consultar
-     * @return Lista de ProductoProveedor con detalles de compras
-     */
+    //Consulta mediante un INNER JOIN todos los productos distribuidos por un proveedor
+    //genera un arreglo con esta información
     public static ArrayList<ProductoProveedor> obtenerProductosDeProveedor(int idProveedor) {
         ArrayList<ProductoProveedor> productos = new ArrayList<>();
         Connection conn = null;
@@ -61,7 +51,6 @@ public class ConsultaProductosPorProveedor {
         try {
             conn = ConexionBD.getConexion();
             
-            // INNER JOIN para obtener proveedores con sus productos
             String sql = "SELECT " +
                         "    p.codigo AS codigo_producto, " +
                         "    p.descripcion AS descripcion_producto, " +
@@ -113,12 +102,7 @@ public class ConsultaProductosPorProveedor {
         
         return productos;
     }
-    
-    /**
-     * Obtiene un resumen de productos únicos de un proveedor
-     * @param idProveedor ID del proveedor
-     * @return String con resumen formateado
-     */
+    // Genera un reporte formateado con estadísticas del proveedor
     public static String obtenerResumenProductos(int idProveedor) {
         ArrayList<ProductoProveedor> lista = obtenerProductosDeProveedor(idProveedor);
         
@@ -127,7 +111,6 @@ public class ConsultaProductosPorProveedor {
                    "No hay productos asociados aún.";
         }
         
-        // Obtener información del proveedor
         Proveedor proveedor = ArregloProveedor.getInstancia().BuscarPorId(idProveedor);
         String nombreProveedor = proveedor != null ? proveedor.getNombre() : "Proveedor #" + idProveedor;
         String rucProveedor = proveedor != null ? proveedor.getRuc() : "---";
@@ -159,7 +142,6 @@ public class ConsultaProductosPorProveedor {
             resumen.append(String.format("Nº Compra: %d\n\n", pp.getNumeroCompra()));
         }
         
-        // Calcular estadísticas
         int totalUnidadesVendidas = 0;
         double totalFacturado = 0;
         double costoPromedio = 0;

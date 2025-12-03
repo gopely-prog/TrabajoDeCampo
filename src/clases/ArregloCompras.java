@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ArregloCompras {
+	//Patrón singleton.
     private static ArregloCompras instancia;
     private ArrayList<Compra> listaCompras;
     private int contadorCompras;
@@ -27,7 +28,7 @@ public class ArregloCompras {
         }
         return instancia;
     }
-    
+    // Obtiene el número mas alto de compra para continuar la secuencia
     private void obtenerUltimoNumeroCompra() {
         Connection conn = null;
         Statement stmt = null;
@@ -61,10 +62,7 @@ public class ArregloCompras {
             }
         }
     }
-    
-    /**
-     * MODIFICADO: Ahora usa id_proveedor en lugar de ruc/nombre
-     */
+    // Carga las compras desde la BD
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
         Statement stmt = null;
@@ -113,10 +111,7 @@ public class ArregloCompras {
             }
         }
     }
-    
-    /**
-     * MODIFICADO: Sin descripcion_producto (se obtiene por JOIN o lookup)
-     */
+    // Carga los detalles (productos) de una compra específica
     private void cargarDetallesCompra(Compra compra) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -153,10 +148,7 @@ public class ArregloCompras {
             }
         }
     }
-    
-    /**
-     * MODIFICADO: Usa id_proveedor (clave foránea)
-     */
+    // Inserta la compra y sus detalles en una transacción
     public void Adicionar(Compra c) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -165,7 +157,6 @@ public class ArregloCompras {
             conn = ConexionBD.getConexion();
             conn.setAutoCommit(false);
             
-            // 1. Insertar compra principal
             String sqlCompra = "INSERT INTO compras (numero_compra, tipo_documento, id_proveedor, " +
                               "sub_total, igv, total, fecha) " +
                               "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -182,7 +173,6 @@ public class ArregloCompras {
             pstmt.executeUpdate();
             pstmt.close();
             
-            // 2. Insertar detalles (sin descripcion_producto)
             String sqlDetalle = "INSERT INTO detalle_compras (numero_compra, codigo_producto, " +
                                "cantidad, costo_unitario, subtotal) " +
                                "VALUES (?, ?, ?, ?, ?)";
@@ -233,7 +223,7 @@ public class ArregloCompras {
         }
         return null;
     }
-    
+    // Elimina la compra y sus detalles
     public void Eliminar(Compra c) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -241,7 +231,6 @@ public class ArregloCompras {
         try {
             conn = ConexionBD.getConexion();
             
-            // CASCADE elimina automáticamente los detalles
             String sql = "DELETE FROM compras WHERE numero_compra = ?";
             
             pstmt = conn.prepareStatement(sql);
@@ -271,14 +260,11 @@ public class ArregloCompras {
     public int Tamaño() {
         return listaCompras.size();
     }
-    
+    // 	Obtiene el siguiente número secuencial de compra
     public int obtenerSiguienteNumero() {
         return contadorCompras++;
     }
-    
-    /**
-     * MODIFICADO: Ahora hace JOIN para obtener nombre del proveedor
-     */
+    // Muestra las compras en la tabla haciendo JOIN con proveedores
     public void Listar(JTable table) {
         DefaultTableModel modelo = (DefaultTableModel) table.getModel();
         modelo.setRowCount(0);
@@ -286,7 +272,6 @@ public class ArregloCompras {
         ArregloProveedor ap = ArregloProveedor.getInstancia();
         
         for (Compra c : listaCompras) {
-            // Obtener proveedor por ID
             Proveedor proveedor = ap.BuscarPorId(c.getIdProveedor());
             String nombreProveedor = proveedor != null ? proveedor.getNombre() : "Desconocido";
             String rucProveedor = proveedor != null ? proveedor.getRuc() : "---";

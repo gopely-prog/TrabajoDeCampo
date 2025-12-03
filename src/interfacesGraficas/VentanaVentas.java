@@ -54,8 +54,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	private JButton btnNuevo;
 	private JButton btnSalir;
 	private JButton btnVENTA;
-	
-	// Variables para controlar totales
 	private double subTotalGlobal = 0;
 	private int numeroProductosAgregados = 0;
 
@@ -114,7 +112,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		lblCantidad.setBounds(10, 99, 102, 39);
 		panel.add(lblCantidad);
 		
-		// ComboBox de productos
 		cboProductos = new JComboBox<>();
 		cboProductos.addItemListener(this);
 		cboProductos.setBounds(140, 50, 147, 20);
@@ -167,7 +164,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		panel_1.add(scrollPane);
 		scrollPane.setEnabled(false);
 		
-		// Modelo de tabla
 		DefaultTableModel modelo = new DefaultTableModel();
 		modelo.addColumn("Cantidad");
 		modelo.addColumn("Descripción");
@@ -202,27 +198,21 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		txtRUC.setBounds(10, 477, 147, 20);
 		contentPane.add(txtRUC);
 		
-		// ========== VALIDACIÓN EN TIEMPO REAL ==========
 	    txtRUC.addKeyListener(new java.awt.event.KeyAdapter() {
-	        @Override
 	        public void keyTyped(java.awt.event.KeyEvent evt) {
-	            validarRUCEnTiempoReal(evt);
+	            validarRUC(evt);
 	        }
 	    });
 	    
-	    // También añadir validación visual con DocumentListener
 	    txtRUC.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-	        @Override
 	        public void insertUpdate(javax.swing.event.DocumentEvent e) {
 	            validarLongitudRUC();
 	        }
 	        
-	        @Override
 	        public void removeUpdate(javax.swing.event.DocumentEvent e) {
 	            validarLongitudRUC();
 	        }
 	        
-	        @Override
 	        public void changedUpdate(javax.swing.event.DocumentEvent e) {
 	            validarLongitudRUC();
 	        }
@@ -308,41 +298,30 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		contentPane.add(lblPUnitario_1);
 		lblPUnitario_1.setFont(new Font("SansSerif", Font.BOLD, 15));
 		
-		// Cargar productos al inicializar
 		cargarProductos();
 		
-		// Inicializar contador de ventas
 		ManejadorContador.inicializarContador();
 	}
 	
 	ArregloComida ac = ArregloComida.getInstancia();
 	
-	/**
-	 * Carga todos los productos de ArregloComida al ComboBox
-	 */
+	// Carga los productos disponibles al ComboBox
 	private void cargarProductos() {
 		cboProductos.addItem(new Comida(0, "-- Seleccionar Producto --", 0, 0));
 		
-		// Agregar todos los productos del ArregloComida
 		for (int i = 0; i < ac.Tamaño(); i++) {
 			cboProductos.addItem(ac.obtenerPorIndice(i));
 		}
 	}
 	
-	/**
-	 * Limpia los campos de entrada de producto
-	 */
 	private void limpiarCamposProducto() {
 		txtCodigo.setText("");
 		txtPUnitario.setText("");
 		txtCantidad.setText("");
 		txtStock.setText("");
-		cboProductos.setSelectedIndex(0); // Vuelve a "-- Seleccionar Producto --"
+		cboProductos.setSelectedIndex(0); 
 	}
 	
-	/**
-	 * Limpia la venta completa
-	 */
 	private void limpiarVenta() {
 		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
@@ -356,9 +335,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		limpiarCamposProducto();
 	}
 	
-	/**
-	 * Actualiza los totales en la venta
-	 */
 	private void actualizarTotales() {
 		double igv = subTotalGlobal * 0.18;
 		double total = subTotalGlobal + igv;
@@ -368,34 +344,30 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 		txtTotal.setText(String.format("S/. %.2f", total));
 	}
 
-	@Override
 	public void itemStateChanged(ItemEvent e) {
 		if (e.getSource() == cboProductos && e.getStateChange() == ItemEvent.SELECTED) {
 			Comida productoSeleccionado = (Comida) cboProductos.getSelectedItem();
 			
-			// Si selecciona la opción vacía o la opción inicial
 			if (productoSeleccionado == null || productoSeleccionado.getCodigo() == 0) {
 				limpiarCamposProducto();
 			} else {
-				// Llenar los campos con datos del producto seleccionado
+				
 				txtCodigo.setText(String.valueOf(productoSeleccionado.getCodigo()));
 				txtPUnitario.setText(String.format("S/. %.2f", productoSeleccionado.getpUnitario()));
 				txtStock.setText(String.valueOf(productoSeleccionado.getStock()));
-				txtCantidad.setText(""); // Limpiar cantidad para que ingrese
-				txtCantidad.requestFocus(); // Enfocar en cantidad
+				txtCantidad.setText(""); 
+				txtCantidad.requestFocus(); 
 			}
 		}
 	}
-
-	private void validarRUCEnTiempoReal(java.awt.event.KeyEvent evt) {
+	// Valida que el RUC tenga solo números y máximo 11 dígitos
+	private void validarRUC(java.awt.event.KeyEvent evt) {
 	    char caracter = evt.getKeyChar();
 	    String textoActual = txtRUC.getText();
 	    
-	    // 1. Solo permitir números
 	    if (!Character.isDigit(caracter) && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-	        evt.consume(); // Bloquear el carácter
+	        evt.consume();
 	        
-	        // Mostrar advertencia solo si intentó escribir letra
 	        if (Character.isLetter(caracter)) {
 	            javax.swing.JOptionPane.showMessageDialog(this, 
 	                "⚠️ El RUC solo puede contener números", 
@@ -405,11 +377,9 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	        return;
 	    }
 	    
-	    // 2. Bloquear si ya tiene 11 dígitos (excepto backspace)
 	    if (textoActual.length() >= 11 && caracter != java.awt.event.KeyEvent.VK_BACK_SPACE) {
-	        evt.consume(); // Bloquear el carácter
+	        evt.consume(); 
 	        
-	        // Mostrar advertencia con sonido
 	        java.awt.Toolkit.getDefaultToolkit().beep();
 	        
 	        javax.swing.JOptionPane.showMessageDialog(this, 
@@ -419,33 +389,27 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	            javax.swing.JOptionPane.WARNING_MESSAGE);
 	    }
 	}
-
-	/**
-	 * Validación visual: cambia color según longitud
-	 */
+	// Cambia el color del campo según la longitud del RUC
 	private void validarLongitudRUC() {
 	    String texto = txtRUC.getText().trim();
 	    int longitud = texto.length();
 	    
 	    if (longitud == 0) {
-	        // Campo vacío: color normal (blanco)
 	        txtRUC.setBackground(java.awt.Color.WHITE);
 	        
 	    } else if (longitud < 11) {
-	        // Menos de 11: amarillo (incompleto)
-	        txtRUC.setBackground(new java.awt.Color(255, 255, 200)); // Amarillo claro
+	        txtRUC.setBackground(new java.awt.Color(255, 255, 200)); 
 	        
 	    } else if (longitud == 11) {
-	        // Exactamente 11: verde (correcto)
-	        txtRUC.setBackground(new java.awt.Color(200, 255, 200)); // Verde claro
+	    	
+	        txtRUC.setBackground(new java.awt.Color(200, 255, 200)); 
 	        
 	    } else {
-	        // Más de 11: rojo (error) - esto no debería pasar con keyTyped
-	        txtRUC.setBackground(new java.awt.Color(255, 200, 200)); // Rojo claro
+	    	
+	        txtRUC.setBackground(new java.awt.Color(255, 200, 200)); 
 	    }
 	}
 	
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnAgregar) {
 			do_btnAgregar_actionPerformed(e);
@@ -460,19 +424,17 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 			do_btnVENTA_actionPerformed(e);
 		}
 	}
-	
+	// Agrega un producto a la tabla, valida stock y actualiza totales
 	protected void do_btnAgregar_actionPerformed(ActionEvent e) {
 		try {
 			Comida productoSeleccionado = (Comida) cboProductos.getSelectedItem();
 			
-			// Validar que seleccione un producto válido
 			if (productoSeleccionado == null || productoSeleccionado.getCodigo() == 0) {
 				JOptionPane.showMessageDialog(this, "Debe seleccionar un producto", 
 					"Producto no seleccionado", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			
-			// Validar que ingrese cantidad
 			String cantidadStr = txtCantidad.getText().trim();
 			if (cantidadStr.isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Debe ingresar una cantidad", 
@@ -492,7 +454,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				return;
 			}
 			
-			// Validar que cantidad sea positiva
 			if (cantidad <= 0) {
 				JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0", 
 					"Cantidad inválida", JOptionPane.WARNING_MESSAGE);
@@ -501,7 +462,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				return;
 			}
 			
-			// VALIDACIÓN PRINCIPAL: Verificar stock disponible
 			if (cantidad > productoSeleccionado.getStock()) {
 				JOptionPane.showMessageDialog(this, 
 					"No hay suficiente stock disponible.\n" +
@@ -513,16 +473,13 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				return;
 			}
 			
-			// Calcular total del producto
 			double precioUnitario = productoSeleccionado.getpUnitario();
 			double totalProducto = cantidad * precioUnitario;
 			
-			// Reducir stock del producto
 			int nuevoStock = productoSeleccionado.getStock() - cantidad;
 			productoSeleccionado.setStock(nuevoStock);
 			ac.actualizarStock(productoSeleccionado.getCodigo(), nuevoStock);
 			
-			// Agregar fila a la tabla
 			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 			modelo.addRow(new Object[]{
 				cantidad,
@@ -531,11 +488,9 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				String.format("S/. %.2f", totalProducto)
 			});
 			
-			// Actualizar subtotal global
 			subTotalGlobal += totalProducto;
 			actualizarTotales();
 			
-			// Limpiar campos para siguiente producto
 			limpiarCamposProducto();
 			
 			JOptionPane.showMessageDialog(this, "Producto agregado a la venta", 
@@ -555,22 +510,19 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 	protected void do_btnSalir_actionPerformed(ActionEvent e) {
 		this.dispose();
 	}
-	
+	// Genera la boleta/factura, guarda en BD y abre el archivo
 	protected void do_btnVENTA_actionPerformed(ActionEvent e) {
 		try {
-			// Validar que haya productos en la venta
 			if (table.getRowCount() == 0) {
 				JOptionPane.showMessageDialog(this, "Debe agregar al menos un producto", 
 					"Venta vacía", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			
-			// Leer datos del cliente
 			String ruc = txtRUC.getText().trim();
 			String razonSocial = txtRazonSocial.getText().trim();
 			String domicilio = txtDomicilio.getText().trim();
 			
-			// Validar Razón Social (obligatoria en ambos casos)
 			if (razonSocial.isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Debe ingresar la Razón Social del cliente", 
 					"Datos incompletos", JOptionPane.WARNING_MESSAGE);
@@ -578,7 +530,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				return;
 			}
 			
-			// Obtener totales de los campos
 			String subTotalStr = txtSubTotal.getText().replace("S/. ", "");
 			String igvStr = txtIGV.getText().replace("S/. ", "");
 			String totalStr = txtTotal.getText().replace("S/. ", "");
@@ -587,7 +538,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 			double igv = Double.parseDouble(igvStr);
 			double total = Double.parseDouble(totalStr);
 			
-			// DETERMINAR SI ES BOLETA O FACTURA
 			boolean esFactura = false;
 			
 			if (ruc.isEmpty()) {
@@ -613,7 +563,6 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				esFactura = true;
 			}
 			
-			// Preparar detalles de productos para GestorBoletas
 			ArrayList<GestorBoletas.DetalleVenta> productos = new ArrayList<>();
 			DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 			
@@ -626,19 +575,16 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				productos.add(new GestorBoletas.DetalleVenta(cantidad, descripcion, precioUnitario));
 			}
 			
-			// Obtener el número secuencial
 			int numero = ManejadorContador.obtenerSiguienteNumero();
 			
 			String rutaArchivo = null;
 			String tipoComprobante = "";
 			
 			if (esFactura) {
-				// GENERAR FACTURA
 				rutaArchivo = GestorBoletas.GenerarFactura(numero, ruc, razonSocial, domicilio, 
 					productos, subTotal, igv, total);
 				tipoComprobante = "Factura";
 			} else {
-				// GENERAR BOLETA
 				rutaArchivo = GestorBoletas.GenerarBoleta(numero, razonSocial, 
 					productos, subTotal, igv, total);
 				tipoComprobante = "Boleta";
@@ -650,26 +596,20 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 				return;
 			}
 			
-			// ============ GUARDAR VENTA EN LA BASE DE DATOS ============
-			
-			// Crear objeto Venta para guardar en BD
 			Venta nuevaVenta = new Venta(numero, tipoComprobante, 
                     esFactura ? ruc : null, 
                     razonSocial, 
                     esFactura ? domicilio : null, 
                     rutaArchivo);
 			
-			// Agregar detalles a la venta
 			for (int i = 0; i < modelo.getRowCount(); i++) {
 			    int cantidad = Integer.parseInt(modelo.getValueAt(i, 0).toString());
 			    String descripcion = modelo.getValueAt(i, 1).toString();
 			    String precioStr = modelo.getValueAt(i, 2).toString().replace("S/. ", "");
 			    double precioUnitario = Double.parseDouble(precioStr);
 			    
-			    // Buscar código del producto por descripción
 			    Comida producto = ac.BuscarPorDescripcion(descripcion);
 			    if (producto != null) {
-			        // ⚠️ Constructor actualizado: sin descripción
 			        DetalleVenta detalle = new DetalleVenta(producto.getCodigo(), 
 			                                                cantidad, 
 			                                                precioUnitario);
@@ -677,11 +617,8 @@ public class VentanaVentas extends JFrame implements ActionListener, ItemListene
 			    }
 			}
 			
-			// Guardar venta en la BD
 			ArregloVentas av = ArregloVentas.getInstancia();
 			av.Adicionar(nuevaVenta);
-			
-			// ============================================================
 			
 			JOptionPane.showMessageDialog(this, 
 				    tipoComprobante + " Nº " + String.format("%06d", numero) + " generada exitosamente!\n\n" +

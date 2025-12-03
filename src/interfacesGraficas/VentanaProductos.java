@@ -34,8 +34,7 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	private JLabel lblBuscarPorCodigo;
 	private JLabel lblBuscarPorDescripcion;
 	private JButton btnListarTodos;
-	
-	// Variable para almacenar el producto seleccionado
+	// Almacena el producto seleccionado en la tabla
 	private Comida productoSeleccionado = null;
 
 	public VentanaProductos() {
@@ -48,7 +47,6 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		// Tabla de productos
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 100, 690, 350);
 		contentPane.add(scrollPane);
@@ -64,14 +62,12 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		modelo.addColumn("Stock");
 		table.setModel(modelo);
 		
-		// ========== LISTENER PARA SELECCIÓN EN LA TABLA ==========
 		table.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				seleccionarProductoDeTabla();
 			}
 		});
 		
-		// Botones principales
 		btnAgregar = new JButton("Agregar");
 		btnAgregar.setFont(new Font("Arial", Font.BOLD, 12));
 		btnAgregar.addActionListener(this);
@@ -96,7 +92,6 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		btnListarTodos.setBounds(350, 461, 120, 30);
 		contentPane.add(btnListarTodos);
 		
-		// Búsqueda por código
 		lblBuscarPorCodigo = new JLabel("Buscar por Código:");
 		lblBuscarPorCodigo.setFont(new Font("Arial", Font.BOLD, 13));
 		lblBuscarPorCodigo.setBounds(20, 20, 150, 25);
@@ -107,14 +102,12 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		contentPane.add(txtCodigoBuscar);
 		txtCodigoBuscar.setColumns(10);
 		
-		// ========== FILTRADO EN TIEMPO REAL - CÓDIGO ==========
 		txtCodigoBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				filtrarProductos();
 			}
 		});
 		
-		// Búsqueda por descripción
 		lblBuscarPorDescripcion = new JLabel("Buscar por Descripción:");
 		lblBuscarPorDescripcion.setFont(new Font("Arial", Font.BOLD, 13));
 		lblBuscarPorDescripcion.setBounds(200, 20, 180, 25);
@@ -132,28 +125,22 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		btnVerProveedores.setToolTipText("Ver todos los proveedores que han vendido este producto");
 		contentPane.add(btnVerProveedores);
 		
-		// ========== FILTRADO EN TIEMPO REAL - DESCRIPCIÓN ==========
 		txtDescripcionBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				filtrarProductos();
 			}
 		});
 		
-		// Cargar todos los productos al iniciar
 		mostrarProductos();
 	}
 	
 	ArregloComida ac = ArregloComida.getInstancia();
 	private JButton btnVerProveedores;
-	
-	/**
-	 * Filtra productos en tiempo real mientras el usuario escribe
-	 */
+	// Filtra productos en tiempo real según código y/o descripción
 	private void filtrarProductos() {
 		String textoCodigo = txtCodigoBuscar.getText().trim().toLowerCase();
 		String textoDescripcion = txtDescripcionBuscar.getText().trim().toLowerCase();
 		
-		// Si ambos están vacíos, mostrar todos
 		if (textoCodigo.isEmpty() && textoDescripcion.isEmpty()) {
 			mostrarProductos();
 			return;
@@ -162,18 +149,15 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
 		
-		// Recorrer todos los productos
 		for (int i = 0; i < ac.Tamaño(); i++) {
 			Comida producto = ac.obtenerPorIndice(i);
 			
 			String codigoProducto = String.valueOf(producto.getCodigo()).toLowerCase();
 			String descripcionProducto = producto.getDescripcion().toLowerCase();
 			
-			// Verificar si cumple con el filtro
 			boolean cumpleCodigo = textoCodigo.isEmpty() || codigoProducto.contains(textoCodigo);
 			boolean cumpleDescripcion = textoDescripcion.isEmpty() || descripcionProducto.contains(textoDescripcion);
 			
-			// Si cumple ambos filtros, agregar a la tabla
 			if (cumpleCodigo && cumpleDescripcion) {
 				modelo.addRow(new Object[]{
 					producto.getCodigo(),
@@ -186,34 +170,27 @@ public class VentanaProductos extends JFrame implements ActionListener {
 			}
 		}
 		
-		// Mostrar cuántos resultados se encontraron
 		int resultados = modelo.getRowCount();
 		if (resultados == 0) {
-			// No se encontraron resultados
-			System.out.println("⚠ No se encontraron productos con ese filtro");
+			
+			System.out.println("No se encontraron productos con ese filtro");
 		} else {
-			System.out.println("✓ Se encontraron " + resultados + " producto(s)");
+			System.out.println("Se encontraron " + resultados + " producto(s)");
 		}
 	}
-	
-	/**
-	 * Captura el producto seleccionado en la tabla
-	 */
+	// Captura el producto seleccionado al hacer clic en la tabla
 	private void seleccionarProductoDeTabla() {
 		int filaSeleccionada = table.getSelectedRow();
 		
 		if (filaSeleccionada != -1) {
-			// Obtener el código del producto de la tabla
 			int codigo = (int) table.getValueAt(filaSeleccionada, 0);
 			
-			// Buscar el producto completo
 			productoSeleccionado = ac.Buscar(codigo);
 			
 			if (productoSeleccionado != null) {
-				System.out.println("✓ Producto seleccionado: " + productoSeleccionado.getDescripcion());
+				System.out.println("Producto seleccionado: " + productoSeleccionado.getDescripcion());
 				
-				// Opcional: Resaltar visualmente que hay un producto seleccionado
-				table.setSelectionBackground(new Color(144, 238, 144)); // Verde claro
+				table.setSelectionBackground(new Color(144, 238, 144)); 
 			}
 		}
 	}
@@ -247,11 +224,7 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		ventana.setVisible(true);
 	}
 	
-	/**
-	 * MODIFICADO: Ahora usa el producto seleccionado en la tabla
-	 */
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {
-		// Verificar si hay un producto seleccionado
 		if (productoSeleccionado == null) {
 			JOptionPane.showMessageDialog(this, 
 				"Debe seleccionar un producto de la tabla para modificar\n\n" +
@@ -260,23 +233,20 @@ public class VentanaProductos extends JFrame implements ActionListener {
 			return;
 		}
 		
-		// Abrir ventana de modificación con el producto seleccionado
 		VentanaModificarProducto ventana = new VentanaModificarProducto(productoSeleccionado);
 		ventana.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosed(java.awt.event.WindowEvent windowEvent) {
 				mostrarProductos();
 				limpiarFiltros();
-				productoSeleccionado = null; // Limpiar selección
+				productoSeleccionado = null; 
 			}
 		});
 		ventana.setVisible(true);
 	}
-	
-	/**
-	 * MODIFICADO: Ahora usa el producto seleccionado en la tabla
-	 */
+	// Llama a EliminacionSegura para verificar referencias FK
+	//Muestra si que hay movimiento con ese producto.
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
-		// Verificar si hay un producto seleccionado
+		
 	    if (productoSeleccionado == null) {
 	        JOptionPane.showMessageDialog(this, 
 	            "Debe seleccionar un producto de la tabla para eliminar\n\n" +
@@ -285,7 +255,6 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	        return;
 	    }
 	    
-	    // ========== NUEVO: Mostrar información de uso ANTES de intentar eliminar ==========
 	    String infoUso = EliminacionSegura.obtenerInfoUsoProducto(productoSeleccionado.getCodigo());
 	    
 	    int opcion = JOptionPane.showOptionDialog(this,
@@ -297,8 +266,8 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	        new Object[]{"Ver más info", "Eliminar", "Cancelar"},
 	        "Cancelar");
 	    
-	    if (opcion == 1) { // "Eliminar"
-	        // Usar eliminación segura
+	    if (opcion == 1) { 
+	    	
 	        if (EliminacionSegura.eliminarProductoSeguro(productoSeleccionado.getCodigo())) {
 	            JOptionPane.showMessageDialog(this,
 	                "✅ Producto eliminado exitosamente\n\n" +
@@ -310,7 +279,6 @@ public class VentanaProductos extends JFrame implements ActionListener {
 	            mostrarProductos();
 	            limpiarFiltros();
 	        }
-	        // Si no pudo eliminarse, EliminacionSegura ya mostró el error
 	    }
 	}
 	
@@ -323,22 +291,15 @@ public class VentanaProductos extends JFrame implements ActionListener {
 			"Lista actualizada", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
-	/**
-	 * Limpia los campos de filtrado
-	 */
 	private void limpiarFiltros() {
 		txtCodigoBuscar.setText("");
 		txtDescripcionBuscar.setText("");
 	}
 	
-	/**
-	 * Muestra todos los productos en la tabla
-	 */
 	public void mostrarProductos() {
 		ac.Listar(table);
 	}
 	protected void do_btnVerProveedores_actionPerformed(ActionEvent e) {
-		// Verificar si hay un producto seleccionado
 				if (productoSeleccionado == null) {
 					JOptionPane.showMessageDialog(this, 
 						"Debe seleccionar un producto de la tabla\n\n" +
@@ -347,11 +308,10 @@ public class VentanaProductos extends JFrame implements ActionListener {
 					return;
 				}
 				
-				// Abrir ventana de proveedores del producto
 				VentanaProveedoresProducto ventana = new VentanaProveedoresProducto(productoSeleccionado);
 				ventana.setVisible(true);
 				
-				System.out.println("✓ Abriendo ventana de proveedores para: " + 
+				System.out.println("Abriendo ventana de proveedores para: " + 
 				                   productoSeleccionado.getDescripcion());
 	}
 }

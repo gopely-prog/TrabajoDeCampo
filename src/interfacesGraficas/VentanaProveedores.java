@@ -33,8 +33,7 @@ public class VentanaProveedores extends JFrame implements ActionListener {
     private JTextField txtBuscarNombre;
     private JButton btnListarTodos;
     private JCheckBox chkSoloActivos;
-    
-    // Variable para almacenar el proveedor seleccionado
+    // Almacena el proveedor seleccionado en la tabla
     private Proveedor proveedorSeleccionado = null;
 
     public VentanaProveedores() {
@@ -47,13 +46,11 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         setContentPane(contentPane);
         contentPane.setLayout(null);
         
-        // Título
         lblTitulo = new JLabel("PROVEEDORES REGISTRADOS");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
         lblTitulo.setBounds(20, 11, 400, 30);
         contentPane.add(lblTitulo);
         
-        // Búsqueda por RUC
         JLabel lblBuscarRUC = new JLabel("Buscar por RUC:");
         lblBuscarRUC.setFont(new Font("Arial", Font.BOLD, 13));
         lblBuscarRUC.setBounds(20, 52, 120, 25);
@@ -64,14 +61,12 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         contentPane.add(txtBuscarRUC);
         txtBuscarRUC.setColumns(10);
         
-        // Filtrado en tiempo real - RUC
         txtBuscarRUC.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 filtrarProveedores();
             }
         });
         
-        // Búsqueda por Nombre
         JLabel lblBuscarNombre = new JLabel("Buscar por Nombre:");
         lblBuscarNombre.setFont(new Font("Arial", Font.BOLD, 13));
         lblBuscarNombre.setBounds(200, 52, 150, 25);
@@ -82,14 +77,12 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         txtBuscarNombre.setBounds(200, 80, 250, 25);
         contentPane.add(txtBuscarNombre);
         
-        // Filtrado en tiempo real - Nombre
         txtBuscarNombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 filtrarProveedores();
             }
         });
         
-        // Checkbox para filtrar solo activos
         chkSoloActivos = new JCheckBox("Solo proveedores activos");
         chkSoloActivos.setFont(new Font("Arial", Font.BOLD, 12));
         chkSoloActivos.setBackground(new Color(205, 232, 254));
@@ -97,13 +90,11 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         chkSoloActivos.addActionListener(this);
         contentPane.add(chkSoloActivos);
         
-        // Leyenda de colores
         JLabel lblLeyenda = new JLabel("🟢 Activo  |  🟡 Inactivo (histórico)");
         lblLeyenda.setFont(new Font("Arial", Font.ITALIC, 11));
         lblLeyenda.setBounds(20, 108, 300, 20);
         contentPane.add(lblLeyenda);
         
-        // Tabla de proveedores
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(20, 130, 750, 280);
         contentPane.add(scrollPane);
@@ -117,23 +108,19 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         table = new JTable(modelo);
         scrollPane.setViewportView(table);
         
-        // Ajustar anchos de columnas
-        table.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
-        table.getColumnModel().getColumn(1).setPreferredWidth(120); // RUC
-        table.getColumnModel().getColumn(2).setPreferredWidth(350); // Nombre
-        table.getColumnModel().getColumn(3).setPreferredWidth(100); // Estado
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);  
+        table.getColumnModel().getColumn(1).setPreferredWidth(120); 
+        table.getColumnModel().getColumn(2).setPreferredWidth(350); 
+        table.getColumnModel().getColumn(3).setPreferredWidth(100);
         
-        // Aplicar colores según estado
         aplicarColoresEstado();
-        
-        // Listener para selección en la tabla
+
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 seleccionarProveedorDeTabla();
             }
         });
         
-        // Botones
         btnVerProductos = new JButton("Ver Productos");
         btnVerProductos.setFont(new Font("Arial", Font.BOLD, 12));
         btnVerProductos.addActionListener(this);
@@ -153,18 +140,13 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         btnCerrar.setBounds(670, 421, 100, 30);
         contentPane.add(btnCerrar);
         
-        // Cargar proveedores
         cargarProveedores();
     }
     
     ArregloProveedor ap = ArregloProveedor.getInstancia();
-    
-    /**
-     * Aplica colores a las filas según el estado del proveedor
-     */
+    // Aplica colores según el estado
     private void aplicarColoresEstado() {
         table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
                 
@@ -172,34 +154,29 @@ public class VentanaProveedores extends JFrame implements ActionListener {
                     table, value, isSelected, hasFocus, row, column);
                 
                 if (!isSelected) {
-                    // Obtener el estado de la columna 3
                     String estado = (String) table.getValueAt(row, 3);
                     
                     if (estado != null && estado.contains("ACTIVO")) {
-                        c.setBackground(new Color(220, 255, 220)); // Verde claro
+                        c.setBackground(new Color(220, 255, 220));//verde
                     } else {
-                        c.setBackground(new Color(255, 250, 220)); // Amarillo claro
+                        c.setBackground(new Color(255, 250, 220));//Amarillo 
                     }
                 } else {
-                    c.setBackground(new Color(144, 238, 144)); // Verde selección
+                    c.setBackground(new Color(144, 238, 144)); 
                 }
                 
                 return c;
             }
         });
     }
-    
-    /**
-     * Captura el proveedor seleccionado en la tabla
-     */
+    // Captura el proveedor seleccionado al hacer clic en la tabla
     private void seleccionarProveedorDeTabla() {
+    	
         int filaSeleccionada = table.getSelectedRow();
         
         if (filaSeleccionada != -1) {
-            // Obtener el ID del proveedor de la tabla
             int id = (int) table.getValueAt(filaSeleccionada, 0);
             
-            // Buscar el proveedor completo
             proveedorSeleccionado = ap.BuscarPorId(id);
             
             if (proveedorSeleccionado != null) {
@@ -207,16 +184,12 @@ public class VentanaProveedores extends JFrame implements ActionListener {
             }
         }
     }
-    
-    /**
-     * Filtra proveedores en tiempo real mientras el usuario escribe
-     */
+    // Filtra proveedores por RUC, nombre o estado 
     private void filtrarProveedores() {
         String textoRUC = txtBuscarRUC.getText().trim().toLowerCase();
         String textoNombre = txtBuscarNombre.getText().trim().toLowerCase();
         boolean soloActivos = chkSoloActivos.isSelected();
         
-        // Si todo está vacío y no hay filtro de activos, mostrar todos
         if (textoRUC.isEmpty() && textoNombre.isEmpty() && !soloActivos) {
             cargarProveedores();
             return;
@@ -225,7 +198,6 @@ public class VentanaProveedores extends JFrame implements ActionListener {
         DefaultTableModel modelo = (DefaultTableModel) table.getModel();
         modelo.setRowCount(0);
         
-        // Recorrer todos los proveedores
         for (int i = 0; i < ap.Tamaño(); i++) {
             Proveedor proveedor = ap.obtenerPorIndice(i);
             
@@ -233,22 +205,18 @@ public class VentanaProveedores extends JFrame implements ActionListener {
                 String ruc = proveedor.getRuc().toLowerCase();
                 String nombre = proveedor.getNombre().toLowerCase();
                 
-                // Verificar estado
                 boolean tieneCompras = ConsultaProductosPorProveedor
                     .obtenerProductosDeProveedor(proveedor.getId())
                     .size() > 0;
                 
-                // Si solo queremos activos y no tiene compras, saltar
                 if (soloActivos && !tieneCompras) continue;
                 
-                // Verificar filtros de texto
                 boolean cumpleRUC = textoRUC.isEmpty() || ruc.contains(textoRUC);
                 boolean cumpleNombre = textoNombre.isEmpty() || nombre.contains(textoNombre);
                 
-                // Si cumple todos los filtros, agregar a la tabla
                 if (cumpleRUC && cumpleNombre) {
-                    String estado = tieneCompras ? "✅ ACTIVO" : "⚠️ INACTIVO";
-                    
+                    String estado = tieneCompras ? "ACTIVO" : "INACTIVO";
+                   
                     modelo.addRow(new Object[]{
                         proveedor.getId(),
                         proveedor.getRuc(),
@@ -259,16 +227,9 @@ public class VentanaProveedores extends JFrame implements ActionListener {
             }
         }
         
-        // Mostrar cuántos resultados se encontraron
         int resultados = modelo.getRowCount();
-        System.out.println(resultados == 0 ? 
-            "⚠ No se encontraron proveedores con ese filtro" : 
-            "✓ Se encontraron " + resultados + " proveedor(es)");
     }
-    
-    /**
-     * Carga todos los proveedores en la tabla con su estado
-     */
+    // Carga todos los proveedores y verifica si tienen compras asociadas
     private void cargarProveedores() {
         DefaultTableModel modelo = (DefaultTableModel) table.getModel();
         modelo.setRowCount(0);
@@ -277,12 +238,11 @@ public class VentanaProveedores extends JFrame implements ActionListener {
             Proveedor proveedor = ap.obtenerPorIndice(i);
             
             if (proveedor != null) {
-                // Verificar si tiene compras
                 boolean tieneCompras = ConsultaProductosPorProveedor
                     .obtenerProductosDeProveedor(proveedor.getId())
                     .size() > 0;
                 
-                String estado = tieneCompras ? "✅ ACTIVO" : "⚠️ INACTIVO";
+                String estado = tieneCompras ? "ACTIVO" : "INACTIVO";
                 
                 modelo.addRow(new Object[]{
                     proveedor.getId(),
@@ -293,10 +253,8 @@ public class VentanaProveedores extends JFrame implements ActionListener {
             }
         }
         
-        System.out.println("✓ Se cargaron " + ap.Tamaño() + " proveedor(es)");
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnVerProductos) {
             do_btnVerProductos_actionPerformed(e);
@@ -313,7 +271,7 @@ public class VentanaProveedores extends JFrame implements ActionListener {
     }
     
     protected void do_btnVerProductos_actionPerformed(ActionEvent e) {
-        // Verificar si hay un proveedor seleccionado
+    	
         if (proveedorSeleccionado == null) {
             JOptionPane.showMessageDialog(this, 
                 "Debe seleccionar un proveedor de la tabla\n\n" +
@@ -321,13 +279,11 @@ public class VentanaProveedores extends JFrame implements ActionListener {
                 "Ningún proveedor seleccionado", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        // Abrir ventana de productos del proveedor
+
         VentanaProductosProveedor ventana = new VentanaProductosProveedor(proveedorSeleccionado);
         ventana.setVisible(true);
         
-        System.out.println("✓ Abriendo ventana de productos para: " + 
-                           proveedorSeleccionado.getNombre());
+        
     }
     
     protected void do_btnListarTodos_actionPerformed(ActionEvent e) {

@@ -7,8 +7,7 @@ import java.util.ArrayList;
 public class Compra {
     private int numeroCompra;
     private String tipoDocumento;
-    private int idProveedor; // ← CAMBIO: era rucProveedor String
-    // ❌ ELIMINADO: nombreProveedor (se obtiene de la tabla proveedores)
+    private int idProveedor;
     private ArrayList<DetalleCompra> detalles;
     private double subTotal;
     private double igv;
@@ -28,12 +27,12 @@ public class Compra {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         this.fecha = ahora.format(formato);
     }
-    
+    // Agrega un producto al detalle y recalcula los totales
     public void agregarDetalle(DetalleCompra detalle) {
         detalles.add(detalle);
         calcularTotales();
     }
-    
+    //Cálcula el precio final de la venta
     public void calcularTotales() {
         subTotal = 0;
         for (DetalleCompra detalle : detalles) {
@@ -42,8 +41,6 @@ public class Compra {
         igv = subTotal * 0.18;
         total = subTotal + igv;
     }
-    
-    // Getters y Setters
     public int getNumeroCompra() {
         return numeroCompra;
     }

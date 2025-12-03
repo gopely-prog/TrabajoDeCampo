@@ -33,8 +33,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
     private JPanel panel_5;
     private JButton btnProveedores;
     private JLabel lblUsuarioActivo;
-    
-    // Variable para almacenar el tipo de usuario
+    // Almacena el tipo de usuario logueado 
     private String tipoUsuario;
 
     private static final String RUTA_LOGO = "/images/logo Polleria.png";
@@ -42,7 +41,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                // Para probar, inicia como ADMINISTRADOR
                 VentanaMenu frame = new VentanaMenu("ADMINISTRADOR");
                 frame.setVisible(true);
             } catch (Exception e) {
@@ -50,11 +48,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
             }
         });
     }
-
-    /**
-     * Constructor que recibe el tipo de usuario desde el login
-     * @param tipoUsuario "ADMINISTRADOR" o "TRABAJADOR"
-     */
+    // Constructor que recibe el rol desde el login
     public VentanaMenu(String tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
         
@@ -67,22 +61,19 @@ public class VentanaMenu extends JFrame implements ActionListener {
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
-        // ========== ETIQUETA DE USUARIO ACTIVO ==========
         lblUsuarioActivo = new JLabel("Usuario Activo: " + tipoUsuario);
         lblUsuarioActivo.setHorizontalAlignment(SwingConstants.RIGHT);
         lblUsuarioActivo.setFont(new Font("Arial", Font.BOLD, 14));
         lblUsuarioActivo.setBounds(400, 11, 272, 25);
         
-        // Color según el rol
         if (tipoUsuario.equals("ADMINISTRADOR")) {
-            lblUsuarioActivo.setForeground(new Color(0, 100, 0)); // Verde oscuro
+            lblUsuarioActivo.setForeground(new Color(0, 100, 0)); 
         } else {
-            lblUsuarioActivo.setForeground(new Color(0, 0, 139)); // Azul oscuro
+            lblUsuarioActivo.setForeground(new Color(0, 0, 139)); 
         }
         
         contentPane.add(lblUsuarioActivo);
 
-        // ========== BOTÓN TIENDA (Ventas) ==========
         panel = new JPanel();
         panel.setBounds(329, 50, 147, 100);
         contentPane.add(panel);
@@ -97,7 +88,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnTienda.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnTienda.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        // ========== BOTÓN COMPRAS ==========
         panel_1 = new JPanel();
         panel_1.setBounds(525, 50, 147, 100);
         contentPane.add(panel_1);
@@ -112,7 +102,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnCompras.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnCompras.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        // ========== BOTÓN AGREGAR PLATOS ==========
         panel_2 = new JPanel();
         panel_2.setBounds(329, 168, 147, 100);
         contentPane.add(panel_2);
@@ -127,7 +116,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnComida.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnComida.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        // ========== BOTÓN VER VENTAS ==========
         panel_4 = new JPanel();
         panel_4.setBounds(525, 168, 147, 100);
         contentPane.add(panel_4);
@@ -142,7 +130,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnVerVentas.setHorizontalTextPosition(SwingConstants.CENTER);
         panel_4.add(btnVerVentas);
 
-        // ========== BOTÓN PROVEEDORES (NUEVO) ==========
         panel_5 = new JPanel();
         panel_5.setBounds(329, 286, 147, 100);
         contentPane.add(panel_5);
@@ -157,7 +144,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnProveedores.setHorizontalTextPosition(SwingConstants.CENTER);
         panel_5.add(btnProveedores);
 
-        // ========== BOTÓN SALIR ==========
         panel_3 = new JPanel();
         panel_3.setBounds(525, 286, 147, 100);
         contentPane.add(panel_3);
@@ -180,10 +166,10 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
         aplicarRestriccionesPorRol();
     }
-    
+    //Deshabilita botones según el rel
     private void aplicarRestriccionesPorRol() {
         if (tipoUsuario.equals("TRABAJADOR")) {
-            // TRABAJADOR: Solo puede realizar ventas
+        	
             btnCompras.setEnabled(false);
             btnCompras.setToolTipText("Acceso restringido - Solo ADMINISTRADOR");
             
@@ -196,23 +182,22 @@ public class VentanaMenu extends JFrame implements ActionListener {
             btnProveedores.setEnabled(false);
             btnProveedores.setToolTipText("Acceso restringido - Solo ADMINISTRADOR");
             
-            // Cambiar color a gris para indicar deshabilitado
             btnCompras.setBackground(new Color(200, 200, 200));
             btnComida.setBackground(new Color(200, 200, 200));
             btnVerVentas.setBackground(new Color(200, 200, 200));
             btnProveedores.setBackground(new Color(200, 200, 200));
             
-            System.out.println("✓ Modo TRABAJADOR activado - Solo ventas disponibles");
+            System.out.println("Modo TRABAJADOR activado - Solo ventas disponibles");
             
         } else if (tipoUsuario.equals("ADMINISTRADOR")) {
-            // ADMINISTRADOR: Acceso completo
+        	
             btnTienda.setEnabled(true);
             btnCompras.setEnabled(true);
             btnComida.setEnabled(true);
             btnVerVentas.setEnabled(true);
             btnProveedores.setEnabled(true);
             
-            System.out.println("✓ Modo ADMINISTRADOR activado - Acceso completo");
+            System.out.println("odo ADMINISTRADOR activado - Acceso completo");
         }
     }
 
@@ -243,7 +228,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
 
     protected void do_btnCompras_actionPerformed(ActionEvent e) {
-        // Verificación adicional (por seguridad)
+    	
         if (tipoUsuario.equals("TRABAJADOR")) {
             JOptionPane.showMessageDialog(this, 
                 "Acceso denegado\n\nSolo el ADMINISTRADOR puede acceder a este módulo", 
@@ -272,7 +257,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
     
     protected void do_btnVerVentas_actionPerformed(ActionEvent e) {
-        // Verificación adicional (por seguridad)
+    	
         if (tipoUsuario.equals("TRABAJADOR")) {
             JOptionPane.showMessageDialog(this, 
                 "Acceso denegado\n\nSolo el ADMINISTRADOR puede ver el historial", 
@@ -284,7 +269,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
     
     protected void do_btnProveedores_actionPerformed(ActionEvent e) {
-        // Verificación adicional (por seguridad)
+    	
         if (tipoUsuario.equals("TRABAJADOR")) {
             JOptionPane.showMessageDialog(this, 
                 "Acceso denegado\n\nSolo el ADMINISTRADOR puede gestionar proveedores", 

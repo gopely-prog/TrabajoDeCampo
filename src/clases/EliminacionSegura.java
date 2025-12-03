@@ -2,16 +2,8 @@ package clases;
 
 import java.sql.*;
 import javax.swing.JOptionPane;
-
-/**
- * Clase para manejar eliminaciones seguras respetando FK
- */
 public class EliminacionSegura {
-    
-    /**
-     * Verifica si un producto puede ser eliminado
-     * @return true si puede eliminarse, false si tiene restricciones
-     */
+	// Verifica si un producto tiene referencias en compras o ventas (FK)
     public static boolean puedeEliminarProducto(int codigoProducto) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -20,7 +12,6 @@ public class EliminacionSegura {
         try {
             conn = ConexionBD.getConexion();
             
-            // Verificar si está en compras
             String sqlCompras = "SELECT COUNT(*) FROM detalle_compras WHERE codigo_producto = ?";
             pstmt = conn.prepareStatement(sqlCompras);
             pstmt.setInt(1, codigoProducto);
@@ -33,7 +24,6 @@ public class EliminacionSegura {
             rs.close();
             pstmt.close();
             
-            // Verificar si está en ventas
             String sqlVentas = "SELECT COUNT(*) FROM detalle_ventas WHERE codigo_producto = ?";
             pstmt = conn.prepareStatement(sqlVentas);
             pstmt.setInt(1, codigoProducto);
@@ -75,10 +65,7 @@ public class EliminacionSegura {
             }
         }
     }
-    
-    /**
-     * Verifica si un proveedor puede ser eliminado
-     */
+    // 	Verifica si un proveedor tiene compras asociadas (FK)
     public static boolean puedeEliminarProveedor(int idProveedor) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -126,10 +113,7 @@ public class EliminacionSegura {
             }
         }
     }
-    
-    /**
-     * Obtiene información detallada de uso de un producto
-     */
+    // 	Obtiene información detallada del uso de un producto en compras y ventas
     public static String obtenerInfoUsoProducto(int codigoProducto) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -192,10 +176,7 @@ public class EliminacionSegura {
             }
         }
     }
-    
-    /**
-     * Elimina un producto de forma segura (validando primero)
-     */
+    // Elimina un producto solo si no tiene referencias (valida primero)
     public static boolean eliminarProductoSeguro(int codigoProducto) {
         if (!puedeEliminarProducto(codigoProducto)) {
             return false;
@@ -222,10 +203,7 @@ public class EliminacionSegura {
         
         return false;
     }
-    
-    /**
-     * Elimina una compra (CASCADA eliminará los detalles automáticamente)
-     */
+    // Elimina una compra y devuelve el stock a los productos
     public static boolean eliminarCompraSegura(int numeroCompra) {
         Compra compra = ArregloCompras.getInstancia().Buscar(numeroCompra);
         
@@ -258,7 +236,6 @@ public class EliminacionSegura {
             JOptionPane.WARNING_MESSAGE);
         
         if (confirmacion == JOptionPane.YES_OPTION) {
-            // Devolver stock (tu código actual ya hace esto)
             ArregloComida ac = ArregloComida.getInstancia();
             for (DetalleCompra dc : compra.getDetalles()) {
                 Comida producto = ac.Buscar(dc.getCodigoProducto());
@@ -270,7 +247,6 @@ public class EliminacionSegura {
                 }
             }
             
-            // Eliminar compra (CASCADA eliminará detalles automáticamente)
             ArregloCompras.getInstancia().Eliminar(compra);
             
             JOptionPane.showMessageDialog(null,
@@ -287,10 +263,7 @@ public class EliminacionSegura {
         
         return false;
     }
-    
-    /**
-     * Elimina una venta (CASCADA eliminará los detalles automáticamente)
-     */
+    // Anula una venta y devuelve el stock a los productos
     public static boolean eliminarVentaSegura(int numeroVenta) {
         Venta venta = ArregloVentas.getInstancia().Buscar(numeroVenta);
         
@@ -329,7 +302,6 @@ public class EliminacionSegura {
                 }
             }
             
-            // Eliminar venta (CASCADA eliminará detalles)
             ArregloVentas.getInstancia().Eliminar(venta);
             
             JOptionPane.showMessageDialog(null,

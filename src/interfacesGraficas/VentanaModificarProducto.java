@@ -135,10 +135,8 @@ public class VentanaModificarProducto extends JFrame implements ActionListener {
 		btnModificar.setBounds(10, 270, 344, 40);
 		panel.add(btnModificar);
 		
-		// Cargar datos del producto
 		cargarDatos();
 		
-		// Listeners para calcular % ganancia en tiempo real
 		txtPrecioUnitario.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				calcularPorcentajeGanancia();
@@ -287,7 +285,6 @@ public class VentanaModificarProducto extends JFrame implements ActionListener {
 	
 	protected void do_btnModificar_actionPerformed(ActionEvent e) {
 		try {
-			// Leer y validar campos
 			String descripcion = LeerDescripcion();
 			if (descripcion == null) return;
 			
@@ -297,7 +294,6 @@ public class VentanaModificarProducto extends JFrame implements ActionListener {
 			Double costoUnitario = LeerCostoUnitario();
 			if (costoUnitario == null) return;
 			
-			// Advertir si el precio es menor o igual al costo
 			if (precioUnitario <= costoUnitario) {
 				int respuesta = JOptionPane.showConfirmDialog(this, 
 					"ADVERTENCIA: El precio de venta es menor o igual al costo.\n\n" +
@@ -315,7 +311,6 @@ public class VentanaModificarProducto extends JFrame implements ActionListener {
 				}
 			}
 			
-			// Modificar producto
 			int codigo = productoOriginal.getCodigo();
 			if (ac.Modificar(codigo, descripcion, precioUnitario, costoUnitario)) {
 				JOptionPane.showMessageDialog(this, 

@@ -38,7 +38,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 	private JButton btnIngresar;
 	private JLabel lblLogo;
 	private JLabel lblIntentos;
-	
 	// Variables para control de intentos
 	private int intentosRestantes = 3;
 	private boolean campoPasswordActivo = false;
@@ -67,7 +66,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		// ========== PANEL IZQUIERDO - LOGO ==========
 		JPanel panelLogo = new JPanel();
 		panelLogo.setBackground(new Color(255, 255, 255));
 		panelLogo.setBounds(10, 11, 300, 469);
@@ -106,7 +104,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		lblSeguridad.setBounds(10, 433, 280, 20);
 		panelLogo.add(lblSeguridad);
 		
-		// ========== PANEL DERECHO - CONTROL DE ACCESO ==========
 		JPanel panelAcceso = new JPanel();
 		panelAcceso.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, 
 			new Color(255, 255, 255), new Color(160, 160, 160)), 
@@ -117,7 +114,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		contentPane.add(panelAcceso);
 		panelAcceso.setLayout(null);
 		
-		// Contraseña
 		JLabel lblPassword = new JLabel("Contraseña:");
 		lblPassword.setFont(new Font("Arial", Font.BOLD, 14));
 		lblPassword.setBounds(20, 38, 100, 25);
@@ -128,7 +124,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		txtPassword.setBounds(20, 68, 314, 30);
 		panelAcceso.add(txtPassword);
 		
-		// Label de intentos restantes
 		lblIntentos = new JLabel("Intentos restantes: 3");
 		lblIntentos.setFont(new Font("Arial", Font.BOLD, 12));
 		lblIntentos.setForeground(new Color(0, 100, 0));
@@ -136,14 +131,12 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		lblIntentos.setBounds(20, 103, 314, 20);
 		panelAcceso.add(lblIntentos);
 		
-		// Listener para activar campo password
 		txtPassword.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusGained(java.awt.event.FocusEvent evt) {
 				campoPasswordActivo = true;
 			}
 		});
 		
-		// ========== TECLADO NUMÉRICO ==========
 		JPanel panelTeclado = new JPanel();
 		panelTeclado.setBorder(new TitledBorder(null, "Teclado Numérico", 
 			TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -151,7 +144,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		panelAcceso.add(panelTeclado);
 		panelTeclado.setLayout(null);
 		
-		// Botones numéricos en grid 4x3
 		btn1 = new JButton("1");
 		btn1.setFont(new Font("Arial", Font.BOLD, 18));
 		btn1.setBounds(10, 25, 70, 50);
@@ -206,7 +198,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		btn9.addActionListener(this);
 		panelTeclado.add(btn9);
 		
-		// Botón Borrar (←)
 		btnBorrar = new JButton("←");
 		btnBorrar.setFont(new Font("Arial", Font.BOLD, 16));
 		btnBorrar.setBackground(new Color(255, 200, 200));
@@ -214,7 +205,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		btnBorrar.addActionListener(this);
 		panelTeclado.add(btnBorrar);
 		
-		// Botón Limpiar (C)
 		btnLimpiar = new JButton("C");
 		btnLimpiar.setFont(new Font("Arial", Font.BOLD, 16));
 		btnLimpiar.setBackground(new Color(255, 230, 200));
@@ -228,7 +218,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		btn0.setFont(new Font("Arial", Font.BOLD, 18));
 		btn0.addActionListener(this);
 		
-		// ========== BOTÓN INGRESAR ==========
 		btnIngresar = new JButton("INGRESAR");
 		btnIngresar.setFont(new Font("Arial", Font.BOLD, 16));
 		btnIngresar.setBackground(new Color(144, 238, 144));
@@ -236,10 +225,8 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		btnIngresar.addActionListener(this);
 		panelAcceso.add(btnIngresar);
 	}
-
-	@Override
+	// Agrega un número al campo de contraseña activo
 	public void actionPerformed(ActionEvent e) {
-		// Botones numéricos
 		if (e.getSource() == btn0) agregarNumero("0");
 		if (e.getSource() == btn1) agregarNumero("1");
 		if (e.getSource() == btn2) agregarNumero("2");
@@ -251,7 +238,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		if (e.getSource() == btn8) agregarNumero("8");
 		if (e.getSource() == btn9) agregarNumero("9");
 		
-		// Botón Borrar
 		if (e.getSource() == btnBorrar) {
 			if (campoPasswordActivo) {
 				String actual = new String(txtPassword.getPassword());
@@ -261,50 +247,37 @@ public class VentanaLogin extends JFrame implements ActionListener {
 			}
 		}
 		
-		// Botón Limpiar
 		if (e.getSource() == btnLimpiar) {
 			if (campoPasswordActivo) {
 				txtPassword.setText("");
 			}
 		}
 		
-		// Botón Ingresar
 		if (e.getSource() == btnIngresar) {
 			do_btnIngresar_actionPerformed(e);
 		}
 	}
 	
-	/**
-	 * Agrega un número al campo de contraseña
-	 */
 	private void agregarNumero(String numero) {
 		if (campoPasswordActivo) {
 			String actual = new String(txtPassword.getPassword());
 			txtPassword.setText(actual + numero);
 		}
 	}
-	
-	/**
-	 * Actualiza el label de intentos restantes con color según estado
-	 */
+	// Actualiza el label de intentos con color
 	private void actualizarLabelIntentos() {
 		lblIntentos.setText("Intentos restantes: " + intentosRestantes);
 		
-		// Cambiar color según intentos
 		if (intentosRestantes == 3) {
-			lblIntentos.setForeground(new Color(0, 100, 0)); // Verde
+			lblIntentos.setForeground(new Color(0, 100, 0)); 
 		} else if (intentosRestantes == 2) {
-			lblIntentos.setForeground(new Color(255, 140, 0)); // Naranja
+			lblIntentos.setForeground(new Color(255, 140, 0)); 
 		} else if (intentosRestantes == 1) {
-			lblIntentos.setForeground(new Color(255, 0, 0)); // Rojo
+			lblIntentos.setForeground(new Color(255, 0, 0)); 
 		}
 	}
-	
-	/**
-	 * Bloquea el sistema después de 3 intentos fallidos
-	 */
+	// Bloquea todos los controles y cierra la aplicación
 	private void bloquearSistema() {
-		// Deshabilitar todos los botones
 		btn0.setEnabled(false);
 		btn1.setEnabled(false);
 		btn2.setEnabled(false);
@@ -320,7 +293,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		btnIngresar.setEnabled(false);
 		txtPassword.setEnabled(false);
 		
-		// Cambiar colores a gris
 		btn0.setBackground(Color.LIGHT_GRAY);
 		btn1.setBackground(Color.LIGHT_GRAY);
 		btn2.setBackground(Color.LIGHT_GRAY);
@@ -335,7 +307,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		btnLimpiar.setBackground(Color.LIGHT_GRAY);
 		btnIngresar.setBackground(Color.LIGHT_GRAY);
 		
-		// Mostrar mensaje de bloqueo
 		JOptionPane.showMessageDialog(this,
 			"🔒 ACCESO BLOQUEADO\n\n" +
 			"Se han agotado los 3 intentos de acceso.\n\n" +
@@ -344,18 +315,13 @@ public class VentanaLogin extends JFrame implements ActionListener {
 			"Sistema Bloqueado",
 			JOptionPane.ERROR_MESSAGE);
 		
-		// Cerrar la aplicación
-		System.out.println("❌ Sistema bloqueado por múltiples intentos fallidos");
+		System.out.println("Sistema bloqueado por múltiples intentos fallidos");
 		System.exit(0);
 	}
-	
-	/**
-	 * Método para validar login con límite de intentos
-	 */
+	// Valida las credenciales y abre el menú correspondiente al rol
 	protected void do_btnIngresar_actionPerformed(ActionEvent e) {
 		String password = new String(txtPassword.getPassword()).trim();
 		
-		// Validar campo vacío
 		if (password.isEmpty()) {
 			JOptionPane.showMessageDialog(this, 
 				"⚠️ Debe ingresar una contraseña", 
@@ -367,26 +333,24 @@ public class VentanaLogin extends JFrame implements ActionListener {
 		String tipoUsuario = null;
 		
 		if (password.equals("1234")) {
-			// ADMINISTRADOR - Acceso exitoso
+			
 			tipoUsuario = "ADMINISTRADOR";
 			
 		} else if (password.equals("2025")) {
-			// TRABAJADOR - Acceso exitoso
+			
 			tipoUsuario = "TRABAJADOR";
 			
 		} else {
-			// CONTRASEÑA INCORRECTA
 			intentosRestantes--;
 			actualizarLabelIntentos();
 			
 			if (intentosRestantes > 0) {
-				// Aún quedan intentos
 				String mensajeIntentos = intentosRestantes == 1 ? 
-					"\n\n⚠️ ÚLTIMO INTENTO\nEl sistema se bloqueará si falla nuevamente." :
+					"\n\nÚLTIMO INTENTO\nEl sistema se bloqueará si falla nuevamente." :
 					"\n\nIntentos restantes: " + intentosRestantes;
 				
 				JOptionPane.showMessageDialog(this, 
-					"❌ CONTRASEÑA INCORRECTA\n\n" +
+					"CONTRASEÑA INCORRECTA\n\n" +
 					"La clave ingresada no está asignada a ningún empleado.\n" +
 					"Verifique e intente nuevamente." +
 					mensajeIntentos,
@@ -397,17 +361,14 @@ public class VentanaLogin extends JFrame implements ActionListener {
 				txtPassword.requestFocus();
 				
 			} else {
-				// Se agotaron los intentos
 				bloquearSistema();
 			}
 			
 			return;
 		}
 		
-		// ========== ACCESO EXITOSO ==========
-		System.out.println("✓ Acceso autorizado: " + tipoUsuario);
+		System.out.println("Acceso autorizado: " + tipoUsuario);
 		
-		// Mostrar mensaje de bienvenida
 		JOptionPane.showMessageDialog(this,
 			"✅ ACCESO AUTORIZADO\n\n" +
 			"Bienvenido al sistema\n" +
@@ -415,11 +376,9 @@ public class VentanaLogin extends JFrame implements ActionListener {
 			"Acceso Exitoso",
 			JOptionPane.INFORMATION_MESSAGE);
 		
-		// Abrir ventana principal
 		VentanaMenu menu = new VentanaMenu(tipoUsuario);
 		menu.setVisible(true);
 		
-		// Cerrar ventana de login
 		this.dispose();
 	}
 }

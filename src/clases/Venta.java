@@ -4,12 +4,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-/**
- * Clase Venta - Similar a Compra pero para ventas
- */
 public class Venta {
     private int numeroVenta;
-    private String tipoDocumento; // "Boleta" o "Factura"
+    private String tipoDocumento; 
     private String rucCliente;
     private String razonSocial;
     private String domicilio;
@@ -33,7 +30,6 @@ public class Venta {
         this.igv = 0;
         this.total = 0;
         
-        // Obtener fecha actual
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         this.fecha = ahora.format(formato);
@@ -53,7 +49,6 @@ public class Venta {
         total = subTotal + igv;
     }
     
-    // Getters y Setters
     public int getNumeroVenta() {
         return numeroVenta;
     }

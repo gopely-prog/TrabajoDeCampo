@@ -30,8 +30,7 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 	private JLabel lblBuscarPorNumero;
 	private JButton btnListarTodas;
 	private JButton btnSalir;
-	
-	// Variable para almacenar la compra seleccionada
+	// Almacena la compra seleccionada
 	private Compra compraSeleccionada = null;
 
 	public VentanaListarCompras() {
@@ -44,7 +43,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		// Búsqueda
 		lblBuscarPorNumero = new JLabel("Buscar por Número:");
 		lblBuscarPorNumero.setFont(new Font("Arial", Font.BOLD, 13));
 		lblBuscarPorNumero.setBounds(20, 20, 150, 25);
@@ -55,14 +53,12 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		contentPane.add(txtNumeroCompra);
 		txtNumeroCompra.setColumns(10);
 		
-		// ========== FILTRADO EN TIEMPO REAL ==========
 		txtNumeroCompra.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				filtrarCompras();
 			}
 		});
 		
-		// Tabla de compras
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 75, 800, 380);
 		contentPane.add(scrollPane);
@@ -78,14 +74,12 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		modelo.addColumn("Total");
 		table.setModel(modelo);
 		
-		// ========== LISTENER PARA SELECCIÓN EN LA TABLA ==========
 		table.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				seleccionarCompraDeTabla();
 			}
 		});
 		
-		// Botones
 		btnVerDetalle = new JButton("Ver Detalle");
 		btnVerDetalle.setFont(new Font("Arial", Font.BOLD, 12));
 		btnVerDetalle.addActionListener(this);
@@ -110,43 +104,32 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		btnSalir.setBounds(690, 466, 130, 30);
 		contentPane.add(btnSalir);
 		
-		// Cargar todas las compras al iniciar
 		mostrarCompras();
 	}
 	
 	ArregloCompras acompras = ArregloCompras.getInstancia();
 	ArregloComida ac = ArregloComida.getInstancia();
-	
-	/**
-	 * Captura la compra seleccionada en la tabla
-	 */
+	// Captura el elemento seleccionado al hacer clic en la tabla
 	private void seleccionarCompraDeTabla() {
 		int filaSeleccionada = table.getSelectedRow();
 		
 		if (filaSeleccionada != -1) {
-			// Obtener el número de compra de la tabla
 			int numeroCompra = (int) table.getValueAt(filaSeleccionada, 0);
 			
-			// Buscar la compra completa
 			compraSeleccionada = acompras.Buscar(numeroCompra);
 			
 			if (compraSeleccionada != null) {
-				// Actualizar etiqueta de selección
 				ArregloProveedor ap = ArregloProveedor.getInstancia();
 				Proveedor proveedor = ap.BuscarPorId(compraSeleccionada.getIdProveedor());
 				String nombreProveedor = proveedor != null ? proveedor.getNombre() : "Desconocido";
 				
-				// Resaltar visualmente
 				table.setSelectionBackground(new Color(144, 238, 144));
 				
-				System.out.println("✓ Compra seleccionada: #" + numeroCompra);
+				System.out.println("Compra seleccionada: #" + numeroCompra);
 			}
 		}
 	}
-	
-	/**
-	 * Filtra compras en tiempo real mientras el usuario escribe
-	 */
+	// Filtra mientras el usuario escribe
 	private void filtrarCompras() {
 		String textoNumero = txtNumeroCompra.getText().trim();
 		
@@ -196,9 +179,9 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 			do_btnSalir_actionPerformed(e);
 		}
 	}
-	
+	// Muestra el detalle completo con productos y totales
 	protected void do_btnVerDetalle_actionPerformed(ActionEvent e) {
-		// Verificar si hay una compra seleccionada
+		
 		if (compraSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, 
 				"Debe seleccionar una compra de la tabla\n\n" +
@@ -207,7 +190,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 			return;
 		}
 		
-		// Obtener proveedor por ID
 		ArregloProveedor ap = ArregloProveedor.getInstancia();
 		Proveedor proveedor = ap.BuscarPorId(compraSeleccionada.getIdProveedor());
 		
@@ -223,7 +205,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		detalle.append("Fecha: ").append(compraSeleccionada.getFecha()).append("\n\n");
 		detalle.append("--- PRODUCTOS ---\n");
 		
-		// Obtener descripción desde ArregloComida
 		for (DetalleCompra dc : compraSeleccionada.getDetalles()) {
 			Comida producto = ac.Buscar(dc.getCodigoProducto());
 			String descripcion = producto != null ? producto.getDescripcion() : "Producto eliminado";
@@ -242,9 +223,8 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 		JOptionPane.showMessageDialog(this, detalle.toString(), 
 			"Detalle de Compra", JOptionPane.INFORMATION_MESSAGE);
 	}
-	
+	// Elimina usando EliminacionSegura para devolver stock
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
-		// Verificar si hay una compra seleccionada
 		if (compraSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, 
 				"Debe seleccionar una compra de la tabla para eliminar\n\n" +
@@ -253,7 +233,6 @@ public class VentanaListarCompras extends JFrame implements ActionListener {
 			return;
 		}
 		
-		// Usar eliminación segura
 		if (EliminacionSegura.eliminarCompraSegura(compraSeleccionada.getNumeroCompra())) {
 			compraSeleccionada = null;
 

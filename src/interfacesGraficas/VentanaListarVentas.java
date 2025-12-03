@@ -32,7 +32,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	private JButton btnListarTodas;
 	private JButton btnSalir;
 	
-	// Variable para almacenar la venta seleccionada
 	private Venta ventaSeleccionada = null;
 
 	public VentanaListarVentas() {
@@ -45,7 +44,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		// Búsqueda
 		lblBuscarPorNumero = new JLabel("Buscar por Número:");
 		lblBuscarPorNumero.setFont(new Font("Arial", Font.BOLD, 13));
 		lblBuscarPorNumero.setBounds(20, 20, 150, 25);
@@ -56,14 +54,12 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 		contentPane.add(txtNumeroVenta);
 		txtNumeroVenta.setColumns(10);
 		
-		// ========== FILTRADO EN TIEMPO REAL ==========
 		txtNumeroVenta.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				filtrarVentas();
 			}
 		});
 		
-		// Tabla de ventas
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(20, 75, 850, 380);
 		contentPane.add(scrollPane);
@@ -79,14 +75,12 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 		modelo.addColumn("Total");
 		table.setModel(modelo);
 		
-		// ========== LISTENER PARA SELECCIÓN EN LA TABLA ==========
 		table.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				seleccionarVentaDeTabla();
 			}
 		});
 		
-		// Botones
 		btnVerDetalle = new JButton("Ver Detalle");
 		btnVerDetalle.setFont(new Font("Arial", Font.BOLD, 12));
 		btnVerDetalle.addActionListener(this);
@@ -117,42 +111,32 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 		btnSalir.setBounds(740, 466, 130, 30);
 		contentPane.add(btnSalir);
 		
-		// Cargar todas las ventas al iniciar
 		mostrarVentas();
 	}
 	
 	ArregloVentas av = ArregloVentas.getInstancia();
 	ArregloComida ac = ArregloComida.getInstancia();
 	
-	/**
-	 * Captura la venta seleccionada en la tabla
-	 */
 	private void seleccionarVentaDeTabla() {
 		int filaSeleccionada = table.getSelectedRow();
 		
 		if (filaSeleccionada != -1) {
-			// Obtener el número de venta de la tabla
 			int numeroVenta = (int) table.getValueAt(filaSeleccionada, 0);
 			
-			// Buscar la venta completa
 			ventaSeleccionada = av.Buscar(numeroVenta);
 			
 			if (ventaSeleccionada != null) {
-				// Actualizar etiqueta de selección
+				
 				String tipoDoc = ventaSeleccionada.getTipoDocumento();
 				String cliente = ventaSeleccionada.getRazonSocial();
 	
-				// Resaltar visualmente
 				table.setSelectionBackground(new Color(144, 238, 144));
 				
-				System.out.println("✓ Venta seleccionada: #" + numeroVenta);
+				System.out.println("Venta seleccionada: #" + numeroVenta);
 			}
 		}
 	}
 	
-	/**
-	 * Filtra ventas en tiempo real mientras el usuario escribe
-	 */
 	private void filtrarVentas() {
 		String textoNumero = txtNumeroVenta.getText().trim();
 		
@@ -201,7 +185,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	}
 	
 	protected void do_btnVerDetalle_actionPerformed(ActionEvent e) {
-		// Verificar si hay una venta seleccionada
 		if (ventaSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, 
 				"Debe seleccionar una venta de la tabla\n\n" +
@@ -228,7 +211,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 		detalle.append("Fecha: ").append(ventaSeleccionada.getFecha()).append("\n\n");
 		detalle.append("--- PRODUCTOS ---\n");
 		
-		// Obtener descripción desde ArregloComida
 		for (DetalleVenta dv : ventaSeleccionada.getDetalles()) {
 			Comida producto = ac.Buscar(dv.getCodigoProducto());
 			String descripcion = producto != null ? producto.getDescripcion() : "Producto eliminado";
@@ -249,7 +231,7 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	}
 	
 	protected void do_btnAbrirArchivo_actionPerformed(ActionEvent e) {
-		// Verificar si hay una venta seleccionada
+		
 		if (ventaSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, 
 				"Debe seleccionar una venta de la tabla\n\n" +
@@ -258,7 +240,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 			return;
 		}
 		
-		// Abrir archivo de la venta
 		String rutaArchivo = ventaSeleccionada.getRutaArchivo();
 		if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
 			GestorBoletas.abrirArchivo(rutaArchivo);
@@ -273,7 +254,7 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 	}
 	
 	protected void do_btnEliminar_actionPerformed(ActionEvent e) {
-		// Verificar si hay una venta seleccionada
+		
 		if (ventaSeleccionada == null) {
 			JOptionPane.showMessageDialog(this, 
 				"Debe seleccionar una venta de la tabla para anular\n\n" +
@@ -282,7 +263,6 @@ public class VentanaListarVentas extends JFrame implements ActionListener {
 			return;
 		}
 		
-		// Usar eliminación segura
 		if (EliminacionSegura.eliminarVentaSegura(ventaSeleccionada.getNumeroVenta())) {
 			ventaSeleccionada = null;
 			txtNumeroVenta.setText("");

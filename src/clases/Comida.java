@@ -6,7 +6,7 @@ public class Comida {
 	private double pUnitario;
 	private double costoUnitario; 
 	
-	public Comida(int cantidad, double pUnitario) { //cálculos rápidos
+	public Comida(int cantidad, double pUnitario) { 
 		this.cantidad = cantidad;
 		this.pUnitario = pUnitario;
 	}
@@ -65,6 +65,7 @@ public class Comida {
 	public void setCostoUnitario(double costoUnitario) {
 		this.costoUnitario = costoUnitario;
 	}
+	// Calcula el porcentaje de ganancia: ((precio - costo) / costo) * 100
 	public double calcularPorcentajeGanancia() {
 		if (costoUnitario == 0) {
 			return 0;

@@ -23,10 +23,6 @@ public class ArregloProveedor {
         }
         return instancia;
     }
-    
-    /**
-     * MODIFICADO: Ahora carga con el campo id
-     */
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
         Statement stmt = null;
@@ -66,10 +62,7 @@ public class ArregloProveedor {
             }
         }
     }
-    
-    /**
-     * MODIFICADO: Ahora captura el ID generado automáticamente
-     */
+    // Inserta el proveedor y captura el ID auto-generado por MySQL
     public void Adicionar(Proveedor p) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -87,7 +80,6 @@ public class ArregloProveedor {
             int filasAfectadas = pstmt.executeUpdate();
             
             if (filasAfectadas > 0) {
-                // Obtener el ID generado automáticamente
                 rs = pstmt.getGeneratedKeys();
                 if (rs.next()) {
                     int idGenerado = rs.getInt(1);
@@ -112,10 +104,6 @@ public class ArregloProveedor {
             }
         }
     }
-    
-    /**
-     * NUEVO: Buscar proveedor por ID
-     */
     public Proveedor BuscarPorId(int id) {
         for (Proveedor p : listaProveedores) {
             if (p.getId() == id) {
@@ -124,10 +112,6 @@ public class ArregloProveedor {
         }
         return null;
     }
-    
-    /**
-     * Buscar por RUC (mantener método existente)
-     */
     public Proveedor BuscarPorRuc(String ruc) {
         for (Proveedor p : listaProveedores) {
             if (p.getRuc().equals(ruc)) {
@@ -140,10 +124,6 @@ public class ArregloProveedor {
     public int Tamaño() {
         return listaProveedores.size();
     }
-    
-    /**
-     * NUEVO: Obtener proveedor por índice
-     */
     public Proveedor obtenerPorIndice(int indice) {
         if (indice >= 0 && indice < listaProveedores.size()) {
             return listaProveedores.get(indice);

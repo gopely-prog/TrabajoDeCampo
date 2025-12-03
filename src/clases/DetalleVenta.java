@@ -2,7 +2,6 @@ package clases;
 
 public class DetalleVenta {
     private int codigoProducto;
-    // ❌ ELIMINADO: descripcionProducto (se obtiene de la tabla productos)
     private int cantidad;
     private double precioUnitario;
     

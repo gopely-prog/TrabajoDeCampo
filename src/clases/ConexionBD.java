@@ -10,7 +10,7 @@ public class ConexionBD{
 
     private static final String URL = "jdbc:mysql://localhost:3306/polleria_excelencia";
     private static final String USUARIO = "root";
-    private static final String CONTRASEÑA = "1234"; // ⚠️ CAMBIA ESTO
+    private static final String CONTRASEÑA = "1234";
     
     private static Connection conexion = null;
     
@@ -60,10 +60,6 @@ public class ConexionBD{
             e.printStackTrace();
         }
     }
-    
-    /**
-     * Método para probar la conexión
-     */
     public static void main(String[] args) {
         System.out.println("=== PROBANDO CONEXIÓN A LA BASE DE DATOS ===\n");
         

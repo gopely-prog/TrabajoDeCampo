@@ -11,21 +11,22 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ArregloComida {
-    private static ArregloComida instancia; //Es el único arreglo que existirá (Singleton)
+	//Patrón singleton: Esto garantiza una sola instancia del arreglo
+    private static ArregloComida instancia; 
     ArrayList<Comida> ListaComida;
-    
-    private ArregloComida() {//Privado para que no puedan otras clases hacer "new"
+    //Private para evitar instancia fuera de la clase
+    private ArregloComida() {
         ListaComida = new ArrayList<Comida>();
-        cargarDesdeBaseDeDatos(); // Cargar productos al iniciar
+        cargarDesdeBaseDeDatos(); 
     }
-    
-    public static ArregloComida getInstancia() {//Este método es el que permite usar esta clase desde otras partes del código
+    //Obtiene la única instanca del arreglo.
+    public static ArregloComida getInstancia() {
         if (instancia == null) {
             instancia = new ArregloComida();
         }
         return instancia;
     }
-    
+    //Carga todos los productos desde la base de datos de su tabla ´productos´ al iniciar el sistema
     private void cargarDesdeBaseDeDatos() {
         Connection conn = null;
         Statement stmt = null;
@@ -66,7 +67,7 @@ public class ArregloComida {
             }
         }
     }
-    
+    //Se inserta el producto en la base d datos y luego al array.
     public void Adicionar(Comida x) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -119,7 +120,7 @@ public class ArregloComida {
         }
         return null;
     }
-
+//Elimina el producto de la BD y del array.
     public void Eliminar(Comida x){
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -170,7 +171,7 @@ public class ArregloComida {
             });
         }
     }
-    
+    //Actualiza los datos del productos en la BD y en el array
     public boolean Modificar(int codigo, String descripcion, double PUnit, double costoUnit) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -214,7 +215,7 @@ public class ArregloComida {
         
         return false;
     }
-    
+    //Mantiene actualizado el stock en BD y en memoria local.
     public void actualizarStock(int codigo, int nuevoStock) {
         Connection conn = null;
         PreparedStatement pstmt = null;

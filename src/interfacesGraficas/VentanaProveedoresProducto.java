@@ -46,13 +46,11 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
         setContentPane(contentPane);
         contentPane.setLayout(null);
         
-        // Título
         lblTitulo = new JLabel("PROVEEDORES DEL PRODUCTO");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
         lblTitulo.setBounds(20, 11, 400, 30);
         contentPane.add(lblTitulo);
         
-        // Información del producto
         JPanel panelProducto = new JPanel();
         panelProducto.setBorder(new TitledBorder(null, "Información del Producto", 
             TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
@@ -65,10 +63,8 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
         lblProducto.setBounds(10, 25, 830, 45);
         panelProducto.add(lblProducto);
         
-        // Cargar información del producto
         cargarInfoProducto();
         
-        // Tabla de proveedores
         JPanel panelTabla = new JPanel();
         panelTabla.setBorder(new TitledBorder(null, "Historial de Compras a Proveedores", 
             TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
@@ -93,7 +89,6 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
         table = new JTable(modelo);
         scrollPane.setViewportView(table);
         
-        // Ajustar anchos de columnas
         table.getColumnModel().getColumn(0).setPreferredWidth(150); // Proveedor
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // RUC
         table.getColumnModel().getColumn(2).setPreferredWidth(80);  // Tipo Doc
@@ -103,7 +98,6 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
         table.getColumnModel().getColumn(6).setPreferredWidth(90);  // Costo Unit.
         table.getColumnModel().getColumn(7).setPreferredWidth(90);  // Subtotal
         
-        // Panel de estadísticas
         lblEstadisticas = new JLabel();
         lblEstadisticas.setFont(new Font("Arial", Font.BOLD, 13));
         lblEstadisticas.setBounds(20, 474, 600, 25);
@@ -115,7 +109,6 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
         btnCerrar.setBounds(770, 510, 100, 30);
         contentPane.add(btnCerrar);
         
-        // Cargar datos
         cargarProveedores();
     }
     
@@ -133,7 +126,6 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
     }
     
     private void cargarProveedores() {
-        // Obtener lista de proveedores del producto
         listaProveedores = ConsultaProveedoresPorProducto.obtenerProveedoresDeProducto(
             producto.getCodigo()
         );
@@ -150,8 +142,7 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
             lblEstadisticas.setText("📊 Sin compras registradas");
             return;
         }
-        
-        // Llenar tabla
+       
         DefaultTableModel modelo = (DefaultTableModel) table.getModel();
         modelo.setRowCount(0);
         
@@ -174,21 +165,18 @@ public class VentanaProveedoresProducto extends JFrame implements ActionListener
             totalGastado += pp.getSubtotal();
         }
         
-        // Mostrar estadísticas
         double costoPromedio = totalUnidades > 0 ? totalGastado / totalUnidades : 0;
         
         lblEstadisticas.setText(String.format(
-            "📊 Total compras: %d  |  Unidades: %d  |  Inversión: S/. %.2f  |  Costo Promedio: S/. %.2f",
+            "Total compras: %d  |  Unidades: %d  |  Inversión: S/. %.2f  |  Costo Promedio: S/. %.2f",
             listaProveedores.size(),
             totalUnidades,
             totalGastado,
             costoPromedio
         ));
         
-        System.out.println("✓ Se cargaron " + listaProveedores.size() + " compras del producto");
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnCerrar) {
             do_btnCerrar_actionPerformed(e);

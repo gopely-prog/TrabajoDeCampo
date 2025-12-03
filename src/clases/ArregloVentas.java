@@ -80,9 +80,6 @@ public class ArregloVentas {
         }
     }
     
-    /**
-     * MODIFICADO: Sin descripcion_producto
-     */
     private void cargarDetallesVenta(Venta venta) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -119,10 +116,7 @@ public class ArregloVentas {
             }
         }
     }
-    
-    /**
-     * MODIFICADO: Sin descripcion_producto en INSERT
-     */
+    // Inserta la venta y sus detalles en una transacción
     public void Adicionar(Venta v) {
         Connection conn = null;
         PreparedStatement pstmt = null;

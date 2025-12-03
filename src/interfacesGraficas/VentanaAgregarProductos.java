@@ -109,7 +109,6 @@ public class VentanaAgregarProductos extends JFrame implements ActionListener {
 		btnAgregar.setBounds(10, 230, 344, 40);
 		panel.add(btnAgregar);
 		
-		// Listeners para calcular % ganancia en tiempo real
 		txtPrecioUnitario.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				calcularPorcentajeGanancia();
@@ -130,7 +129,7 @@ public class VentanaAgregarProductos extends JFrame implements ActionListener {
 			do_btnAgregar_actionPerformed(e);
 		}
 	}
-	
+	// Calcula el porcentaje de ganancia en tiempo real mientras se escribe
 	private void calcularPorcentajeGanancia() {
 		try {
 			String precioStr = txtPrecioUnitario.getText().trim();
@@ -288,10 +287,9 @@ public class VentanaAgregarProductos extends JFrame implements ActionListener {
 		txtPorcentajeGanancia.setText("");
 		txtCodigo.requestFocus();
 	}
-	
+	// Valida los datos y agrega el producto en BD
 	protected void do_btnAgregar_actionPerformed(ActionEvent e) {
 		try {
-			// Leer y validar todos los campos
 			Integer codigo = LeerCodigo();
 			if (codigo == null) return;
 			
@@ -304,7 +302,6 @@ public class VentanaAgregarProductos extends JFrame implements ActionListener {
 			Double costoUnitario = LeerCostoUnitario();
 			if (costoUnitario == null) return;
 			
-			// Verificar si ya existe el código
 			Comida c = ac.Buscar(codigo);
 			if (c != null) {
 				JOptionPane.showMessageDialog(this, 
@@ -315,7 +312,6 @@ public class VentanaAgregarProductos extends JFrame implements ActionListener {
 				return;
 			}
 			
-			// Advertir si el precio es menor o igual al costo
 			if (precioUnitario <= costoUnitario) {
 				int respuesta = JOptionPane.showConfirmDialog(this, 
 					"ADVERTENCIA: El precio de venta es menor o igual al costo.\n\n" +
@@ -333,7 +329,6 @@ public class VentanaAgregarProductos extends JFrame implements ActionListener {
 				}
 			}
 			
-			// Crear producto (stock inicia en 0)
 			Comida nuevoProducto = new Comida(codigo, descripcion, precioUnitario, costoUnitario);
 			ac.Adicionar(nuevoProducto);
 			

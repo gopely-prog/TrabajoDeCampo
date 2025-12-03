@@ -7,14 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
-/**
- * Clase para consultar proveedores de un producto específico
- */
 public class ConsultaProveedoresPorProducto {
     
-    /**
-     * Clase interna para almacenar datos de proveedor con detalles de compra
-     */
     public static class ProveedorProducto {
         private int idProveedor;
         private String rucProveedor;
@@ -50,11 +44,6 @@ public class ConsultaProveedoresPorProducto {
         public double getSubtotal() { return cantidadComprada * costoUnitario; }
     }
     
-    /**
-     * Obtiene todos los proveedores que han vendido un producto específico
-     * @param codigoProducto Código del producto a consultar
-     * @return Lista de ProveedorProducto con detalles de compras
-     */
     public static ArrayList<ProveedorProducto> obtenerProveedoresDeProducto(int codigoProducto) {
         ArrayList<ProveedorProducto> proveedores = new ArrayList<>();
         Connection conn = null;
@@ -64,7 +53,6 @@ public class ConsultaProveedoresPorProducto {
         try {
             conn = ConexionBD.getConexion();
             
-            // INNER JOIN para obtener productos con sus proveedores
             String sql = "SELECT " +
                         "    p.id AS id_proveedor, " +
                         "    p.ruc AS ruc_proveedor, " +
@@ -119,11 +107,6 @@ public class ConsultaProveedoresPorProducto {
         return proveedores;
     }
     
-    /**
-     * Obtiene un resumen de proveedores únicos de un producto
-     * @param codigoProducto Código del producto
-     * @return String con resumen formateado
-     */
     public static String obtenerResumenProveedores(int codigoProducto) {
         ArrayList<ProveedorProducto> lista = obtenerProveedoresDeProducto(codigoProducto);
         
@@ -132,7 +115,6 @@ public class ConsultaProveedoresPorProducto {
                    "No hay proveedores asociados aún.";
         }
         
-        // Obtener información del producto
         Comida producto = ArregloComida.getInstancia().Buscar(codigoProducto);
         String nombreProducto = producto != null ? producto.getDescripcion() : "Producto #" + codigoProducto;
         
@@ -163,7 +145,6 @@ public class ConsultaProveedoresPorProducto {
             resumen.append(String.format("Nº Compra: %d\n\n", pp.getNumeroCompra()));
         }
         
-        // Calcular estadísticas
         int totalUnidadesCompradas = 0;
         double totalGastado = 0;
         double costoPromedio = 0;
