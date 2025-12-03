@@ -171,12 +171,7 @@ public class VentanaProductos extends JFrame implements ActionListener {
 		}
 		
 		int resultados = modelo.getRowCount();
-		if (resultados == 0) {
-			
-			System.out.println("No se encontraron productos con ese filtro");
-		} else {
-			System.out.println("Se encontraron " + resultados + " producto(s)");
-		}
+		
 	}
 	// Captura el producto seleccionado al hacer clic en la tabla
 	private void seleccionarProductoDeTabla() {

@@ -315,7 +315,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 			"Sistema Bloqueado",
 			JOptionPane.ERROR_MESSAGE);
 		
-		System.out.println("Sistema bloqueado por múltiples intentos fallidos");
 		System.exit(0);
 	}
 	// Valida las credenciales y abre el menú correspondiente al rol
@@ -367,14 +366,6 @@ public class VentanaLogin extends JFrame implements ActionListener {
 			return;
 		}
 		
-		System.out.println("Acceso autorizado: " + tipoUsuario);
-		
-		JOptionPane.showMessageDialog(this,
-			"✅ ACCESO AUTORIZADO\n\n" +
-			"Bienvenido al sistema\n" +
-			"Rol: " + tipoUsuario,
-			"Acceso Exitoso",
-			JOptionPane.INFORMATION_MESSAGE);
 		
 		VentanaMenu menu = new VentanaMenu(tipoUsuario);
 		menu.setVisible(true);

@@ -187,7 +187,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
             btnVerVentas.setBackground(new Color(200, 200, 200));
             btnProveedores.setBackground(new Color(200, 200, 200));
             
-            System.out.println("Modo TRABAJADOR activado - Solo ventas disponibles");
             
         } else if (tipoUsuario.equals("ADMINISTRADOR")) {
         	
@@ -197,7 +196,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
             btnVerVentas.setEnabled(true);
             btnProveedores.setEnabled(true);
             
-            System.out.println("odo ADMINISTRADOR activado - Acceso completo");
         }
     }
 
