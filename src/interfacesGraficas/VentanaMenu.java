@@ -32,8 +32,9 @@ public class VentanaMenu extends JFrame implements ActionListener {
     private JButton btnVerVentas;
     private JPanel panel_5;
     private JButton btnProveedores;
+    private JPanel panel_6;
+    private JButton btnColaboradores;
     private JLabel lblUsuarioActivo;
-    // Almacena el tipo de usuario logueado 
     private String tipoUsuario;
 
     private static final String RUTA_LOGO = "/images/logo Polleria.png";
@@ -48,7 +49,7 @@ public class VentanaMenu extends JFrame implements ActionListener {
             }
         });
     }
-    // Constructor que recibe el rol desde el login
+
     public VentanaMenu(String tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
         
@@ -144,8 +145,22 @@ public class VentanaMenu extends JFrame implements ActionListener {
         btnProveedores.setHorizontalTextPosition(SwingConstants.CENTER);
         panel_5.add(btnProveedores);
 
+        panel_6 = new JPanel();
+        panel_6.setBounds(525, 286, 147, 100);
+        contentPane.add(panel_6);
+        panel_6.setLayout(new GridLayout(1, 0, 0, 0));
+        
+        btnColaboradores = new JButton("<html><center>Ver<br>Colaboradores</center></html>");
+        btnColaboradores.setFont(new Font("Arial", Font.BOLD, 13));
+        btnColaboradores.setIcon(new ImageIcon(VentanaMenu.class.getResource("/images/iconComida.png")));
+        btnColaboradores.addActionListener(this);
+        btnColaboradores.setBackground(new Color(255, 255, 255));
+        btnColaboradores.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnColaboradores.setHorizontalTextPosition(SwingConstants.CENTER);
+        panel_6.add(btnColaboradores);
+
         panel_3 = new JPanel();
-        panel_3.setBounds(525, 286, 147, 100);
+        panel_3.setBounds(329, 404, 147, 100);
         contentPane.add(panel_3);
         panel_3.setLayout(new GridLayout(1, 0, 0, 0));
 
@@ -166,10 +181,9 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
         aplicarRestriccionesPorRol();
     }
-    //Deshabilita botones según el rel
+
     private void aplicarRestriccionesPorRol() {
         if (tipoUsuario.equals("TRABAJADOR")) {
-        	
             btnCompras.setEnabled(false);
             btnCompras.setToolTipText("Acceso restringido - Solo ADMINISTRADOR");
             
@@ -187,15 +201,12 @@ public class VentanaMenu extends JFrame implements ActionListener {
             btnVerVentas.setBackground(new Color(200, 200, 200));
             btnProveedores.setBackground(new Color(200, 200, 200));
             
-            
         } else if (tipoUsuario.equals("ADMINISTRADOR")) {
-        	
             btnTienda.setEnabled(true);
             btnCompras.setEnabled(true);
             btnComida.setEnabled(true);
             btnVerVentas.setEnabled(true);
             btnProveedores.setEnabled(true);
-            
         }
     }
 
@@ -218,6 +229,9 @@ public class VentanaMenu extends JFrame implements ActionListener {
         if (e.getSource() == btnTienda) {
             do_btnTienda_actionPerformed(e);
         }
+        if (e.getSource() == btnColaboradores) {
+            do_btnColaboradores_actionPerformed(e);
+        }
     }
 
     protected void do_btnTienda_actionPerformed(ActionEvent e) {
@@ -226,7 +240,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
 
     protected void do_btnCompras_actionPerformed(ActionEvent e) {
-    	
         if (tipoUsuario.equals("TRABAJADOR")) {
             JOptionPane.showMessageDialog(this, 
                 "Acceso denegado\n\nSolo el ADMINISTRADOR puede acceder a este módulo", 
@@ -255,7 +268,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
     
     protected void do_btnVerVentas_actionPerformed(ActionEvent e) {
-    	
         if (tipoUsuario.equals("TRABAJADOR")) {
             JOptionPane.showMessageDialog(this, 
                 "Acceso denegado\n\nSolo el ADMINISTRADOR puede ver el historial", 
@@ -267,7 +279,6 @@ public class VentanaMenu extends JFrame implements ActionListener {
     }
     
     protected void do_btnProveedores_actionPerformed(ActionEvent e) {
-    	
         if (tipoUsuario.equals("TRABAJADOR")) {
             JOptionPane.showMessageDialog(this, 
                 "Acceso denegado\n\nSolo el ADMINISTRADOR puede gestionar proveedores", 
@@ -275,6 +286,11 @@ public class VentanaMenu extends JFrame implements ActionListener {
             return;
         }
         VentanaProveedores ventana = new VentanaProveedores();
+        ventana.setVisible(true);
+    }
+    
+    protected void do_btnColaboradores_actionPerformed(ActionEvent e) {
+        VentanaColaboradores ventana = new VentanaColaboradores();
         ventana.setVisible(true);
     }
 }
