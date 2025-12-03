@@ -58,7 +58,7 @@ public class VentanaColaboradores extends JFrame implements ActionListener {
         // Puedes agregar tu imagen aquí: lblFoto1.setIcon(new ImageIcon(VentanaColaboradores.class.getResource("/images/foto1.png")));
         panelColaborador1.add(lblFoto1);
         
-        lblNombre2 = new JLabel("Ortega Ordinola, Karlos");
+        lblNombre2 = new JLabel("Ortega Ordinola, Karlo");
         lblNombre2.setBounds(10, 239, 180, 50);
         panelColaborador1.add(lblNombre2);
         lblNombre2.setHorizontalAlignment(SwingConstants.CENTER);
